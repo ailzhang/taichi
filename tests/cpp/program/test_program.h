@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "taichi/program/program.h"
+#include "taichi/csrc/program/program.h"
 
 namespace taichi {
 namespace lang {

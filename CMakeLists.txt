@@ -6,9 +6,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(taichi)
 
-SET(TI_VERSION_MAJOR 0)
-SET(TI_VERSION_MINOR 7)
-SET(TI_VERSION_PATCH 25)
+set(TI_VERSION_STRING ${TI_VERSION_STRING})
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -25,7 +23,7 @@ execute_process(
 string(STRIP ${TI_COMMIT_HASH} TI_COMMIT_HASH)
 string(STRIP ${TI_COMMIT_SHORT_HASH} TI_COMMIT_SHORT_HASH)
 
-message("Taichi Version ${TI_VERSION_MAJOR}.${TI_VERSION_MINOR}.${TI_VERSION_PATCH}")
+message("Taichi Version ${TI_VERSION_STRING}")
 message("       Commit ${TI_COMMIT_HASH}")
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -76,11 +74,19 @@ add_custom_target(
 )
 add_dependencies(${CORE_LIBRARY_NAME} generate_commit_hash)
 
-FILE(WRITE ${CMAKE_CURRENT_LIST_DIR}/taichi/common/version.h
+file(GLOB LLVM_RUNTIME_SOURCE_DIR
+        "taichi/csrc/runtime/llvm")
+add_custom_target(
+    generate_llvm_runtime
+    COMMAND clang -S "${LLVM_RUNTIME_SOURCE_DIR}/runtime.cpp" -o "${LLVM_RUNTIME_SOURCE_DIR}/runtime.ll" -fno-exceptions -emit-llvm -std=c++17 -D ARCH_arm64 -I ${PROJECT_SOURCE_DIR};
+    COMMAND ${LLVM_AS} "${LLVM_RUNTIME_SOURCE_DIR}/runtime.ll" -o "${LLVM_RUNTIME_SOURCE_DIR}/runtime_arm64.bc"
+)
+
+add_dependencies(${CORE_LIBRARY_NAME} generate_llvm_runtime)
+
+FILE(WRITE ${CMAKE_CURRENT_LIST_DIR}/taichi/csrc/common/version.h
         "#pragma once\n"
-        "#define TI_VERSION_MAJOR \"${TI_VERSION_MAJOR}\"\n"
-        "#define TI_VERSION_MINOR \"${TI_VERSION_MINOR}\"\n"
-        "#define TI_VERSION_PATCH \"${TI_VERSION_PATCH}\"\n"
+        "#define TI_VERSION_STRING \"${TI_VERSION_STRING}\"\n"
         "#define TI_CUDAVERSION \"${CUDA_VERSION}\"\n"
         )
 
@@ -89,3 +95,5 @@ option(TI_EXPORT_CORE "export taichi core" OFF)
 if (TI_EXPORT_CORE)
   include(cmake/TaichiExportCore.cmake)
 endif()
+
+

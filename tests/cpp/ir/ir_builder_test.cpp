@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
-#include "taichi/ir/ir_builder.h"
-#include "taichi/ir/statements.h"
+#include "taichi/csrc/ir/ir_builder.h"
+#include "taichi/csrc/ir/statements.h"
 #include "tests/cpp/program/test_program.h"
 
 namespace taichi {

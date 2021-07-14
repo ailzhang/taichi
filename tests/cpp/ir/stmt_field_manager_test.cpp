@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
 
-#include "taichi/ir/ir.h"
-#include "taichi/ir/statements.h"
-#include "taichi/util/testing.h"
+#include "taichi/csrc/ir/ir.h"
+#include "taichi/csrc/ir/statements.h"
+#include "taichi/csrc/util/testing.h"
 
 namespace taichi {
 namespace lang {

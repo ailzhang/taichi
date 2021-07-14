@@ -1,12 +1,12 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-#include "taichi/analysis/arithmetic_interpretor.h"
-#include "taichi/ir/ir_builder.h"
-#include "taichi/ir/snode.h"
-#include "taichi/ir/statements.h"
-#include "taichi/ir/transforms.h"
-#include "taichi/struct/struct.h"
+#include "taichi/csrc/analysis/arithmetic_interpretor.h"
+#include "taichi/csrc/ir/ir_builder.h"
+#include "taichi/csrc/ir/snode.h"
+#include "taichi/csrc/ir/statements.h"
+#include "taichi/csrc/ir/transforms.h"
+#include "taichi/csrc/struct/struct.h"
 #include "tests/cpp/struct/fake_struct_compiler.h"
 
 namespace taichi {

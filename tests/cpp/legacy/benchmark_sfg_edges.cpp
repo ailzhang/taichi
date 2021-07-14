@@ -8,8 +8,8 @@
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/SmallVector.h"
-#include "taichi/system/profiler.h"
-#include "taichi/util/testing.h"
+#include "taichi/csrc/system/profiler.h"
+#include "taichi/csrc/util/testing.h"
 
 TLANG_NAMESPACE_BEGIN
 

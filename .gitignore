@@ -39,8 +39,11 @@ runtimes/*.png
 runtimes/taichi_core*
 runtimes/libtaichi_core*
 .pypirc
-python/dist
-python/MANIFEST
+taichi/dist
+taichi/assets
+taichi/examples
+dist/
+taichi/MANIFEST
 build/
 bin/
 tmp/
@@ -56,9 +59,9 @@ __pycache__
 *.jpg
 *.egg-info
 .tlang_cache
-/taichi/common/version.h
-/taichi/common/commit_hash.h
-/python/test_env
+/taichi/csrc/common/version.h
+/taichi/csrc/common/commit_hash.h
+/taichi/test_env
 /CHANGELOG.md
 /.coverage
 /coverage.xml

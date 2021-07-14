@@ -4,8 +4,8 @@
 *******************************************************************************/
 #include "gtest/gtest.h"
 
-#include "taichi/common/dict.h"
-#include "taichi/util/testing.h"
+#include "taichi/csrc/common/dict.h"
+#include "taichi/csrc/util/testing.h"
 
 namespace taichi {
 namespace lang {

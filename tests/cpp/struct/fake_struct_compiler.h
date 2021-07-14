@@ -1,4 +1,4 @@
-#include "taichi/struct/struct.h"
+#include "taichi/csrc/struct/struct.h"
 
 namespace taichi {
 namespace lang {

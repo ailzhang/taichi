@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
-#include "taichi/util/testing.h"
-#include "taichi/program/async_engine.h"
+#include "taichi/csrc/util/testing.h"
+#include "taichi/csrc/program/async_engine.h"
 
 namespace taichi {
 namespace lang {

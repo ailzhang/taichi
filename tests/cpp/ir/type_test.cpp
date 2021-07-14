@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
 
-#include "taichi/util/testing.h"
-#include "taichi/ir/type.h"
-#include "taichi/ir/type_factory.h"
+#include "taichi/csrc/util/testing.h"
+#include "taichi/csrc/ir/type.h"
+#include "taichi/csrc/ir/type_factory.h"
 
 namespace taichi {
 namespace lang {

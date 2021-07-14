@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "taichi/common/core.h"
+#include "taichi/csrc/common/core.h"
 
 namespace taichi {
 namespace lang {

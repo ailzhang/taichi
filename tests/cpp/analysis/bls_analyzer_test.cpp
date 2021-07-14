@@ -1,13 +1,13 @@
-#include "taichi/analysis/bls_analyzer.h"
+#include "taichi/csrc/analysis/bls_analyzer.h"
 
 #include <memory>
 
 #include "gtest/gtest.h"
-#include "taichi/ir/ir_builder.h"
-#include "taichi/ir/scratch_pad.h"
-#include "taichi/ir/snode.h"
-#include "taichi/ir/transforms.h"
-#include "taichi/struct/struct.h"
+#include "taichi/csrc/ir/ir_builder.h"
+#include "taichi/csrc/ir/scratch_pad.h"
+#include "taichi/csrc/ir/snode.h"
+#include "taichi/csrc/ir/transforms.h"
+#include "taichi/csrc/struct/struct.h"
 #include "tests/cpp/struct/fake_struct_compiler.h"
 
 namespace taichi {

@@ -42,18 +42,18 @@ if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/src/glad.c")
 endif()
 
 file(GLOB TAICHI_CORE_SOURCE
-        "taichi/*/*/*/*.cpp" "taichi/*/*/*.cpp" "taichi/*/*.cpp" "taichi/*.cpp"
-        "taichi/*/*/*/*.h" "taichi/*/*/*.h" "taichi/*/*.h" "taichi/*.h" "tests/cpp/task/*.cpp")
+        "taichi/csrc/*/*/*/*.cpp" "taichi/csrc/*/*/*.cpp" "taichi/csrc/*/*.cpp" "taichi/csrc/*.cpp"
+        "taichi/csrc/*/*/*/*.h" "taichi/csrc/*/*/*.h" "taichi/csrc/*/*.h" "taichi/csrc/*.h" "tests/cpp/task/*.cpp")
 
-file(GLOB TAICHI_BACKEND_SOURCE "taichi/backends/**/*.cpp" "taichi/backends/**/*.h")
+file(GLOB TAICHI_BACKEND_SOURCE "taichi/csrc/backends/**/*.cpp" "taichi/csrc/backends/**/*.h")
 
-file(GLOB TAICHI_CPU_SOURCE "taichi/backends/cpu/*.cpp" "taichi/backends/cpu/*.h")
-file(GLOB TAICHI_WASM_SOURCE "taichi/backends/wasm/*.cpp" "taichi/backends/wasm/*.h")
-file(GLOB TAICHI_CUDA_SOURCE "taichi/backends/cuda/*.cpp" "taichi/backends/cuda/*.h")
-file(GLOB TAICHI_METAL_SOURCE "taichi/backends/metal/*.h" "taichi/backends/metal/*.cpp" "taichi/backends/metal/shaders/*")
-file(GLOB TAICHI_OPENGL_SOURCE "taichi/backends/opengl/*.h" "taichi/backends/opengl/*.cpp" "taichi/backends/opengl/shaders/*")
-file(GLOB TAICHI_CC_SOURCE "taichi/backends/cc/*.h" "taichi/backends/cc/*.cpp")
-file(GLOB TAICHI_VULKAN_SOURCE "taichi/backends/vulkan/*.h" "taichi/backends/vulkan/*.cpp")
+file(GLOB TAICHI_CPU_SOURCE "taichi/csrc/backends/cpu/*.cpp" "taichi/csrc/backends/cpu/*.h")
+file(GLOB TAICHI_WASM_SOURCE "taichi/csrc/backends/wasm/*.cpp" "taichi/csrc/backends/wasm/*.h")
+file(GLOB TAICHI_CUDA_SOURCE "taichi/csrc/backends/cuda/*.cpp" "taichi/csrc/backends/cuda/*.h")
+file(GLOB TAICHI_METAL_SOURCE "taichi/csrc/backends/metal/*.h" "taichi/csrc/backends/metal/*.cpp" "taichi/csrc/backends/metal/shaders/*")
+file(GLOB TAICHI_OPENGL_SOURCE "taichi/csrc/backends/opengl/*.h" "taichi/csrc/backends/opengl/*.cpp" "taichi/csrc/backends/opengl/shaders/*")
+file(GLOB TAICHI_CC_SOURCE "taichi/csrc/backends/cc/*.h" "taichi/csrc/backends/cc/*.cpp")
+file(GLOB TAICHI_VULKAN_SOURCE "taichi/csrc/backends/vulkan/*.h" "taichi/csrc/backends/vulkan/*.cpp")
 
 list(REMOVE_ITEM TAICHI_CORE_SOURCE ${TAICHI_BACKEND_SOURCE})
 
@@ -105,8 +105,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # TODO(#2198): Long-term speaking, we should create a separate library for each
 # sub-module. This way we can guarantee that the lib dependencies form a DAG.
 file(GLOB TAICHI_PYBIND_SOURCE
-      "taichi/python/*.cpp"
-      "taichi/python/*.h"
+      "taichi/csrc/python/*.cpp"
+      "taichi/csrc/python/*.h"
 )
 list(REMOVE_ITEM TAICHI_CORE_SOURCE ${TAICHI_PYBIND_SOURCE})
 

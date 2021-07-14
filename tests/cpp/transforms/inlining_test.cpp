@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 
-#include "taichi/ir/analysis.h"
-#include "taichi/ir/ir_builder.h"
-#include "taichi/ir/statements.h"
-#include "taichi/ir/transforms.h"
-#include "taichi/program/program.h"
+#include "taichi/csrc/ir/analysis.h"
+#include "taichi/csrc/ir/ir_builder.h"
+#include "taichi/csrc/ir/statements.h"
+#include "taichi/csrc/ir/transforms.h"
+#include "taichi/csrc/program/program.h"
 
 namespace taichi {
 namespace lang {
