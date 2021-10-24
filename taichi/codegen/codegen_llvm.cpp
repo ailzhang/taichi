@@ -635,6 +635,7 @@ void CodeGenLLVM::visit(BinaryOpStmt *stmt) {
   }
 }
 
+// TODO: add half type here.
 llvm::Type *CodeGenLLVM::llvm_type(DataType dt) {
   if (dt->is_primitive(PrimitiveTypeID::i8) ||
       dt->is_primitive(PrimitiveTypeID::u8)) {
@@ -654,6 +655,10 @@ llvm::Type *CodeGenLLVM::llvm_type(DataType dt) {
     return llvm::Type::getFloatTy(*llvm_context);
   } else if (dt->is_primitive(PrimitiveTypeID::f64)) {
     return llvm::Type::getDoubleTy(*llvm_context);
+  } else if (dt->is_primitive(PrimitiveTypeID::f16)) {
+    /// FIXME
+    return llvm::Type::getFloatTy(*llvm_context);
+    // return llvm::Type::getHalfTy(*llvm_context);
   } else {
     TI_NOT_IMPLEMENTED;
   }
