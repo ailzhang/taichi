@@ -62,13 +62,6 @@ class DataType {
   }
 
   bool operator==(const DataType &o) const {
-    /// FIXME
-    if ((ptr_->is_primitive(PrimitiveTypeID::f16) &&
-         o.ptr_->is_primitive(PrimitiveTypeID::f32)) ||
-        (ptr_->is_primitive(PrimitiveTypeID::f32) &&
-         o.ptr_->is_primitive(PrimitiveTypeID::f16))) {
-      return true;
-    }
     return ptr_ == o.ptr_;
   }
 
@@ -129,8 +122,7 @@ class PrimitiveType : public Type {
   std::string to_string() const override;
 
   virtual Type *get_compute_type() override {
-    /// FIXME: this is a hack!
-    return this->type == PrimitiveTypeID::f16 ? PrimitiveType::f32 : this;
+    return this;
   }
 
   static DataType get(PrimitiveTypeID type);

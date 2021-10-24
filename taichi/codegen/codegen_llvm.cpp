@@ -368,8 +368,20 @@ void CodeGenLLVM::visit(UnaryOpStmt *stmt) {
         llvm_val[stmt] = builder->CreateFPExt(
             llvm_val[stmt->operand], tlctx->get_data_type(stmt->cast_type));
       } else {
-        llvm_val[stmt] = builder->CreateFPTrunc(
-            llvm_val[stmt->operand], tlctx->get_data_type(stmt->cast_type));
+        // if (llvm_type(to) == llvm::Type::getHalfTy(*llvm_context)) {
+        if (to == PrimitiveType::f16) {
+          llvm_val[stmt] = builder->CreateIntrinsic(
+              llvm::Intrinsic::convert_to_fp16, llvm_type(from),
+              llvm_val[stmt->operand]);
+        } else if (llvm_type(from) == llvm::Type::getHalfTy(*llvm_context)) {
+          //} else if (from == PrimitiveType::f16) {
+          llvm_val[stmt] =
+              builder->CreateIntrinsic(llvm::Intrinsic::convert_from_fp16,
+                                       llvm_type(to), llvm_val[stmt->operand]);
+        } else {
+          llvm_val[stmt] = builder->CreateFPTrunc(
+              llvm_val[stmt->operand], tlctx->get_data_type(stmt->cast_type));
+        }
       }
     } else if (!is_real(from) && !is_real(to)) {
       // TODO: implement casting into custom integer type
@@ -413,8 +425,15 @@ void CodeGenLLVM::visit(BinaryOpStmt *stmt) {
   auto ret_type = stmt->ret_type;
   if (op == BinaryOpType::add) {
     if (is_real(stmt->ret_type)) {
-      llvm_val[stmt] =
-          builder->CreateFAdd(llvm_val[stmt->lhs], llvm_val[stmt->rhs]);
+      // FIXME: MUST get rid of this: hack since f16 lives in i16 register
+      if (llvm_val[stmt->lhs]->getType() ==
+          llvm::Type::getInt16Ty(*llvm_context)) {
+        llvm_val[stmt] =
+            builder->CreateAdd(llvm_val[stmt->lhs], llvm_val[stmt->rhs]);
+      } else {
+        llvm_val[stmt] =
+            builder->CreateFAdd(llvm_val[stmt->lhs], llvm_val[stmt->rhs]);
+      }
     } else {
       llvm_val[stmt] =
           builder->CreateAdd(llvm_val[stmt->lhs], llvm_val[stmt->rhs]);
@@ -635,7 +654,6 @@ void CodeGenLLVM::visit(BinaryOpStmt *stmt) {
   }
 }
 
-// TODO: add half type here.
 llvm::Type *CodeGenLLVM::llvm_type(DataType dt) {
   if (dt->is_primitive(PrimitiveTypeID::i8) ||
       dt->is_primitive(PrimitiveTypeID::u8)) {
@@ -656,9 +674,9 @@ llvm::Type *CodeGenLLVM::llvm_type(DataType dt) {
   } else if (dt->is_primitive(PrimitiveTypeID::f64)) {
     return llvm::Type::getDoubleTy(*llvm_context);
   } else if (dt->is_primitive(PrimitiveTypeID::f16)) {
-    /// FIXME
-    return llvm::Type::getFloatTy(*llvm_context);
     // return llvm::Type::getHalfTy(*llvm_context);
+    // FIXME: hack since fp16 uses int16 register
+    return llvm::Type::getInt16Ty(*llvm_context);
   } else {
     TI_NOT_IMPLEMENTED;
   }
@@ -1210,6 +1228,10 @@ void CodeGenLLVM::visit(GlobalLoadStmt *stmt) {
     } else {
       TI_NOT_IMPLEMENTED
     }
+    // } else if (ptr_type->get_pointee_type() == PrimitiveType::f16) {
+    //   llvm_val[stmt] =
+    //   builder->CreateLoad(llvm::PointerType::getInt16PtrTy(*llvm_context),
+    //   llvm_val[stmt->src]);
   } else {
     llvm_val[stmt] = builder->CreateLoad(tlctx->get_data_type(stmt->ret_type),
                                          llvm_val[stmt->src]);
