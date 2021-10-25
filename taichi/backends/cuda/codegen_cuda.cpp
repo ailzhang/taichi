@@ -494,11 +494,11 @@ class CodeGenLLVMCUDA : public CodeGenLLVM {
           } else {
             TI_NOT_IMPLEMENTED;
           }
-        } else if (auto ptr_type = stmt->src->ret_type->as<PointerType>();
-                   ptr_type->get_pointee_type() == PrimitiveType::f16) {
+          //} else if (auto ptr_type = stmt->src->ret_type->as<PointerType>();
+          // ptr_type->get_pointee_type() == PrimitiveType::f16) {
           // FIXME: hack since fp16 uses int16 register.
-          llvm_val[stmt] = create_intrinsic_load(get_data_type<int16>(),
-                                                 llvm_val[stmt->src]);
+          // llvm_val[stmt] = create_intrinsic_load(get_data_type<int16>(),
+          // llvm_val[stmt->src]);
         } else {
           // Byte pointer case.
           // Issue an CUDA "__ldg" instruction so that data are cached in

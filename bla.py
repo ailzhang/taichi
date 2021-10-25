@@ -1,6 +1,9 @@
 import taichi as ti
 
-ti.init(arch=ti.cuda, print_ir=False, print_kernel_llvm_ir=True)
+ti.init(arch=ti.cuda,
+        print_ir=True,
+        print_kernel_llvm_ir=True,
+        print_kernel_nvptx=True)
 dtype = ti.f16
 # dtype = ti.f32
 x = ti.field(dtype, shape=())

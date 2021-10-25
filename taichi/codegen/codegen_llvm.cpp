@@ -370,9 +370,11 @@ void CodeGenLLVM::visit(UnaryOpStmt *stmt) {
       } else {
         // if (llvm_type(to) == llvm::Type::getHalfTy(*llvm_context)) {
         if (to == PrimitiveType::f16) {
-          llvm_val[stmt] = builder->CreateIntrinsic(
-              llvm::Intrinsic::convert_to_fp16, llvm_type(from),
-              llvm_val[stmt->operand]);
+          // llvm_val[stmt] = builder->CreateIntrinsic(
+          // llvm::Intrinsic::convert_to_fp16, llvm_type(from),
+          // llvm_val[stmt->operand]);
+          llvm_val[stmt] = builder->CreateFPTrunc(
+              llvm_val[stmt->operand], llvm::Type::getHalfTy(*llvm_context));
         } else if (llvm_type(from) == llvm::Type::getHalfTy(*llvm_context)) {
           //} else if (from == PrimitiveType::f16) {
           llvm_val[stmt] =
@@ -674,9 +676,7 @@ llvm::Type *CodeGenLLVM::llvm_type(DataType dt) {
   } else if (dt->is_primitive(PrimitiveTypeID::f64)) {
     return llvm::Type::getDoubleTy(*llvm_context);
   } else if (dt->is_primitive(PrimitiveTypeID::f16)) {
-    // return llvm::Type::getHalfTy(*llvm_context);
-    // FIXME: hack since fp16 uses int16 register
-    return llvm::Type::getInt16Ty(*llvm_context);
+    return llvm::Type::getHalfTy(*llvm_context);
   } else {
     TI_NOT_IMPLEMENTED;
   }

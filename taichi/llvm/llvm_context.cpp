@@ -121,8 +121,7 @@ llvm::Type *TaichiLLVMContext::get_data_type(DataType dt) {
   } else if (dt->is_primitive(PrimitiveTypeID::u64)) {
     return llvm::Type::getInt64Ty(*ctx);
   } else if (dt->is_primitive(PrimitiveTypeID::f16)) {
-    // FIXME: hack
-    return llvm::Type::getInt16Ty(*ctx);
+    return llvm::Type::getHalfTy(*ctx);
   } else {
     TI_INFO(data_type_name(dt));
     TI_NOT_IMPLEMENTED
