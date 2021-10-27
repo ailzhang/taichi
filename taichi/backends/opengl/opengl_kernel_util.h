@@ -49,8 +49,8 @@ enum class GLBufId {
   Gtmp = 1,
   Args = 2,
   Retr = 3,
-  Extr = 4,
-  Runtime = 5,
+  // Extr = 4,
+  Runtime = 4,
 };
 
 struct IOV {

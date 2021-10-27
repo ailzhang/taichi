@@ -317,12 +317,12 @@ void DeviceCompiledProgram::launch(Context &ctx, OpenGlRuntime *runtime) const {
     binder->buffer(0, int(GLBufId::Runtime), core_bufs.runtime);
     binder->buffer(0, int(GLBufId::Root), core_bufs.root);
     binder->buffer(0, int(GLBufId::Gtmp), core_bufs.gtmp);
-    if (program_.args_buf_size)
+    if (program_.args_buf_size || program_.total_ext_arr_size)
       binder->buffer(0, int(GLBufId::Args), args_buf_);
     if (program_.ret_buf_size)
       binder->buffer(0, int(GLBufId::Retr), ret_buf_);
-    if (program_.total_ext_arr_size)
-      binder->buffer(0, int(GLBufId::Extr), ext_arr_buf_);
+    // if (program_.total_ext_arr_size)
+    // binder->buffer(0, int(GLBufId::Extr), ext_arr_buf_);
 
     cmdlist->bind_pipeline(compiled_pipeline_[i].get());
     cmdlist->bind_resources(binder);

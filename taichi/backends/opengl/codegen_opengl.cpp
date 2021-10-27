@@ -179,11 +179,11 @@ class KernelGen : public IRVisitor {
       }
 
       if (write && !read) {
-        REGISTER_BUFFER(std430, writeonly buffer, extr, GLBufId::Extr);
+        REGISTER_BUFFER(std430, writeonly buffer, extr, GLBufId::Args);
       } else if (!write && read) {
-        REGISTER_BUFFER(std430, readonly buffer, extr, GLBufId::Extr);
+        REGISTER_BUFFER(std430, readonly buffer, extr, GLBufId::Args);
       } else {
-        REGISTER_BUFFER(std430, buffer, extr, GLBufId::Extr);
+        REGISTER_BUFFER(std430, buffer, extr, GLBufId::Args);
       }
     }
 
