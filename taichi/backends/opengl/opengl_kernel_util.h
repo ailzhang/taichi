@@ -28,7 +28,6 @@ struct UsedFeature {
   // buffers:
   bool buf_args{false};
   bool buf_gtmp{false};
-  bool buf_retr{false};
 
   // utilties:
   bool fast_pow{false};
@@ -46,8 +45,7 @@ enum class GLBufId {
   Root = 0,
   Gtmp = 1,
   Args = 2,
-  Retr = 3,
-  Runtime = 4,
+  Runtime = 3,
 };
 
 struct IOV {

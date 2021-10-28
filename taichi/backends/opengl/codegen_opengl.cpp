@@ -167,8 +167,6 @@ class KernelGen : public IRVisitor {
       REGISTER_BUFFER(std430, buffer, gtmp, GLBufId::Gtmp);
     if (used.buf_args)
       REGISTER_BUFFER(std430, buffer, args, GLBufId::Args);
-    if (used.buf_retr)
-      REGISTER_BUFFER(std430, writeonly buffer, retr, GLBufId::Retr);
 
 #undef REGISTER_BUFFER
 #undef DEFINE_LAYOUT
@@ -729,10 +727,16 @@ class KernelGen : public IRVisitor {
   }
 
   void visit(ReturnStmt *stmt) override {
-    used.buf_retr = true;
+    used.buf_args = true;
+    size_t data_type_in_bytes = data_type_size(stmt->element_type());
     // TODO: use stmt->ret_id instead of 0 as index
-    emit("_retr_{}_[0] = {};",
+    emit("_args_{}_[{} + 0] = {};",
          opengl_data_type_short_name(stmt->element_type()),
+         size_t(taichi_opengl_earg_base +
+                taichi_max_num_args_extra * taichi_max_num_indices *
+                    sizeof(int) +
+                taichi_max_num_args_extra * sizeof(uint64_t)) /
+             data_type_in_bytes,
          stmt->value->short_name());
   }
 
