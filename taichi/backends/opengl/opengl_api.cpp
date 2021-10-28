@@ -288,7 +288,7 @@ void DeviceCompiledProgram::launch(Context &ctx, OpenGlRuntime *runtime) const {
     void *baseptr = device_->map(args_buf_);
     size_t ext_arr_offset =
         size_t(taichi_opengl_earg_base) +
-        sizeof(int) * size_t(program_.arg_count * taichi_max_num_indices);
+        sizeof(int) * size_t(taichi_max_num_args_extra * taichi_max_num_indices);
     size_t accum_size = 0;
     for (const auto &[i, size] : program_.ext_arr_map) {
       auto ptr = (void *)ctx.args[i];
