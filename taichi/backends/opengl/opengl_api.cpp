@@ -349,14 +349,22 @@ void DeviceCompiledProgram::launch(RuntimeContext &ctx,
   // - arr_bufs_[i] contains its DeviceAllocation on device.
   // Note shapes of these external arrays still reside in argument buffer,
   // see more details below.
-  for (const auto &[i, size] : program_.ext_arr_map) {
-    if (size == 0)
+  for (const auto [i, size] : program_.ext_arr_map) {
+    size_t size1 = ctx.sizes[i];
+    if (size1 == 0)
       continue;
-    void *baseptr = device_->map(arr_bufs_[i]);
-    if (program_.check_ext_arr_read(i)) {
-      std::memcpy((char *)baseptr, (void *)ctx.args[i], size);
+
+    if (ctx.sizes[i] > 0) {
+      void *host_ptr = (void *)ctx.args[i];
+      const_cast<DeviceAllocation &>(arr_bufs_[i]) = device_->allocate_memory(
+          {size1, /*host_write=*/true, /*host_read=*/true,
+           /*export_sharing=*/false});
+      void *baseptr = device_->map(arr_bufs_[i]);
+      // if (program_.check_ext_arr_read(i)) {
+      std::memcpy((char *)baseptr, host_ptr, size1);
+      //}
+      device_->unmap(arr_bufs_[i]);
     }
-    device_->unmap(arr_bufs_[i]);
   }
 
   // clang-format off
@@ -406,8 +414,15 @@ void DeviceCompiledProgram::launch(RuntimeContext &ctx,
     // TODO: properly assert and throw if we bind more than allowed SSBOs.
     //       On most devices this number is 8. But I need to look up how
     //       to query this information so currently this is thrown from OpenGl.
-    for (const auto &[arg_id, bind_id] : program_.used.arr_arg_to_bind_idx) {
-      binder->buffer(0, bind_id, arr_bufs_[arg_id]);
+    for (const auto [arg_id, bind_id] : program_.used.arr_arg_to_bind_idx) {
+      if (ctx.sizes[arg_id] > 0) {
+        binder->buffer(0, bind_id, arr_bufs_[arg_id]);
+      } else {
+        DeviceAllocation *ptr =
+            static_cast<DeviceAllocation *>((void *)ctx.args[arg_id]);
+
+        binder->buffer(0, bind_id, *ptr);
+      }
     }
 
     cmdlist->bind_pipeline(compiled_pipeline_[i].get());
@@ -429,14 +444,16 @@ void DeviceCompiledProgram::launch(RuntimeContext &ctx,
     dump_message_buffer(device_, runtime->impl->core_bufs.runtime,
                         program_.str_table);
   }
-  for (const auto &[i, size] : program_.ext_arr_map) {
-    if (size == 0)
+  for (const auto [i, size] : program_.ext_arr_map) {
+    size_t size1 = ctx.sizes[i];
+    if (size1 == 0)
       continue;
-    uint8_t *baseptr = (uint8_t *)device_->map(arr_bufs_[i]);
+    if (size1 > 0) {
+      uint8_t *baseptr = (uint8_t *)device_->map(arr_bufs_[i]);
+      memcpy((void *)ctx.args[i], baseptr, size1);
 
-    memcpy((void *)ctx.args[i], baseptr, size);
-
-    device_->unmap(arr_bufs_[i]);
+      device_->unmap(arr_bufs_[i]);
+    }
   }
 
   if (program_.ret_buf_size) {
@@ -455,12 +472,12 @@ DeviceCompiledProgram::DeviceCompiledProgram(CompiledProgram &&program,
                                          /*host_write=*/true,
                                          /*host_read=*/true,
                                          /*export_sharing=*/false});
-    for (const auto &[i, size] : program_.ext_arr_map) {
-      arr_bufs_[i] = device->allocate_memory({size,
-                                              /*host_write=*/true,
-                                              /*host_read=*/true,
-                                              /*export_sharing=*/false});
-    }
+    // for (const auto [i, size] : program_.ext_arr_map) {
+    //  arr_bufs_[i] = device->allocate_memory({size,
+    //                                          /*host_write=*/true,
+    //                                          /*host_read=*/true,
+    //                                          /*export_sharing=*/false});
+    //}
   }
 
   for (auto &k : program_.kernels) {

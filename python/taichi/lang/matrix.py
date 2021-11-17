@@ -185,6 +185,8 @@ class Matrix(TaichiOperations):
     def element_wise_writeback_binary(self, foo, other):
         if foo.__name__ == 'assign' and not isinstance(other,
                                                        (list, tuple, Matrix)):
+            if isinstance(other, (float, int)):
+                return self.fill(other)
             raise TaichiSyntaxError(
                 'cannot assign scalar expr to '
                 f'taichi class {type(self)}, maybe you want to use `a.fill(b)` instead?'

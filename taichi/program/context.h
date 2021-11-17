@@ -18,6 +18,10 @@ struct RuntimeContext {
   uint64 args[taichi_max_num_args_total];
   int32 extra_args[taichi_max_num_args_extra][taichi_max_num_indices];
   int32 cpu_thread_id;
+  // Only host ptrs have non zero sizes since we need to memcpy.
+  // DeviceAllocations are already allocated with the right size so we don't
+  // need to worry about it.
+  uint64 sizes[taichi_max_num_args_total]{0};
 
   static constexpr size_t extra_args_size = sizeof(extra_args);
 
@@ -34,6 +38,10 @@ struct RuntimeContext {
   template <typename T>
   void set_arg(int i, T v) {
     args[i] = taichi_union_cast_with_different_sizes<uint64>(v);
+  }
+
+  void set_arg_size(int i, size_t size) {
+    sizes[i] = size;
   }
 #endif
 };

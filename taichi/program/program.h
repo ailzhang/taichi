@@ -292,6 +292,17 @@ class Program {
     return program_impl_->get_graphics_device();
   }
 
+  DeviceAllocation allocate_memory_ndarray(std::size_t alloc_size,
+                                           uint64 *result_buffer);
+
+  uint64_t *get_ndarray_alloc_info_ptr(DeviceAllocation &alloc) {
+    return program_impl_->get_ndarray_alloc_info_ptr(alloc);
+  }
+
+  void deallocate_memory_ndarray(DeviceAllocation &alloc) {
+    return program_impl_->deallocate_memory_ndarray(alloc);
+  }
+
  private:
   // SNode information that requires using Program.
   SNodeGlobalVarExprMap snode_to_glb_var_exprs_;

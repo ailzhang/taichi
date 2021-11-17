@@ -583,3 +583,26 @@ def test_arg_not_match_torch():
 @ti.test(arch=ti.get_host_arch_list(), ndarray_use_torch=False)
 def test_arg_not_match():
     _test_arg_not_match()
+
+
+@ti.test(arch=[ti.opengl])
+def test_vector_ndarray_assign():
+    x = ti.Vector.ndarray(2, ti.f32, 4)
+
+    for i in range(4):
+        x[i] = [0.1, 0.2]
+
+    for i in range(4):
+        assert x[i][0] == ti.approx(0.1, rel=1e-4)
+        assert x[i][1] == ti.approx(0.2, rel=1e-4)
+
+
+@ti.test(arch=[ti.opengl])
+def test_vector_ndarray_fill():
+    x = ti.Vector.ndarray(2, ti.f32, 4)
+
+    x.fill(1)
+
+    for i in range(4):
+        assert x[i][0] == ti.approx(1, rel=1e-4)
+        assert x[i][1] == ti.approx(1, rel=1e-4)

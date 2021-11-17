@@ -100,6 +100,8 @@ class DeviceCompiledProgram {
 
   DeviceAllocation args_buf_{kDeviceNullAllocation};
   DeviceAllocation ret_buf_{kDeviceNullAllocation};
+  // Only saves numpy/torch cpu based external array since they don't have
+  // DeviceAllocation. Ndarray based external array have DeviceAllocation.
   DeviceAllocation arr_bufs_[taichi_max_num_args]{kDeviceNullAllocation};
 };
 

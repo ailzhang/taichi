@@ -536,6 +536,11 @@ std::size_t Program::get_snode_num_dynamically_allocated(SNode *snode) {
                                                             result_buffer);
 }
 
+DeviceAllocation Program::allocate_memory_ndarray(std::size_t alloc_size,
+                                                  uint64 *result_buffer) {
+  return program_impl_->allocate_memory_ndarray(alloc_size, result_buffer);
+}
+
 Program::~Program() {
   if (!finalized_)
     finalize();

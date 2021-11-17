@@ -47,9 +47,15 @@ class OpenglProgramImpl : public ProgramImpl {
 
   std::unique_ptr<AotModuleBuilder> make_aot_module_builder() override;
 
-  virtual void destroy_snode_tree(SNodeTree *snode_tree) override {
-    TI_NOT_IMPLEMENTED
-  }
+  virtual void destroy_snode_tree(SNodeTree *snode_tree) override{
+      TI_NOT_IMPLEMENTED}
+
+  DeviceAllocation allocate_memory_ndarray(std::size_t alloc_size,
+                                           uint64 *result_buffer) override;
+
+  uint64_t *get_ndarray_alloc_info_ptr(DeviceAllocation &alloc) override;
+
+  void deallocate_memory_ndarray(DeviceAllocation &alloc) override;
 
   ~OpenglProgramImpl() {
   }

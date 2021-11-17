@@ -30,8 +30,10 @@ class Ndarray {
   intptr_t get_data_ptr_as_int() const;
   std::size_t get_element_size() const;
   std::size_t get_nelement() const;
+  ~Ndarray();
 
  private:
+  Program *prog_;
   DeviceAllocation ndarray_alloc_{kDeviceNullAllocation};
   uint64_t *data_ptr_{nullptr};
   std::size_t nelement_{1};

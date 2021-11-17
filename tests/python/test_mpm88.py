@@ -207,7 +207,15 @@ def test_mpm88_numpy_and_ndarray():
                 grid_m.fill(0)
                 substep(x, v, C, J, grid_v, grid_m)
 
-        pos = x if isinstance(x, np.ndarray) else x.to_numpy()
+        # pos = x if isinstance(x, np.ndarray) else x.to_numpy()
+        if isinstance(x, np.ndarray):
+            pos = x
+        else:
+            # FIXME: support  to_numpy
+            pos = np.ndarray(shape=(n_particles, dim))
+            for i in range(n_particles):
+                for j in range(dim):
+                    pos[i][j] = x[i][j]
         pos[:, 1] *= 2
         regression = [
             0.31722742,

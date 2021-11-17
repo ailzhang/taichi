@@ -66,5 +66,23 @@ std::unique_ptr<AotModuleBuilder> OpenglProgramImpl::make_aot_module_builder() {
 #endif
 }
 
+DeviceAllocation OpenglProgramImpl::allocate_memory_ndarray(
+    std::size_t alloc_size,
+    uint64 *result_buffer) {
+  return opengl_runtime_->device->allocate_memory(
+      {alloc_size, /*host_write=*/true, /*host_read=*/true,
+       /*export_sharing=*/false});
+}
+
+uint64_t *OpenglProgramImpl::get_ndarray_alloc_info_ptr(
+    DeviceAllocation &alloc) {
+  uint64_t *data_ptr = (uint64_t *)opengl_runtime_->device->map(alloc);
+  opengl_runtime_->device->unmap(alloc);
+  return data_ptr;
+}
+
+void OpenglProgramImpl::deallocate_memory_ndarray(DeviceAllocation &alloc) {
+  opengl_runtime_->device->unmap(alloc);
+}
 }  // namespace lang
 }  // namespace taichi

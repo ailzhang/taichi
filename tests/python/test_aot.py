@@ -233,3 +233,21 @@ def test_opengl_exceed_max_ssbo():
     with pytest.raises(RuntimeError):
         init(0, density1, density2, density3, density4, density5, density6,
              density7)
+
+
+@ti.test(arch=ti.opengl, ndarray_use_torch=False)
+def test_different_shape():
+    n1 = 4
+    x = ti.ndarray(dtype=ti.f32, shape=(n1, n1))
+
+    @ti.kernel
+    def init(d: ti.i32, arr: ti.any_arr()):
+        for i, j in arr:
+            arr[i, j] = d
+
+    init(2, x)
+    assert (x.to_numpy() == (np.ones(shape=(n1, n1)) * 2)).all()
+    n2 = 8
+    y = ti.ndarray(dtype=ti.f32, shape=(n2, n2))
+    init(3, y)
+    assert (y.to_numpy() == (np.ones(shape=(n2, n2)) * 3)).all()
