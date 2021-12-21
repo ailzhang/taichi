@@ -518,26 +518,32 @@ class KernelGen : public IRVisitor {
          stmt->src->short_name(), opengl_data_address_shifter(dt));
   }
 
+  std::unordered_set<std::string> ext_ptr_queries;
+
   void visit(ExternalPtrStmt *stmt) override {
     TI_ASSERT(stmt->width() == 1);
     const auto linear_index_name = fmt::format("_li_{}", stmt->short_name());
     const auto *argload = stmt->base_ptrs[0]->as<ArgLoadStmt>();
     const int arg_id = argload->arg_id;
     emit("int {} = 0;", linear_index_name);
+    const int num_indices = stmt->indices.size();
+    std::vector<std::string> size_var_names;
+    for (int i = 0; i < num_indices; i++) {
+      used.buf_args = true;
+      used.int32 = true;
+      std::string var_name = fmt::format("_s{}_{}{}", i, "arr", arg_id);
+      if (!ext_ptr_queries.count(var_name)) {
+      emit("int {} = _args_i32_[{} + {} * {} + {}];", var_name,
+           taichi_opengl_extra_args_base / sizeof(int), arg_id,
+           taichi_max_num_indices, i);
+        ext_ptr_queries.insert(var_name);
+      }
+      size_var_names.push_back(std::move(var_name));
+    }
+
     emit("{{ // linear seek");
     {
       ScopedIndent _s(line_appender_);
-      const int num_indices = stmt->indices.size();
-      std::vector<std::string> size_var_names;
-      for (int i = 0; i < num_indices; i++) {
-        used.buf_args = true;
-        used.int32 = true;
-        std::string var_name = fmt::format("_s{}_{}", i, stmt->short_name());
-        emit("int {} = _args_i32_[{} + {} * {} + {}];", var_name,
-             taichi_opengl_extra_args_base / sizeof(int), arg_id,
-             taichi_max_num_indices, i);
-        size_var_names.push_back(std::move(var_name));
-      }
       for (int i = 0; i < num_indices; i++) {
         emit("{} *= {};", linear_index_name, size_var_names[i]);
         emit("{} += {};", linear_index_name, stmt->indices[i]->short_name());
@@ -1129,6 +1135,7 @@ class KernelGen : public IRVisitor {
     }
     is_top_level_ = true;
     generate_bottom();
+    ext_ptr_queries.clear();
   }
 
   void visit(StructForStmt *) override {
