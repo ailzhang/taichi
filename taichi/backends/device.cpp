@@ -16,7 +16,10 @@ namespace taichi {
 namespace lang {
 
 DeviceAllocationGuard::~DeviceAllocationGuard() {
-  device->dealloc_memory(*this);
+  // std::cout << "dealloc guard " << this->alloc_id << std::endl;
+  if (*this != kDeviceNullAllocation) {
+    device->dealloc_memory(*this);
+  }
 }
 
 DevicePtr DeviceAllocation::get_ptr(uint64_t offset) const {

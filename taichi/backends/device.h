@@ -65,6 +65,7 @@ struct DeviceAllocation {
 
 struct DeviceAllocationGuard : public DeviceAllocation {
   DeviceAllocationGuard(DeviceAllocation alloc) : DeviceAllocation(alloc) {
+    // std::cout << "alloc guard " << this->alloc_id << std::endl;
   }
   DeviceAllocationGuard(const DeviceAllocationGuard &) = delete;
   ~DeviceAllocationGuard();
