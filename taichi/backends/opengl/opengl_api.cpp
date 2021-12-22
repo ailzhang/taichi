@@ -473,8 +473,9 @@ void DeviceCompiledTaichiKernel::launch(RuntimeContext &ctx,
     i++;
   }
 
-  if (program_.used.print || has_ext_arr || program_.ret_buf_size ||
-      runtime->saved_arg_bufs.size() >= 32) {
+  //if (program_.used.print || has_ext_arr || program_.ret_buf_size ||
+      //runtime->saved_arg_bufs.size() >= 32) {
+  if (true) {
     // We'll do device->host memcpy later so sync is required.
     // Sync is required if:
     // - we need to do device -> host memcpy later.
@@ -511,7 +512,9 @@ void DeviceCompiledTaichiKernel::launch(RuntimeContext &ctx,
   }
 
   if (kernel->is_evaluator) {
-    runtime->jit_evaluator_bufs.push_back(std::move(args_buf_));
+    TI_ASSERT(synced);
+    //runtime->jit_evaluator_bufs.push_back(std::move(args_buf_));
+    runtime->saved_arg_bufs.clear();
   } else if (synced) {
     runtime->saved_arg_bufs.clear();
     args_buf_.reset(nullptr);
