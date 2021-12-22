@@ -473,7 +473,8 @@ void DeviceCompiledTaichiKernel::launch(RuntimeContext &ctx,
     i++;
   }
 
-  if (program_.used.print || has_ext_arr || program_.ret_buf_size) {
+  if (program_.used.print || has_ext_arr || program_.ret_buf_size ||
+      runtime->saved_arg_bufs.size() >= 32) {
     // We'll do device->host memcpy later so sync is required.
     device_->get_compute_stream()->submit_synced(cmdlist.get());
     synced = true;
@@ -504,12 +505,13 @@ void DeviceCompiledTaichiKernel::launch(RuntimeContext &ctx,
            program_.ret_buf_size);
     device_->unmap(*args_buf_);
   }
-  if (program_.args_buf_size || program_.ret_buf_size) {
-    runtime->saved_arg_bufs.push_back(std::move(args_buf_));
-  }
-
-  if (synced) {
+  if (kernel->is_evaluator) {
+    // Comment the line below to hide the bug
     runtime->saved_arg_bufs.clear();
+  } else if (synced) {
+    runtime->saved_arg_bufs.clear();
+  } else if (program_.args_buf_size || program_.ret_buf_size) {
+    runtime->saved_arg_bufs.push_back(std::move(args_buf_));
   }
 }
 
