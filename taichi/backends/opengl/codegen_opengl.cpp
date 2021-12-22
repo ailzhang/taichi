@@ -533,9 +533,9 @@ class KernelGen : public IRVisitor {
       used.int32 = true;
       std::string var_name = fmt::format("_s{}_{}{}", i, "arr", arg_id);
       if (!ext_ptr_queries.count(var_name)) {
-      emit("int {} = _args_i32_[{} + {} * {} + {}];", var_name,
-           taichi_opengl_extra_args_base / sizeof(int), arg_id,
-           taichi_max_num_indices, i);
+        emit("int {} = _args_i32_[{} + {} * {} + {}];", var_name,
+             taichi_opengl_extra_args_base / sizeof(int), arg_id,
+             taichi_max_num_indices, i);
         ext_ptr_queries.insert(var_name);
       }
       size_var_names.push_back(std::move(var_name));
@@ -1004,6 +1004,25 @@ class KernelGen : public IRVisitor {
       ScopedGridStrideLoop _gsl(this, end_value - begin_value);
       emit("int _itv = {} + _sid;", begin_value);
       stmt->body->accept(this);
+    } else if (stmt->end_stmt) {
+      TI_ASSERT(stmt->end_stmt->cast<ExternalTensorShapeAlongAxisStmt>());
+      auto val = stmt->end_stmt->cast<ExternalTensorShapeAlongAxisStmt>();
+      ScopedIndent _s(line_appender_);
+      emit("// range known as ndarray shape");
+      // FIXME: 64 is a hack
+      auto begin_expr = stmt->const_begin ? std::to_string(stmt->begin_value)
+                                          : fmt::format("_args_i32_[({} + {}) >> 2]",
+                                                        64, stmt->begin_offset);
+      auto end_expr = stmt->const_end ? std::to_string(stmt->end_value)
+                                      : fmt::format("_args_i32_[({} + {}) >> 2]",
+                                                    64, stmt->end_offset);
+      workgroup_size_ = stmt->block_dim;
+      num_workgroups_ = stmt->grid_dim;
+      emit("int _beg = {}, _end = {};", begin_expr, end_expr);
+      ScopedGridStrideLoop _gsl(this, "_end - _beg");
+      emit("int _itv = _beg + _sid;");
+      stmt->body->accept(this);
+
     } else {
       ScopedIndent _s(line_appender_);
       emit("// range known at runtime");

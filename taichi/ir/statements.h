@@ -1123,6 +1123,8 @@ class OffloadedStmt : public Stmt {
   int block_dim{1};
   bool reversed{false};
   int num_cpu_threads{1};
+  std::string end_buf = "tmp";
+  Stmt* end_stmt{nullptr};
 
   mesh::Mesh *mesh{nullptr};
   mesh::MeshElementType major_from_type;

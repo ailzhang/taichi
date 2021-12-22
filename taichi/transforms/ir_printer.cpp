@@ -550,7 +550,8 @@ class IRPrinter : public IRVisitor {
       if (stmt->const_end) {
         end_str = std::to_string(stmt->end_value);
       } else {
-        end_str = fmt::format("tmp(offset={}B)", stmt->end_offset);
+        end_str =
+            fmt::format("{}(offset={}B)", stmt->end_buf, stmt->end_offset);
       }
       details =
           fmt::format("range_for({}, {}) grid_dim={} block_dim={}", begin_str,

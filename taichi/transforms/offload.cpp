@@ -95,6 +95,16 @@ class Offloader {
         if (auto val = s->end->cast<ConstStmt>()) {
           offloaded->const_end = true;
           offloaded->end_value = val->val[0].val_int32();
+        } else if (auto val =
+                       s->end->cast<ExternalTensorShapeAlongAxisStmt>()) {
+          auto new_val = Stmt::make<ExternalTensorShapeAlongAxisStmt>(
+              val->axis, val->arg_id);
+          auto new_val_ptr = new_val.get();
+          offloaded->body->insert(std::move(new_val));
+          replace_all_usages_with(s, s->end, new_val_ptr);
+          offloaded->end_stmt = new_val_ptr;
+          offloaded_ranges.end_stmts.insert(
+              std::make_pair(offloaded.get(), new_val_ptr));
         } else {
           offloaded_ranges.end_stmts.insert(
               std::make_pair(offloaded.get(), s->end));
@@ -482,13 +492,28 @@ class FixCrossOffloadReferences : public BasicStmtVisitor {
       if (!stmt->const_end) {
         TI_ASSERT(offloaded_ranges_->end_stmts.find(stmt) !=
                   offloaded_ranges_->end_stmts.end())
-        TI_ASSERT_INFO(local_to_global_offset_.find(
-                           offloaded_ranges_->end_stmts.find(stmt)->second) !=
-                           local_to_global_offset_.end(),
-                       "End fails.")
-        stmt->end_offset =
-            local_to_global_offset_[offloaded_ranges_->end_stmts.find(stmt)
-                                        ->second];
+        if (auto val = offloaded_ranges_->end_stmts.find(stmt)
+                           ->second->cast<ExternalTensorShapeAlongAxisStmt>()) {
+          // ndarray shape
+          stmt->end_buf = "args";
+          stmt->end_offset = 0;
+           //stmt->end_offset = taichi_max_num_indices * val->arg_id +
+          // val->axis;
+
+          // Note: replace this
+          //stmt->end_offset =
+              //local_to_global_offset_[offloaded_ranges_->end_stmts.find(stmt)
+                                          //->second];
+        } else {
+          // runtime info
+          TI_ASSERT_INFO(local_to_global_offset_.find(
+                             offloaded_ranges_->end_stmts.find(stmt)->second) !=
+                             local_to_global_offset_.end(),
+                         "End fails.")
+          stmt->end_offset =
+              local_to_global_offset_[offloaded_ranges_->end_stmts.find(stmt)
+                                          ->second];
+        }
       }
     }
   }
@@ -756,19 +781,45 @@ class AssociateContinueScope : public BasicStmtVisitor {
 };
 
 }  // namespace
+namespace {
+
+std::function<void(const std::string &)>
+make_pass_printer(bool verbose, const std::string &kernel_name, IRNode *ir) {
+  // if (!verbose) {
+  // return [](const std::string &) {};
+  //}
+  return [ir, kernel_name](const std::string &pass) {
+    TI_INFO("[{}] {}:", kernel_name, pass);
+    std::cout << std::flush;
+    irpass::re_id(ir);
+    irpass::print(ir);
+    std::cout << std::flush;
+  };
+}
+
+}  // namespace
 
 void offload(IRNode *root, const CompileConfig &config) {
   TI_AUTO_PROF;
+  auto print = make_pass_printer(true, "test", root);
+  print("before");
+
   auto offloaded_ranges = Offloader::run(root, config);
+  print("step1");
   type_check(root, config);
   {
     auto stmt_to_offloaded = StmtToOffloaded::run(root);
+    print("step2");
     const auto local_to_global_offset = IdentifyValuesUsedInOtherOffloads::run(
         root, config, stmt_to_offloaded, &offloaded_ranges);
     PromoteIntermediateToGlobalTmp::run(root, local_to_global_offset);
+    print("step3");
     stmt_to_offloaded = StmtToOffloaded::run(root);
+    print("step4");
     FixCrossOffloadReferences::run(root, config, local_to_global_offset,
                                    stmt_to_offloaded, &offloaded_ranges);
+
+    print("step5");
   }
   insert_gc(root, config);
   // TODO(k-ye): Move this into its own pass. However, we need to wait for all
