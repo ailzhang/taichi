@@ -49,7 +49,9 @@ class Ndarray {
   // you try to deallocate in Ndarray destructor.
   // Note that we might consider changing this logic later if we implement
   // dynamic tensor rematerialization.
-  std::shared_ptr<Device> device_{nullptr};
+  // std::shared_ptr<Device> device_{nullptr};
+  // TODO: delete device_
+  Device *device_{nullptr};
 };
 
 }  // namespace lang

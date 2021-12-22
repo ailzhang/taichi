@@ -300,6 +300,7 @@ class Program {
   // TODO: do we still need result_buffer?
   DeviceAllocation allocate_memory_ndarray(std::size_t alloc_size,
                                            uint64 *result_buffer) {
+    // materialize_runtime();
     return program_impl_->allocate_memory_ndarray(alloc_size, result_buffer);
   }
 

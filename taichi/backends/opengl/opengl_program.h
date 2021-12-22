@@ -48,7 +48,15 @@ class OpenglProgramImpl : public ProgramImpl {
   DeviceAllocation allocate_memory_ndarray(std::size_t alloc_size,
                                            uint64 *result_buffer) override;
 
-  std::shared_ptr<Device> get_device_shared() override;
+  Device *get_graphics_device() override {
+    return opengl_runtime_ ? opengl_runtime_->device.get() : nullptr;
+  }
+
+  Device *get_compute_device() override {
+    return opengl_runtime_ ? opengl_runtime_->device.get() : nullptr;
+  }
+
+  // std::shared_ptr<Device> get_device_shared() override;
 
   std::unique_ptr<AotModuleBuilder> make_aot_module_builder() override;
 

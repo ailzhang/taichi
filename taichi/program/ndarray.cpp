@@ -16,9 +16,10 @@ Ndarray::Ndarray(Program *prog,
                                 1,
                                 std::multiplies<>())),
       element_size_(data_type_size(dtype)),
-      device_(prog->get_device_shared()) {
+      device_(prog->get_compute_device()) {
   ndarray_alloc_ = prog->allocate_memory_ndarray(nelement_ * element_size_,
                                                  prog->result_buffer);
+    std::cout << "alloc " << ndarray_alloc_.alloc_id << std::endl;
 #ifdef TI_WITH_LLVM
   if (arch_is_cpu(prog->config.arch) || prog->config.arch == Arch::cuda) {
     // For the LLVM backends, device allocation is a physical pointer.
@@ -31,9 +32,11 @@ Ndarray::Ndarray(Program *prog,
 }
 
 Ndarray::~Ndarray() {
+    std::cout << "dealloc " << ndarray_alloc_.alloc_id << std::endl;
   if (device_) {
     device_->dealloc_memory(ndarray_alloc_);
   }
+  //ndarray_alloc_.device->dealloc_memory(ndarray_alloc_);
 }
 
 intptr_t Ndarray::get_data_ptr_as_int() const {
