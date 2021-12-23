@@ -137,6 +137,13 @@ ExternalTensorShapeAlongAxisStmt::ExternalTensorShapeAlongAxisStmt(int axis,
   TI_STMT_REG_FIELDS;
 }
 
+//std::unique_ptr<Stmt> ExternalTensorShapeAlongAxisStmt::clone() const {
+//  auto new_stmt = std::make_unique<ExternalTensorShapeAlongAxisStmt>(axis, arg_id);
+//  new_stmt->ret_type = ret_type;
+//  return new_stmt;
+//}
+
+
 LoopUniqueStmt::LoopUniqueStmt(Stmt *input, const std::vector<SNode *> &covers)
     : input(input) {
   for (const auto &sn : covers) {

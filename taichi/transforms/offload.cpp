@@ -100,11 +100,36 @@ class Offloader {
           auto new_val = Stmt::make<ExternalTensorShapeAlongAxisStmt>(
               val->axis, val->arg_id);
           auto new_val_ptr = new_val.get();
+          std::cout << "old " << s->end << std::endl;
           offloaded->body->insert(std::move(new_val));
           replace_all_usages_with(s, s->end, new_val_ptr);
           offloaded->end_stmt = new_val_ptr;
           offloaded_ranges.end_stmts.insert(
               std::make_pair(offloaded.get(), new_val_ptr));
+        } else if (auto val = s->end->cast<BinaryOpStmt>()) {
+            std::cout << "stmt is " << val->lhs->type() << " " << val->rhs->type() << std::endl;
+           // HACK!
+           if (auto lhs = val->lhs->cast<ExternalTensorShapeAlongAxisStmt>()) {
+               //auto new_lhs = Stmt::make<ExternalTensorShapeAlongAxisStmt>(
+                    //lhs->axis, lhs->arg_id);
+                auto new_lhs = lhs->clone();
+               auto new_lhs_ptr = new_lhs.get();
+               val->lhs = new_lhs_ptr;
+               offloaded->body->insert(std::move(new_lhs));
+               replace_all_usages_with(s, val->lhs, new_lhs_ptr);
+           }
+           if (auto rhs = val->rhs->cast<ExternalTensorShapeAlongAxisStmt>()) {
+               //auto new_rhs = Stmt::make<ExternalTensorShapeAlongAxisStmt>(
+                    //rhs->axis, rhs->arg_id);
+                auto new_rhs = rhs->clone();
+               auto new_rhs_ptr = new_rhs.get();
+               val->rhs = new_rhs_ptr;
+               offloaded->body->insert(std::move(new_rhs));
+               replace_all_usages_with(s, val->rhs, new_rhs_ptr);
+           }
+           offloaded->end_stmt = s->end;
+          offloaded_ranges.end_stmts.insert(
+              std::make_pair(offloaded.get(), s->end));
         } else {
           offloaded_ranges.end_stmts.insert(
               std::make_pair(offloaded.get(), s->end));
@@ -504,6 +529,9 @@ class FixCrossOffloadReferences : public BasicStmtVisitor {
           //stmt->end_offset =
               //local_to_global_offset_[offloaded_ranges_->end_stmts.find(stmt)
                                           //->second];
+        } else if (auto val = offloaded_ranges_->end_stmts.find(stmt)->second->cast<BinaryOpStmt>()) {
+            stmt->end_buf = "args_mul";
+            stmt->end_offset = 0;
         } else {
           // runtime info
           TI_ASSERT_INFO(local_to_global_offset_.find(
@@ -805,21 +833,21 @@ void offload(IRNode *root, const CompileConfig &config) {
   print("before");
 
   auto offloaded_ranges = Offloader::run(root, config);
-  print("step1");
+  //print("step1");
   type_check(root, config);
   {
     auto stmt_to_offloaded = StmtToOffloaded::run(root);
-    print("step2");
+    //print("step2");
     const auto local_to_global_offset = IdentifyValuesUsedInOtherOffloads::run(
         root, config, stmt_to_offloaded, &offloaded_ranges);
     PromoteIntermediateToGlobalTmp::run(root, local_to_global_offset);
-    print("step3");
+    //print("step3");
     stmt_to_offloaded = StmtToOffloaded::run(root);
-    print("step4");
+    //print("step4");
     FixCrossOffloadReferences::run(root, config, local_to_global_offset,
                                    stmt_to_offloaded, &offloaded_ranges);
 
-    print("step5");
+    //print("step5");
   }
   insert_gc(root, config);
   // TODO(k-ye): Move this into its own pass. However, we need to wait for all
@@ -827,6 +855,8 @@ void offload(IRNode *root, const CompileConfig &config) {
   AssociateContinueScope::run(root);
   type_check(root, config);
   re_id(root);
+  die(root);
+  print("after");
 }
 
 }  // namespace irpass

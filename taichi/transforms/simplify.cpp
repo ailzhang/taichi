@@ -635,10 +635,29 @@ bool simplify(IRNode *root, const CompileConfig &config) {
   return modified;
 }
 
+namespace {
+
+std::function<void(const std::string &)>
+make_pass_printer(bool verbose, const std::string &kernel_name, IRNode *ir) {
+  // if (!verbose) {
+  // return [](const std::string &) {};
+  //}
+  return [ir, kernel_name](const std::string &pass) {
+    TI_INFO("[{}] {}:", kernel_name, pass);
+    std::cout << std::flush;
+    irpass::re_id(ir);
+    irpass::print(ir);
+    std::cout << std::flush;
+  };
+}
+}  // namespace
+
+
 void full_simplify(IRNode *root,
                    const CompileConfig &config,
                    const FullSimplifyPass::Args &args) {
   TI_AUTO_PROF;
+  auto print = make_pass_printer(true, "ailing", root);
   if (config.advanced_optimization) {
     bool first_iteration = true;
     while (true) {
@@ -652,8 +671,10 @@ void full_simplify(IRNode *root,
       if (config.constant_folding &&
           constant_fold(root, config, {args.program}))
         modified = true;
+      print("before die");
       if (die(root))
         modified = true;
+      print("done die");
       if (alg_simp(root, config))
         modified = true;
       if (loop_invariant_code_motion(root, config))

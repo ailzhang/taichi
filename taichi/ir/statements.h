@@ -378,6 +378,12 @@ class ExternalTensorShapeAlongAxisStmt : public Stmt {
 
   ExternalTensorShapeAlongAxisStmt(int axis, int arg_id);
 
+  bool has_global_side_effect() const override {
+      return false;
+  }
+
+  //std::unique_ptr<Stmt> clone() const override;
+
   TI_STMT_DEF_FIELDS(ret_type, axis, arg_id);
   TI_DEFINE_ACCEPT_AND_CLONE
 };

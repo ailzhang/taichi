@@ -1004,40 +1004,46 @@ class KernelGen : public IRVisitor {
       ScopedGridStrideLoop _gsl(this, end_value - begin_value);
       emit("int _itv = {} + _sid;", begin_value);
       stmt->body->accept(this);
-    } else if (stmt->end_stmt) {
-      TI_ASSERT(stmt->end_stmt->cast<ExternalTensorShapeAlongAxisStmt>());
-      auto val = stmt->end_stmt->cast<ExternalTensorShapeAlongAxisStmt>();
-      ScopedIndent _s(line_appender_);
-      emit("// range known as ndarray shape");
-      // FIXME: 64 is a hack
-      auto begin_expr = stmt->const_begin ? std::to_string(stmt->begin_value)
-                                          : fmt::format("_args_i32_[({} + {}) >> 2]",
-                                                        64, stmt->begin_offset);
-      auto end_expr = stmt->const_end ? std::to_string(stmt->end_value)
-                                      : fmt::format("_args_i32_[({} + {}) >> 2]",
-                                                    64, stmt->end_offset);
-      workgroup_size_ = stmt->block_dim;
-      num_workgroups_ = stmt->grid_dim;
-      emit("int _beg = {}, _end = {};", begin_expr, end_expr);
-      ScopedGridStrideLoop _gsl(this, "_end - _beg");
-      emit("int _itv = _beg + _sid;");
-      stmt->body->accept(this);
-
     } else {
-      ScopedIndent _s(line_appender_);
-      emit("// range known at runtime");
-      auto begin_expr = stmt->const_begin ? std::to_string(stmt->begin_value)
+        std::string begin_expr, end_expr;
+          ScopedIndent _s(line_appender_);
+        if (stmt->end_stmt->cast<ExternalTensorShapeAlongAxisStmt>()) {
+          //TI_ASSERT(stmt->end_stmt->cast<ExternalTensorShapeAlongAxisStmt>());
+          auto val = stmt->end_stmt->cast<ExternalTensorShapeAlongAxisStmt>();
+          emit("// range known as ndarray shape");
+          // FIXME: 64 is a hack
+          begin_expr = stmt->const_begin ? std::to_string(stmt->begin_value)
+                                              : fmt::format("_args_i32_[({} + {}) >> 2]",
+                                                            64, stmt->begin_offset);
+          end_expr = stmt->const_end ? std::to_string(stmt->end_value)
+                                          : fmt::format("_args_i32_[({} + {}) >> 2]",
+                                                        64, stmt->end_offset);
+        } else if (stmt->end_stmt->cast<BinaryOpStmt>()) {
+            //FIXME: HACK
+          emit("// range known as ndarray shape");
+          begin_expr = stmt->const_begin ? std::to_string(stmt->begin_value)
+                                              : fmt::format("_args_i32_[({} + {}) >> 2]",
+                                                            64, stmt->begin_offset);
+          end_expr = stmt->const_end ? std::to_string(stmt->end_value)
+                                          : stmt->name();
+
+        } else {
+          emit("// range known at runtime");
+          begin_expr = stmt->const_begin ? std::to_string(stmt->begin_value)
+                                              : fmt::format("_gtmp_i32_[{} >> 2]",
+                                                            stmt->begin_offset);
+          end_expr = stmt->const_end ? std::to_string(stmt->end_value)
                                           : fmt::format("_gtmp_i32_[{} >> 2]",
-                                                        stmt->begin_offset);
-      auto end_expr = stmt->const_end ? std::to_string(stmt->end_value)
-                                      : fmt::format("_gtmp_i32_[{} >> 2]",
-                                                    stmt->end_offset);
-      workgroup_size_ = stmt->block_dim;
-      num_workgroups_ = stmt->grid_dim;
-      emit("int _beg = {}, _end = {};", begin_expr, end_expr);
-      ScopedGridStrideLoop _gsl(this, "_end - _beg");
-      emit("int _itv = _beg + _sid;");
-      stmt->body->accept(this);
+                                                        stmt->end_offset);
+        }
+        workgroup_size_ = stmt->block_dim;
+        num_workgroups_ = stmt->grid_dim;
+        emit("int _beg = {}, _end = {};", begin_expr, end_expr);
+        ScopedGridStrideLoop _gsl(this, "_end - _beg");
+        emit("int _itv = _beg + _sid;");
+        stmt->body->accept(this);
+
+
     }
 
     if (used_tls_) {
