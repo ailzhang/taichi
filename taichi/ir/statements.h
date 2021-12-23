@@ -729,6 +729,7 @@ class RangeForStmt : public Stmt {
   int num_cpu_threads;
   int block_dim;
   bool strictly_serialized;
+  bool range_of_array{false};
 
   RangeForStmt(Stmt *begin,
                Stmt *end,
@@ -737,7 +738,8 @@ class RangeForStmt : public Stmt {
                int bit_vectorize,
                int num_cpu_threads,
                int block_dim,
-               bool strictly_serialized);
+               bool strictly_serialized,
+               bool range_of_array = false);
 
   bool is_container_statement() const override {
     return true;
@@ -756,7 +758,8 @@ class RangeForStmt : public Stmt {
                      bit_vectorize,
                      num_cpu_threads,
                      block_dim,
-                     strictly_serialized);
+                     strictly_serialized,
+                     range_of_array);
   TI_DEFINE_ACCEPT
 };
 

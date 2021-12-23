@@ -85,19 +85,32 @@ class Offloader {
         } else {
           offloaded->block_dim = s->block_dim;
         }
-        if (auto val = s->begin->cast<ConstStmt>()) {
+
+        if (s->range_of_array) {
+          // range of ndarray or external array.
+          // range of array must begin with 0.
+          auto begin = s->begin->cast<ConstStmt>();
+          TI_ASSERT(begin && begin->val[0].val_int32() == 0);
           offloaded->const_begin = true;
-          offloaded->begin_value = val->val[0].val_int32();
-        } else {
-          offloaded_ranges.begin_stmts.insert(
-              std::make_pair(offloaded.get(), s->begin));
-        }
-        if (auto val = s->end->cast<ConstStmt>()) {
-          offloaded->const_end = true;
-          offloaded->end_value = val->val[0].val_int32();
-        } else {
+          offloaded->begin_value = 0;
+
           offloaded_ranges.end_stmts.insert(
               std::make_pair(offloaded.get(), s->end));
+        } else {
+          if (auto val = s->begin->cast<ConstStmt>()) {
+            offloaded->const_begin = true;
+            offloaded->begin_value = val->val[0].val_int32();
+          } else {
+            offloaded_ranges.begin_stmts.insert(
+                std::make_pair(offloaded.get(), s->begin));
+          }
+          if (auto val = s->end->cast<ConstStmt>()) {
+            offloaded->const_end = true;
+            offloaded->end_value = val->val[0].val_int32();
+          } else {
+            offloaded_ranges.end_stmts.insert(
+                std::make_pair(offloaded.get(), s->end));
+          }
         }
         offloaded->num_cpu_threads =
             std::min(s->num_cpu_threads, config.cpu_max_num_threads);

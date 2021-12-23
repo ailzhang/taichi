@@ -533,9 +533,9 @@ class KernelGen : public IRVisitor {
       used.int32 = true;
       std::string var_name = fmt::format("_s{}_{}{}", i, "arr", arg_id);
       if (!ext_ptr_queries.count(var_name)) {
-      emit("int {} = _args_i32_[{} + {} * {} + {}];", var_name,
-           taichi_opengl_extra_args_base / sizeof(int), arg_id,
-           taichi_max_num_indices, i);
+        emit("int {} = _args_i32_[{} + {} * {} + {}];", var_name,
+             taichi_opengl_extra_args_base / sizeof(int), arg_id,
+             taichi_max_num_indices, i);
         ext_ptr_queries.insert(var_name);
       }
       size_var_names.push_back(std::move(var_name));
