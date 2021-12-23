@@ -378,6 +378,10 @@ class ExternalTensorShapeAlongAxisStmt : public Stmt {
 
   ExternalTensorShapeAlongAxisStmt(int axis, int arg_id);
 
+  bool has_global_side_effect() const override {
+    return false;
+  }
+
   TI_STMT_DEF_FIELDS(ret_type, axis, arg_id);
   TI_DEFINE_ACCEPT_AND_CLONE
 };
@@ -1126,6 +1130,7 @@ class OffloadedStmt : public Stmt {
   int block_dim{1};
   bool reversed{false};
   int num_cpu_threads{1};
+  Stmt *end_stmt{nullptr};
 
   mesh::Mesh *mesh{nullptr};
   mesh::MeshElementType major_from_type;
