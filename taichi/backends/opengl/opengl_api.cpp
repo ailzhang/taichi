@@ -18,6 +18,7 @@
 #endif
 
 #include <list>
+#include <iomanip>
 
 TLANG_NAMESPACE_BEGIN
 namespace opengl {
@@ -442,6 +443,7 @@ void DeviceCompiledTaichiKernel::launch(RuntimeContext &ctx,
     device_->unmap(runtime_buf);
   }
 
+  device_->get_compute_stream()->command_sync();
   auto cmdlist = device_->get_compute_stream()->new_command_list();
 
   // Kernel dispatch
@@ -477,9 +479,15 @@ void DeviceCompiledTaichiKernel::launch(RuntimeContext &ctx,
     i++;
   }
 
-  if (program_.used.print || has_ext_arr || program_.ret_buf_size) {
+  //if (program_.used.print || has_ext_arr || program_.ret_buf_size) {
+  if (true) {
     // We'll do device->host memcpy later so sync is required.
+    auto start = std::chrono::steady_clock::now();
     device_->get_compute_stream()->submit_synced(cmdlist.get());
+
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> diff = (end - start) * 1000 * 1000;
+    std::cout <<"Elapsed " << std::setprecision(10) << diff.count() << "us" << std::endl;
     synced = true;
   } else {
     device_->get_compute_stream()->submit(cmdlist.get());
