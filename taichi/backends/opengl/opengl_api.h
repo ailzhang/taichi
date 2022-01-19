@@ -47,8 +47,9 @@ struct CompiledOffloadedTask {
   OffloadedTaskType type;
   int workgroup_size;
   int num_groups;
+  std::string range_hint;
 
-  TI_IO_DEF(name, src, workgroup_size, num_groups);
+  TI_IO_DEF(name, src, workgroup_size, num_groups, range_hint);
 };
 
 struct ScalarArg {
@@ -80,6 +81,7 @@ struct CompiledTaichiKernel {
            OffloadedTaskType type,
            int num_workgrous,
            int workgroup_size,
+           std::string range_hint,
            std::unordered_map<int, irpass::ExternalPtrAccess> *ext_ptr_access =
                nullptr);
   void set_used(const UsedFeature &used);

@@ -198,7 +198,8 @@ class KernelGen : public IRVisitor {
     return res;
   }
 
-  void generate_task_bottom(OffloadedTaskType task_type) {
+  void generate_task_bottom(OffloadedTaskType task_type,
+                            std::string range_hint) {
     emit("void main()");
     emit("{{");
     if (used.random)
@@ -301,7 +302,7 @@ class KernelGen : public IRVisitor {
                           : workgroup_size_;
     compiled_program_.add(std::move(glsl_kernel_name_), kernel_src_code,
                           task_type, num_workgroups_, workgroup_size_,
-                          &this->extptr_access_);
+                          range_hint, &this->extptr_access_);
     if (config.print_kernel_llvm_ir) {
       static FileSequenceWriter writer("shader{:04d}.comp",
                                        "OpenGL compute shader");
@@ -994,7 +995,7 @@ class KernelGen : public IRVisitor {
     }
     stmt->accept(this);
   }
-  void generate_range_for_kernel(OffloadedStmt *stmt) {
+  std::string generate_range_for_kernel(OffloadedStmt *stmt) {
     TI_ASSERT(stmt->task_type == OffloadedStmt::TaskType::range_for);
     const std::string glsl_kernel_name = make_kernel_name();
     emit("void {}()", glsl_kernel_name);
@@ -1020,6 +1021,7 @@ class KernelGen : public IRVisitor {
       emit("}}");
     }
 
+    std::string range_hint;
     if (stmt->const_begin && stmt->const_end) {
       ScopedIndent _s(line_appender_);
       emit("// range known at compile time");
@@ -1029,6 +1031,7 @@ class KernelGen : public IRVisitor {
         end_value = begin_value;
       workgroup_size_ = stmt->block_dim;
       num_workgroups_ = stmt->grid_dim;
+      range_hint = std::to_string(end_value - begin_value);
       ScopedGridStrideLoop _gsl(this, end_value - begin_value);
       emit("int _itv = {} + _sid;", begin_value);
       stmt->body->accept(this);
@@ -1040,6 +1043,8 @@ class KernelGen : public IRVisitor {
         TI_ASSERT(stmt->const_begin);
         begin_expr = std::to_string(stmt->begin_value);
         gen_array_range(stmt->end_stmt);
+        irpass::print_raw_stmt(stmt->end_stmt, &range_hint);
+        std::replace(range_hint.begin(), range_hint.end(), '\n', ';');
         end_expr = stmt->end_stmt->short_name();
       } else {
         emit("// range known at runtime");
@@ -1067,6 +1072,7 @@ class KernelGen : public IRVisitor {
     used_tls_ = false;
 
     emit("}}\n");
+    return range_hint;
   }
 
   size_t get_snode_base_address(const SNode *snode) {
@@ -1160,10 +1166,11 @@ class KernelGen : public IRVisitor {
     TI_ASSERT(is_top_level_);
     is_top_level_ = false;
     const auto task_type = stmt->task_type;
+    std::string range_hint;
     if (task_type == OffloadedTaskType::serial) {
       generate_serial_kernel(stmt);
     } else if (task_type == OffloadedTaskType::range_for) {
-      generate_range_for_kernel(stmt);
+      range_hint = generate_range_for_kernel(stmt);
     } else {
       // struct_for is automatically lowered to ranged_for for dense snodes
       // (#378). So we only need to support serial and range_for tasks.
@@ -1171,7 +1178,7 @@ class KernelGen : public IRVisitor {
                stmt->task_name());
     }
     is_top_level_ = true;
-    generate_task_bottom(task_type);
+    generate_task_bottom(task_type, range_hint);
     loaded_args_.clear();
   }
 

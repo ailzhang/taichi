@@ -256,6 +256,7 @@ void CompiledTaichiKernel::add(
     OffloadedTaskType type,
     int num_workgroups,
     int workgroup_size,
+    std::string range_hint,
     std::unordered_map<int, irpass::ExternalPtrAccess> *ext_ptr_access) {
   num_workgroups = std::min(num_workgroups, opengl_max_grid_dim);
   workgroup_size = std::min(workgroup_size, opengl_max_block_dim);
@@ -272,7 +273,8 @@ void CompiledTaichiKernel::add(
 
   TI_DEBUG("[glsl]\ncompiling kernel {}<<<{}, {}>>>:\n{}", name, num_workgroups,
            workgroup_size, source);
-  tasks.push_back({name, source, type, workgroup_size, num_workgroups});
+  tasks.push_back(
+      {name, source, type, workgroup_size, num_workgroups, range_hint});
 
   if (ext_ptr_access) {
     for (auto pair : *ext_ptr_access) {

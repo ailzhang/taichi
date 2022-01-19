@@ -87,6 +87,25 @@ class IRPrinter : public IRVisitor {
       *output = p.ss.str();
   }
 
+  static void print_stmt(Stmt *stmt, std::string *output) {
+    if (stmt == nullptr) {
+      TI_WARN("IRPrinter: Printing nullptr.");
+      if (output) {
+        *output = std::string();
+      }
+      return;
+    }
+    auto p = IRPrinter(output);
+    int num_operands = stmt->num_operands();
+    for (int i = 0; i < num_operands; i++) {
+      stmt->operand(i)->accept(&p);
+    }
+
+    stmt->accept(&p);
+    if (output)
+      *output = p.ss.str();
+  }
+
   void visit(Block *stmt_list) override {
     current_indent++;
     for (auto &stmt : stmt_list->statements) {
@@ -738,6 +757,10 @@ namespace irpass {
 
 void print(IRNode *root, std::string *output) {
   return IRPrinter::run(root, output);
+}
+
+void print_raw_stmt(Stmt *stmt, std::string *output) {
+  return IRPrinter::print_stmt(stmt, output);
 }
 
 }  // namespace irpass

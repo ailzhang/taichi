@@ -33,9 +33,10 @@ struct CompiledOffloadedTask {
   std::string name;
   // Do we need to inline the source code?
   std::string source_path;
+  std::string range_hint;
   int gpu_block_size{0};
 
-  TI_IO_DEF(type, name, source_path, gpu_block_size);
+  TI_IO_DEF(type, name, source_path, range_hint, gpu_block_size);
 };
 
 struct ScalarArg {
