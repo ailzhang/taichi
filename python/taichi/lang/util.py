@@ -1,5 +1,8 @@
+import atexit
 import functools
 import os
+import shutil
+import tempfile
 
 import numpy as np
 from taichi._lib import core as _ti_core
@@ -225,5 +228,51 @@ def python_scope(func):
 
     return wrapped
 
+
+def is_arch_supported(arch, use_gles=False):
+    """Checks whether an arch is supported on the machine.
+
+    Args:
+        arch (taichi_core.Arch): Specified arch.
+        use_gles (bool): If True, check is GLES is available otherwise
+          check if GLSL is available. Only effective when `arch` is `ti.opengl`.
+          Default is `False`.
+
+    Returns:
+        bool: Whether `arch` is supported on the machine.
+    """
+
+    arch_table = {
+        _ti_core.cuda: _ti_core.with_cuda,
+        _ti_core.metal: _ti_core.with_metal,
+        _ti_core.opengl: functools.partial(_ti_core.with_opengl, use_gles),
+        _ti_core.cc: _ti_core.with_cc,
+        _ti_core.vulkan: _ti_core.with_vulkan,
+        _ti_core.dx11: _ti_core.with_dx11,
+        _ti_core.wasm: lambda: True,
+        _ti_core.host_arch(): lambda: True,
+    }
+    with_arch = arch_table.get(arch, lambda: False)
+    try:
+        return with_arch()
+    except Exception as e:
+        arch = _ti_core.arch_name(arch)
+        _ti_core.warn(
+            f"{e.__class__.__name__}: '{e}' occurred when detecting "
+            f"{arch}, consider adding `TI_ENABLE_{arch.upper()}=0` "
+            f" to environment variables to suppress this warning message.")
+        return False
+
+
+def prepare_sandbox():
+    '''
+    Returns a temporary directory, which will be automatically deleted on exit.
+    It may contain the taichi_core shared object or some misc. files.
+    '''
+    tmp_dir = tempfile.mkdtemp(prefix='taichi-')
+    atexit.register(shutil.rmtree, tmp_dir)
+    print(f'[Taichi] preparing sandbox at {tmp_dir}')
+    os.mkdir(os.path.join(tmp_dir, 'runtime/'))
+    return tmp_dir
 
 __all__ = []

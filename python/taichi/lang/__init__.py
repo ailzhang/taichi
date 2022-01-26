@@ -1,10 +1,5 @@
-import atexit
-import datetime
-import functools
 import inspect
 import os
-import shutil
-import tempfile
 import time
 from contextlib import contextmanager
 from copy import deepcopy as _deepcopy
@@ -31,6 +26,7 @@ from taichi.lang.kernel_impl import (KernelArgError, KernelDefError,
 from taichi.lang.matrix import Matrix, MatrixField, Vector
 from taichi.lang.mesh import Mesh, MeshElementFieldProxy, TetMesh, TriMesh
 from taichi.lang.ops import *  # pylint: disable=W0622
+from taichi.lang.utils import is_arch_supported
 from taichi.lang.quant_impl import quant
 from taichi.lang.runtime_ops import async_flush, sync
 from taichi.lang.snode import (SNode, activate, append, deactivate, get_addr,
@@ -425,18 +421,6 @@ class _SpecialConfig:
         self.experimental_real_function = False
         self.short_circuit_operators = False
         self.ndarray_use_torch = False
-
-
-def prepare_sandbox():
-    '''
-    Returns a temporary directory, which will be automatically deleted on exit.
-    It may contain the taichi_core shared object or some misc. files.
-    '''
-    tmp_dir = tempfile.mkdtemp(prefix='taichi-')
-    atexit.register(shutil.rmtree, tmp_dir)
-    print(f'[Taichi] preparing sandbox at {tmp_dir}')
-    os.mkdir(os.path.join(tmp_dir, 'runtime/'))
-    return tmp_dir
 
 
 def init(arch=None,
@@ -906,41 +890,6 @@ def stat_write(key, value):
     data[case_name][key][arch_name][async_mode] = value
     with open(filename, 'w') as f:
         yaml.dump(data, f, Dumper=yaml.SafeDumper)
-
-
-def is_arch_supported(arch, use_gles=False):
-    """Checks whether an arch is supported on the machine.
-
-    Args:
-        arch (taichi_core.Arch): Specified arch.
-        use_gles (bool): If True, check is GLES is available otherwise
-          check if GLSL is available. Only effective when `arch` is `ti.opengl`.
-          Default is `False`.
-
-    Returns:
-        bool: Whether `arch` is supported on the machine.
-    """
-
-    arch_table = {
-        cuda: _ti_core.with_cuda,
-        metal: _ti_core.with_metal,
-        opengl: functools.partial(_ti_core.with_opengl, use_gles),
-        cc: _ti_core.with_cc,
-        vulkan: _ti_core.with_vulkan,
-        dx11: _ti_core.with_dx11,
-        wasm: lambda: True,
-        cpu: lambda: True,
-    }
-    with_arch = arch_table.get(arch, lambda: False)
-    try:
-        return with_arch()
-    except Exception as e:
-        arch = _ti_core.arch_name(arch)
-        _ti_core.warn(
-            f"{e.__class__.__name__}: '{e}' occurred when detecting "
-            f"{arch}, consider adding `TI_ENABLE_{arch.upper()}=0` "
-            f" to environment variables to suppress this warning message.")
-        return False
 
 
 def adaptive_arch_select(arch, enable_fallback, use_gles):
