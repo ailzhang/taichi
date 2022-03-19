@@ -55,8 +55,8 @@ KernelContextAttributes::KernelContextAttributes(const Kernel &kernel)
   arg_attribs_vec_.reserve(kernel.args.size());
   for (const auto &ka : kernel.args) {
     ArgAttributes aa;
-    aa.dt = ka.dt;
-    const size_t dt_bytes = data_type_size(aa.dt);
+    aa.dtype = to_vk_dtype_enum(ka.dt);
+    const size_t dt_bytes = data_type_size(ka.dt);
     aa.is_array = ka.is_array;
     if (aa.is_array) {
       aa.field_dim = ka.total_dim - ka.element_shape.size();
@@ -70,13 +70,14 @@ KernelContextAttributes::KernelContextAttributes(const Kernel &kernel)
     RetAttributes ra;
     size_t dt_bytes{0};
     if (auto tensor_type = kr.dt->cast<TensorType>()) {
-      ra.dt = tensor_type->get_element_type();
-      dt_bytes = data_type_size(ra.dt);
+      auto tensor_dtype = tensor_type->get_element_type();
+      ra.dtype = to_vk_dtype_enum(tensor_dtype);
+      dt_bytes = data_type_size(tensor_dtype);
       ra.is_array = true;
       ra.stride = tensor_type->get_num_elements() * dt_bytes;
     } else {
-      ra.dt = kr.dt;
-      dt_bytes = data_type_size(ra.dt);
+      ra.dtype = to_vk_dtype_enum(kr.dt);
+      dt_bytes = data_type_size(kr.dt);
       ra.is_array = false;
       ra.stride = dt_bytes;
     }
@@ -88,9 +89,10 @@ KernelContextAttributes::KernelContextAttributes(const Kernel &kernel)
     size_t bytes = offset;
     for (int i = 0; i < vec->size(); ++i) {
       auto &attribs = (*vec)[i];
-      const size_t dt_bytes = (attribs.is_array && !is_ret)
-                                  ? sizeof(uint64_t)
-                                  : data_type_size(attribs.dt);
+      const size_t dt_bytes =
+          (attribs.is_array && !is_ret)
+              ? sizeof(uint64_t)
+              : data_type_size(vk_dtype_enum_to_dt(attribs.dtype));
       // Align bytes to the nearest multiple of dt_bytes
       bytes = (bytes + dt_bytes - 1) / dt_bytes * dt_bytes;
       attribs.offset_in_mem = bytes;
@@ -113,6 +115,62 @@ KernelContextAttributes::KernelContextAttributes(const Kernel &kernel)
 
   TI_TRACE("sizes: args={} rets={}", args_bytes(), rets_bytes());
   TI_ASSERT(has_rets() == (rets_bytes_ > 0));
+}
+
+uint32_t to_vk_dtype_enum(DataType dt) {
+  if (dt == PrimitiveType::u64) {
+    return 0;
+  } else if (dt == PrimitiveType::i64) {
+    return 1;
+  } else if (dt == PrimitiveType::u32) {
+    return 2;
+  } else if (dt == PrimitiveType::i32) {
+    return 3;
+  } else if (dt == PrimitiveType::u16) {
+    return 4;
+  } else if (dt == PrimitiveType::i16) {
+    return 5;
+  } else if (dt == PrimitiveType::u8) {
+    return 6;
+  } else if (dt == PrimitiveType::i8) {
+    return 7;
+  } else if (dt == PrimitiveType::f64) {
+    return 8;
+  } else if (dt == PrimitiveType::f32) {
+    return 9;
+  } else if (dt == PrimitiveType::f16) {
+    return 10;
+  } else {
+    TI_NOT_IMPLEMENTED
+  }
+}
+
+DataType vk_dtype_enum_to_dt(uint32_t dt) {
+  if (dt == 0) {
+    return PrimitiveType::u64;
+  } else if (dt == 1) {
+    return PrimitiveType::i64;
+  } else if (dt == 2) {
+    return PrimitiveType::u32;
+  } else if (dt == 3) {
+    return PrimitiveType::i32;
+  } else if (dt == 4) {
+    return PrimitiveType::u16;
+  } else if (dt == 5) {
+    return PrimitiveType::i16;
+  } else if (dt == 6) {
+    return PrimitiveType::u8;
+  } else if (dt == 7) {
+    return PrimitiveType::i8;
+  } else if (dt == 8) {
+    return PrimitiveType::f64;
+  } else if (dt == 9) {
+    return PrimitiveType::f32;
+  } else if (dt == 10) {
+    return PrimitiveType::f16;
+  } else {
+    TI_NOT_IMPLEMENTED;
+  }
 }
 
 }  // namespace spirv
