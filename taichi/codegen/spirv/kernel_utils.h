@@ -140,12 +140,18 @@ class KernelContextAttributes {
     size_t offset_in_mem{0};
     // Index of the input arg or the return value in the host `Context`
     int index{-1};
-    DataType dt;
+    uint32_t dtype{0};
     bool is_array{false};
     std::vector<int> element_shape;
     std::size_t field_dim{0};
 
-    TI_IO_DEF(stride, offset_in_mem, index, is_array, element_shape, field_dim);
+    TI_IO_DEF(stride,
+              offset_in_mem,
+              index,
+              dtype,
+              is_array,
+              element_shape,
+              field_dim);
   };
 
  public:
@@ -252,6 +258,10 @@ struct TaichiKernelAttributes {
 
   TI_IO_DEF(name, is_jit_evaluator, tasks_attribs, ctx_attribs);
 };
+
+uint32_t to_vk_dtype_enum(DataType dt);
+
+DataType vk_dtype_enum_to_dt(uint32_t dt);
 
 }  // namespace spirv
 }  // namespace lang

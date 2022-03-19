@@ -76,7 +76,7 @@ class HostDeviceContextBlitter {
 
     for (int i = 0; i < ctx_attribs_->args().size(); ++i) {
       const auto &arg = ctx_attribs_->args()[i];
-      const auto dt = arg.dt;
+      const auto dt = vk_dtype_enum_to_dt(arg.dtype);
       char *device_ptr = device_base + arg.offset_in_mem;
       do {
         if (arg.is_array) {
@@ -124,7 +124,8 @@ class HostDeviceContextBlitter {
             break;
           }
         }
-        TI_ERROR("Vulkan does not support arg type={}", data_type_name(arg.dt));
+        TI_ERROR("Vulkan does not support arg type={}",
+                 data_type_name(vk_dtype_enum_to_dt(arg.dtype)));
       } while (0);
     }
 
@@ -196,8 +197,8 @@ class HostDeviceContextBlitter {
       // *arg* on the host context.
       const auto &ret = ctx_attribs_->rets()[i];
       char *device_ptr = device_base + ret.offset_in_mem;
-      const auto dt = ret.dt;
-      const auto num = ret.stride / data_type_size(ret.dt);
+      const auto dt = vk_dtype_enum_to_dt(ret.dtype);
+      const auto num = ret.stride / data_type_size(dt);
       for (int j = 0; j < num; ++j) {
         if (device_->get_cap(DeviceCapability::spirv_has_int8)) {
           TO_HOST(i8, int8, j)
@@ -227,7 +228,7 @@ class HostDeviceContextBlitter {
           }
         }
         TI_ERROR("Vulkan does not support return value type={}",
-                 data_type_name(ret.dt));
+                 data_type_name(vk_dtype_enum_to_dt(ret.dtype)));
       }
     }
 #undef TO_HOST
