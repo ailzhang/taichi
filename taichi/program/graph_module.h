@@ -1,0 +1,110 @@
+#pragma once
+
+#include <string>
+#include <vector>
+#include <unordered_set>
+
+// #include "taichi/program/context.h"
+#include "taichi/codegen/spirv/kernel_utils.h"
+#include "taichi/program/ndarray.h"
+#include "taichi/program/program.h"
+
+
+namespace taichi {
+namespace lang {
+  class Kernel;
+  class Graph;
+  struct IValue;
+  struct Arg {
+    std::string name;
+  };
+
+  class Node {
+    public:
+    // use void for now, it might return value to host in the future. 
+    Node() = default;
+    virtual ~Node() = default;
+    Node(const Node &) = delete;
+    Node &operator=(const Node &) = delete;
+    Node(Node &&) = default;
+    Node &operator=(Node &&) = default;
+    virtual void compile() = 0;
+    virtual void run(std::unordered_map<std::string, IValue>& args) = 0;
+    //virtual void eval();
+    private:
+    // Graph* owning_graph_;
+  };
+
+  struct IValue {
+    public:
+    enum Tag {SCALAR, NDARRAY};
+    uint64 val;
+    Tag tag;
+    IValue(const Ndarray& ndarray) :
+      IValue(reinterpret_cast<intptr_t>(&ndarray), Tag::NDARRAY) {}
+    template <typename T>
+    static IValue create(T v) {
+      return IValue(taichi_union_cast_with_different_sizes<uint64>(v), Tag::SCALAR);
+    } 
+    private:
+    IValue(uint64 val, Tag tag): val(val), tag(tag) {}
+  };
+
+  class Dispatch : public Node {
+    public:
+    explicit Dispatch(Kernel *kernel, const std::vector<Arg>& args): kernel_(kernel), symbolic_args_(args) {}
+    void compile() override;
+    void run(std::unordered_map<std::string, IValue>& args) override;
+    private:
+    Kernel *kernel_{nullptr};
+    std::vector<Arg> symbolic_args_;
+  };
+
+  class Sequential : public Node {
+    public:
+    explicit Sequential(Graph* graph):owning_graph_(graph) {}
+    void append(Node* node);
+    void emplace(Kernel* kernel, const std::vector<Arg>& args);
+    void compile() override;
+    void run(std::unordered_map<std::string, IValue>& args) override;
+    private:
+      std::vector<Node*> sequence_;
+      Graph* owning_graph_{nullptr};
+  };
+
+  enum NodeKind {DISPATCH, SEQUENTIAL, COND};
+
+  class Graph {
+    public:
+    // explicit Graph(Sequential seq): seq_(seq) {
+    // };
+    Graph();
+    void compile();
+    void bind();
+    void run(std::unordered_map<std::string, IValue>& args);
+    Node* create_dispatch(Kernel* kernel, const std::vector<Arg>& args);
+    Node* create_sequential();
+    Sequential* seq();
+    ~Graph() {
+      for (const Node* n: all_nodes_) {
+        delete n;
+      }
+    }
+    
+    private:
+    std::unique_ptr<Sequential> seq_{nullptr};
+    std::unordered_set<const Node*> all_nodes_;
+    std::unordered_map<std::string, IValue> bound_args;
+  };
+
+  class GraphModule {
+    public:
+    Sequential* new_graph(std::string name);
+    Graph* get_graph(std::string name);
+    void compile();
+    private:
+    std::unordered_map<std::string, std::unique_ptr<Graph>> graphs_;
+  };
+
+}
+}

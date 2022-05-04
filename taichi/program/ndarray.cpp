@@ -55,6 +55,10 @@ intptr_t Ndarray::get_device_allocation_ptr_as_int() const {
   return reinterpret_cast<intptr_t>(&ndarray_alloc_);
 }
 
+DeviceAllocation& Ndarray::get_devalloc() {
+  return ndarray_alloc_;
+}
+
 std::size_t Ndarray::get_element_size() const {
   return element_size_;
 }
