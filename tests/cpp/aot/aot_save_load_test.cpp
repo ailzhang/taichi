@@ -12,7 +12,6 @@
 #include "taichi/backends/vulkan/vulkan_device_creator.h"
 #include "taichi/backends/vulkan/vulkan_loader.h"
 #include "taichi/backends/vulkan/vulkan_utils.h"
-#include "taichi/backends/vulkan/graph_module.h"
 #endif
 
 using namespace taichi;
