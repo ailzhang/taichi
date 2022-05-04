@@ -3,6 +3,8 @@
 #include "taichi/ir/statements.h"
 #include "taichi/inc/constants.h"
 #include "taichi/program/program.h"
+#include "tests/cpp/program/test_program.h"
+
 #ifdef TI_WITH_VULKAN
 #include "taichi/backends/vulkan/aot_module_loader_impl.h"
 #include "taichi/backends/device.h"
@@ -10,6 +12,7 @@
 #include "taichi/backends/vulkan/vulkan_device_creator.h"
 #include "taichi/backends/vulkan/vulkan_loader.h"
 #include "taichi/backends/vulkan/vulkan_utils.h"
+#include "taichi/backends/vulkan/graph_module.h"
 #endif
 
 using namespace taichi;
@@ -178,3 +181,4 @@ TEST(AotSaveLoad, Vulkan) {
   EXPECT_NE(x_field, nullptr);
 }
 #endif
+
