@@ -11,6 +11,7 @@
 #include "taichi/backends/device.h"
 #include "taichi/ir/snode.h"
 #include "taichi/aot/module_data.h"
+#include "taichi/aot/graph.h"
 
 namespace taichi {
 namespace lang {
@@ -18,6 +19,7 @@ namespace lang {
 struct RuntimeContext;
 
 namespace aot {
+  class Graph;
 
 class TI_DLL_EXPORT Field {
  public:
@@ -98,6 +100,8 @@ class TI_DLL_EXPORT Module {
   Module &operator=(Module &&) = default;
 
   static std::unique_ptr<Module> load(Arch arch, std::any mod_params);
+  // TODO: this shouldn't be backend specific
+  virtual std::unique_ptr<aot::Graph> load_graph(std::string name) {return nullptr;};
 
   // Module metadata
   // TODO: Instead of virtualize these simple properties, just store them as

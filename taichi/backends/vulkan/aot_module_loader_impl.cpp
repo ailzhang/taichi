@@ -1,7 +1,8 @@
 #include "taichi/backends/vulkan/aot_module_loader_impl.h"
-
+#include "taichi/aot/graph.h"
 #include <fstream>
 #include <type_traits>
+#include <cstring>
 
 #include "taichi/runtime/vulkan/runtime.h"
 
@@ -12,6 +13,16 @@ namespace {
 
 using KernelHandle = VkRuntime::KernelHandle;
 
+void tokenize(std::string const &str, const char* delim, 
+            std::vector<std::string> &out) 
+{ 
+    char *token = strtok(const_cast<char*>(str.c_str()), delim); 
+    while (token != nullptr) 
+    { 
+        out.push_back(std::string(token)); 
+        token = strtok(nullptr, delim); 
+    } 
+}
 class FieldImpl : public aot::Field {
  public:
   explicit FieldImpl(VkRuntime *runtime, const aot::CompiledFieldData &field)
@@ -41,7 +52,7 @@ class KernelImpl : public aot::Kernel {
 class AotModuleImpl : public aot::Module {
  public:
   explicit AotModuleImpl(const AotModuleParams &params)
-      : runtime_(params.runtime) {
+      : runtime_(params.runtime), module_path_(params.module_path) {
     const std::string bin_path =
         fmt::format("{}/metadata.tcb", params.module_path);
     read_from_binary_file(ti_aot_data_, bin_path);
@@ -69,6 +80,29 @@ class AotModuleImpl : public aot::Module {
   }
   uint64_t version() const override {
     TI_NOT_IMPLEMENTED;
+  }
+
+  std::unique_ptr<aot::Graph> load_graph(std::string name) override {
+    std::string file = fmt::format("{}/graph_{}.txt", module_path_, name);
+    auto graph = std::make_unique<aot::Graph>();
+    std::ifstream fs(file);
+    std::string line;
+    while (std::getline(fs, line)) {
+      std::size_t left_paren = line.find("(");
+      std::string kernel_name = line.substr(0, left_paren);
+      aot::Kernel* kernel = get_kernel(kernel_name);
+      std::size_t right_paren = line.find(")");
+      std::vector<std::string> out;
+      const char* delim = ", ";
+      tokenize(line.substr(left_paren+1, right_paren-left_paren-1), delim, out);
+      std::vector<aot::Arg> args;
+      for (int i = 0; i < out.size(); i++) {
+        args.push_back(aot::Arg{out[i]});
+      }
+      auto node = graph->create_dispatch(kernel, args);
+      graph->seq()->append(node);
+    }
+    return graph;
   }
 
  private:
@@ -142,6 +176,7 @@ class AotModuleImpl : public aot::Module {
   }
 
   TaichiAotData ti_aot_data_;
+  std::string module_path_;
   VkRuntime *runtime_{nullptr};
 };
 

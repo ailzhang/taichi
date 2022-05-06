@@ -9,16 +9,8 @@
 using namespace taichi;
 using namespace lang;
 
-TEST(GraphModule, SimpleNdarray) {
-  TestProgram test_prog;
-  // FIXME: Change this to x64 before sending a PR
-  test_prog.setup(Arch::vulkan);
+[[maybe_unused]] static std::unique_ptr<Kernel> setup_kernel1(Program* prog) {
   IRBuilder builder1;
-  const int size = 10;
-  
-  auto array = Ndarray(test_prog.prog(), PrimitiveType::i32, {size});
-  array.write_int({0}, 2);
-  array.write_int({2}, 40);
   {
   auto *arg = builder1.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
                                       /*is_ptr=*/true);
@@ -35,24 +27,38 @@ TEST(GraphModule, SimpleNdarray) {
   builder1.create_global_store(a2ptr, a0plusa2);  // a[2] = a[0] + a[2]
   }
   auto block = builder1.extract_ir();
-  auto ker1 = std::make_unique<Kernel>(*test_prog.prog(), std::move(block));
+  auto ker1 = std::make_unique<Kernel>(*prog, std::move(block), "ker1");
   ker1->insert_arg(get_data_type<int>(), /*is_array=*/true);
+  return ker1;
+}
 
+[[maybe_unused]] static std::unique_ptr<Kernel> setup_kernel2(Program* prog) {
   IRBuilder builder2;
+
   {
   auto *arg = builder2.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
                                       /*is_ptr=*/true);
   auto *arg2 = builder2.create_arg_load(/*arg_id=*/1, get_data_type<int>(),
                                       /*is_ptr=*/false);
   auto *one = builder2.get_int32(1);
-  // auto *two = builder2.get_int32(2);
   auto *a1ptr = builder2.create_external_ptr(arg, {one});
   builder2.create_global_store(a1ptr, arg2);  // a[1] = 2
   }
   auto block2 = builder2.extract_ir();
-  auto ker2 = std::make_unique<Kernel>(*test_prog.prog(), std::move(block2));
+  auto ker2 = std::make_unique<Kernel>(*prog, std::move(block2), "ker2");
   ker2->insert_arg(get_data_type<int>(), /*is_array=*/true);
   ker2->insert_arg(get_data_type<int>(), /*is_array=*/false);
+  return ker2;
+}
+
+TEST(GraphModule, SimpleGraphRun) {
+  TestProgram test_prog;
+  // FIXME: Change this to x64 before sending a PR
+  test_prog.setup(Arch::vulkan);
+  const int size = 10;
+
+  auto ker1 = setup_kernel1(test_prog.prog());
+  auto ker2 = setup_kernel2(test_prog.prog());
 
   auto module = std::make_unique<GraphModule>();
   auto seq = module->new_graph("test");
@@ -61,11 +67,34 @@ TEST(GraphModule, SimpleNdarray) {
   seq->emplace(ker2.get(), {arr_arg, Arg{"x"}});
   auto g = module->get_graph("test");
   g->compile();
+
+  auto array = Ndarray(test_prog.prog(), PrimitiveType::i32, {size});
+  array.write_int({0}, 2);
+  array.write_int({2}, 40);
   std::unordered_map<std::string, IValue> args;
   args.insert({"arr", IValue(array)});
   args.insert({"x", IValue::create<int>(2)});
+
   g->run(args);
   EXPECT_EQ(array.read_int({0}), 2);
   EXPECT_EQ(array.read_int({1}), 2);
   EXPECT_EQ(array.read_int({2}), 42);
+}
+
+TEST(GraphModule, SimpleGraphSave) {
+  TestProgram test_prog;
+  // FIXME: Change this to x64 before sending a PR
+  test_prog.setup(Arch::vulkan);
+  const int size = 10;
+
+  auto ker1 = setup_kernel1(test_prog.prog());
+  auto ker2 = setup_kernel2(test_prog.prog());
+
+  auto module = std::make_unique<GraphModule>();
+  auto seq = module->new_graph("test");
+  auto arr_arg = Arg{"arr"};
+  seq->emplace(ker1.get(), {arr_arg});
+  seq->emplace(ker2.get(), {arr_arg, Arg{"x"}});
+  auto g = module->get_graph("test");
+  module->save(".", test_prog.prog());
 }
