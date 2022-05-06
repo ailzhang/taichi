@@ -30,6 +30,8 @@ namespace lang {
     Node &operator=(Node &&) = default;
     virtual void compile() = 0;
     virtual void run(std::unordered_map<std::string, IValue>& args) = 0;
+    virtual void save(std::ofstream& fs) = 0;
+    virtual void add_to_aot_module(AotModuleBuilder* aot_builder) const = 0;
     //virtual void eval();
     private:
     // Graph* owning_graph_;
@@ -37,11 +39,18 @@ namespace lang {
 
   struct IValue {
     public:
-    enum Tag {SCALAR, NDARRAY};
+    enum Tag {SCALAR, NDARRAY, DEVALLOC};
     uint64 val;
     Tag tag;
+    uint64 size_;
+    std::vector<int64> shape_; // Hack! remove me
     IValue(const Ndarray& ndarray) :
       IValue(reinterpret_cast<intptr_t>(&ndarray), Tag::NDARRAY) {}
+    IValue(const DeviceAllocation& devalloc, uint64 size, const std::vector<int64>& shape) :
+      IValue(reinterpret_cast<intptr_t>(&devalloc), Tag::DEVALLOC) {
+        size_ = size;
+        shape_ = shape;
+      }
     template <typename T>
     static IValue create(T v) {
       return IValue(taichi_union_cast_with_different_sizes<uint64>(v), Tag::SCALAR);
@@ -52,11 +61,14 @@ namespace lang {
 
   class Dispatch : public Node {
     public:
-    explicit Dispatch(Kernel *kernel, const std::vector<Arg>& args): kernel_(kernel), symbolic_args_(args) {}
+    explicit Dispatch(Kernel *kernel, const std::vector<Arg>& args): kernel_(kernel), name(kernel->get_name()), symbolic_args_(args) {}
     void compile() override;
     void run(std::unordered_map<std::string, IValue>& args) override;
+    void save(std::ofstream& fs) override;
+    void add_to_aot_module(AotModuleBuilder* aot_builder) const override;
     private:
     Kernel *kernel_{nullptr};
+    std::string name;
     std::vector<Arg> symbolic_args_;
   };
 
@@ -67,6 +79,9 @@ namespace lang {
     void emplace(Kernel* kernel, const std::vector<Arg>& args);
     void compile() override;
     void run(std::unordered_map<std::string, IValue>& args) override;
+    void save(std::ofstream& fs) override;
+    void add_to_aot_module(AotModuleBuilder* aot_builder) const override;
+
     private:
       std::vector<Node*> sequence_;
       Graph* owning_graph_{nullptr};
@@ -85,6 +100,8 @@ namespace lang {
     Node* create_dispatch(Kernel* kernel, const std::vector<Arg>& args);
     Node* create_sequential();
     Sequential* seq();
+    void add_to_aot_module(AotModuleBuilder* aot_builder) const;
+    void save(std::string dst_file);
     ~Graph() {
       for (const Node* n: all_nodes_) {
         delete n;
@@ -102,6 +119,7 @@ namespace lang {
     Sequential* new_graph(std::string name);
     Graph* get_graph(std::string name);
     void compile();
+    void save(std::string dst_folder, Program* prog);
     private:
     std::unordered_map<std::string, std::unique_ptr<Graph>> graphs_;
   };
