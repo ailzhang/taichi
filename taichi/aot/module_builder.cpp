@@ -78,7 +78,7 @@ void AotModuleBuilder::dump_graph(std::string output_dir) const {
 
 void AotModuleBuilder::add_graph(std::string name, const aot::DispatchSeq& seq) {
   if (graphs_.count(name) != 0) {
-    TI_ERROR("Kernel {} already exists", name);
+    TI_ERROR("Graph {} already exists", name);
   }
   graphs_[name] = seq;
 }
