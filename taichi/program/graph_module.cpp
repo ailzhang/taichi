@@ -18,7 +18,8 @@ namespace lang {
       TI_ASSERT(args.count(symbolic_args_[i].name) == 1);
       IValue& ival = args.at(symbolic_args_[i].name);
       if (ival.tag == IValue::Tag::NDARRAY) {
-      launch_ctx.set_arg_ndarray(i, *(reinterpret_cast<Ndarray*>(ival.val)));
+        Ndarray* arr = reinterpret_cast<Ndarray*>(ival.val);
+      launch_ctx.set_arg_ndarray(i, *arr);
       } else if (ival.tag == IValue::Tag::DEVALLOC) {
         launch_ctx.set_arg_external_array_with_shape(i, ival.val, ival.size_, ival.shape_);
       } else {
@@ -76,9 +77,15 @@ namespace lang {
     seq_ = std::make_unique<Sequential>(this);
   }
   Node* Graph::create_dispatch(Kernel *kernel, const std::vector<Arg>& args) {
-    Node* n = new Dispatch(kernel, args);
-    all_nodes_.insert(n);
-    return n;
+    all_nodes_.push_back(std::make_unique<Dispatch>(kernel, args));
+    return all_nodes_.back().get();
+  }
+
+  Sequential* Graph::create_sequential() {
+    all_nodes_.push_back(std::make_unique<Sequential>(this));
+    auto res= static_cast<Sequential*>(all_nodes_.back().get());
+    
+    return res;
   }
   
   // TODO: compile can take in Arch argument
@@ -88,6 +95,10 @@ namespace lang {
 
   Sequential* Graph::seq() const {
     return seq_.get();
+  }
+
+  void Graph::emplace(Kernel* kernel, const std::vector<Arg>& args) {
+    seq()->emplace(kernel, args);
   }
 
   void Graph::run(std::unordered_map<std::string, IValue>& args) {

@@ -1,5 +1,7 @@
 import taichi as ti
+import numpy as np
 
+ti.init(arch=ti.vulkan)
 n_particles = 8192
 n_grid = 128
 dx = 1 / n_grid
@@ -13,18 +15,18 @@ bound = 3
 E = 400
 
 @ti.kernel
-def substep_reset_grid(grid_v : ti.any_arr(element_dim=1), grid_m : ti.any_arr()):
+def substep_reset_grid(grid_v : ti.any_arr(field_dim=2), grid_m : ti.any_arr(field_dim=2)):
     for i, j in grid_m:
         grid_v[i, j] = [0, 0]
         grid_m[i, j] = 0
 
 @ti.kernel
-def substep_p2g(x : ti.any_arr(element_dim=1),
-                v : ti.any_arr(element_dim=1),
-                C : ti.any_arr(element_dim=2),
-                J : ti.any_arr(),
-                grid_v : ti.any_arr(element_dim=1),
-                grid_m : ti.any_arr()):
+def substep_p2g(x : ti.any_arr(field_dim=1),
+                v : ti.any_arr(field_dim=1),
+                C : ti.any_arr(field_dim=1),
+                J : ti.any_arr(field_dim=1),
+                grid_v : ti.any_arr(field_dim=2),
+                grid_m : ti.any_arr(field_dim=2)):
     for p in x:
         Xp = x[p] / dx
         base = int(Xp - 0.5)
@@ -40,7 +42,7 @@ def substep_p2g(x : ti.any_arr(element_dim=1),
             grid_m[base + offset] += weight * p_mass
 
 @ti.kernel
-def substep_update_grid_v(grid_v : ti.any_arr(element_dim=1), grid_m : ti.any_arr()):
+def substep_update_grid_v(grid_v : ti.any_arr(field_dim=2), grid_m : ti.any_arr(field_dim=2)):
     for i, j in grid_m:
         if grid_m[i, j] > 0:
             grid_v[i, j] /= grid_m[i, j]
@@ -55,11 +57,11 @@ def substep_update_grid_v(grid_v : ti.any_arr(element_dim=1), grid_m : ti.any_ar
             grid_v[i, j].y = 0
 
 @ti.kernel
-def substep_g2p(x : ti.any_arr(element_dim=1),
-                v : ti.any_arr(element_dim=1),
-                C : ti.any_arr(element_dim=2),
-                J : ti.any_arr(),
-                grid_v : ti.any_arr(element_dim=1)):
+def substep_g2p(x : ti.any_arr(field_dim=1),
+                v : ti.any_arr(field_dim=1),
+                C : ti.any_arr(field_dim=1),
+                J : ti.any_arr(field_dim=1),
+                grid_v : ti.any_arr(field_dim=2)):
     for p in x:
         Xp = x[p] / dx
         base = int(Xp - 0.5)
@@ -80,47 +82,48 @@ def substep_g2p(x : ti.any_arr(element_dim=1),
         C[p] = new_C
 
 @ti.kernel
-def generate_vbo(x : ti.any_arr(element_dim=1), vertices : ti.any_arr(element_dim=1)):
+def generate_vbo(x : ti.any_arr(field_dim=1), vertices : ti.any_arr(field_dim=1)):
     for p in x:
         vertices[p] = x[p]
 
 @ti.kernel
-def init_particles(x : ti.any_arr(element_dim=1),
-                   v : ti.any_arr(element_dim=1),
-                   J : ti.any_arr(),
-                   x_init : ti.any_arr(element_dim=1),
-                   v_init : ti.any_arr(element_dim=1)):
+def init_particles(x : ti.any_arr(field_dim=1),
+                   v : ti.any_arr(field_dim=1),
+                   J : ti.any_arr(field_dim=1),
+                   x_init : ti.any_arr(field_dim=1),
+                   v_init : ti.any_arr(field_dim=1)):
     for i in range(n_particles):
         x[i] = x_init[i]
         v[i] = v_init[i]
         J[i] = 1
 
-# g = cgraph.Module()
+sym_x = ti.graph.Arg('x', element_shape=(2,))
+sym_v = ti.graph.Arg('v', element_shape=(2,))
+sym_C = ti.graph.Arg('C', element_shape=(2,2))
+sym_J = ti.graph.Arg('J',element_shape=())
+sym_vertices = ti.graph.Arg('vertices', element_shape=(2,))
+g_init = ti.graph.Graph('init')
+g_init.emplace(init_particles, sym_x, sym_v, sym_J, ti.graph.Arg('x_init', element_shape=(2,)), ti.graph.Arg('v_init', element_shape=(2,)))
 
-g_init = taichi.Graph('init')
-g_init.emplace(init_particles, cgraph.Arg('x'), cgraph.Arg('v'), cgraph.Arg('J'), cgraph.Arg('x_init'), cgraph.Arg('v_init'))
-
-g_update = taichi.Graph('update')
-substep = g_init.create_sequential()
-substep.emplace(substep_reset_grid, cgraph.Arg('grid_v'), cgraph.Arg('grid_m'))
-substep.emplace(substep_p2g, cgraph.Arg('x'), cgraph.Arg('v'), cgraph.Arg('C'), cgraph.Arg('J'), cgraph.Arg('grid_v'), cgraph.Arg('grid_m'))
-substep.emplace(substep_update_grid_v, cgraph.Arg('grid_v'), cgraph.Arg('grid_m'))
-substep.emplace(substep_g2p, cgraph.Arg('x'), cgraph.Arg('v'), cgraph.Arg('C'), cgraph.Arg('J'), cgraph.Arg('grid_v'))
-
-# Static loop??
-# g_update = g.new_graph('update')
+g_update = ti.graph.Graph('update')
+substep = g_update.create_sequential()
+sym_grid_v = ti.graph.Arg('grid_v', element_shape=(2,))
+sym_grid_m = ti.graph.Arg('grid_m', element_shape=())
+print(substep)
+substep.emplace(substep_reset_grid, sym_grid_v, sym_grid_m)
+substep.emplace(substep_p2g, sym_x, sym_v, sym_C, sym_J, sym_grid_v, sym_grid_m)
+substep.emplace(substep_update_grid_v, sym_grid_v, sym_grid_m)
+substep.emplace(substep_g2p, sym_x, sym_v, sym_C, sym_J, sym_grid_v)
 
 for i in range(50):
     g_update.append(substep)
 
-g_update.emplace(generate_vbo, cgraph.Arg('x'), cgraph.Arg('vertices'))
+g_update.emplace(generate_vbo, sym_x, sym_vertices)
 
 g_init.compile()
 g_update.compile()
 
-import numpy as np
 
-ti.init(arch=ti.vulkan)
 
 vertices_np = (np.random.random((n_particles, 2)) * 0.4 + 0.2).astype(np.single)
 init_v_np = np.zeros((n_particles, 2)).astype(np.single)
@@ -136,17 +139,19 @@ J = ti.ndarray(ti.f32, shape=(n_particles))
 grid_v = ti.Vector.ndarray(2, ti.f32, shape=(n_grid, n_grid))
 grid_m = ti.ndarray(ti.f32, shape=(n_grid, n_grid))
 
-# compiled_g_init = g.get_graph('init')
-# compiled_g_init.bind()
-g_init.run(('x_init', vertices), ('v_init', init_v), ('x', x), ('v', v), ('J', J))
+aot = True
 
-# g_update = ti.Graph('update')
-# TODO: support graph.bind()
-# g_update.bind(('x', x), ('v', v), ('C', C), ('J', J), ('grid_v', grid_v), ('grid_m', grid_m))
+if not aot:
+    g_init.run({'x_init': vertices, 'v_init': init_v, 'x': x, 'v': v, 'J': J})
+    print(x.to_numpy())
 
-gui = ti.GUI('MPM88')
-while gui.running:
-    g_update.run(('vertices', vertices),('x', x), ('v', v), ('C', C), ('J', J), ('grid_v', grid_v), ('grid_m', grid_m))
-    gui.clear(0x112F41)
-    gui.circles(vertices.to_numpy(), radius=1.5, color=0x068587)
-    gui.show()
+    gui = ti.GUI('MPM88')
+    while gui.running:
+        g_update.run({'vertices': vertices,'x': x, 'v': v, 'C': C, 'J': J, 'grid_v': grid_v, 'grid_m': grid_m})
+        gui.clear(0x112F41)
+        gui.circles(vertices.to_numpy(), radius=1.5, color=0x068587)
+        gui.show()
+else:
+    mod = ti.aot.Module(ti.vulkan)
+    mod.add_graph(g_init)
+    mod.save('.', '')

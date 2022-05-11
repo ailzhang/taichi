@@ -19,6 +19,8 @@ namespace lang {
   class AotModuleBuilder;
   struct Arg {
     std::string name;
+    std::vector<int> element_shape;
+    Arg(std::string name, const std::vector<int>& element_shape={}): name(name), element_shape(element_shape) {}
   };
 
   class Node {
@@ -92,19 +94,16 @@ namespace lang {
     void bind();
     void run(std::unordered_map<std::string, IValue>& args);
     Node* create_dispatch(Kernel* kernel, const std::vector<Arg>& args);
-    Node* create_sequential();
+    Sequential* create_sequential();
+    void emplace(Kernel* kernel, const std::vector<Arg>& args);
+    // void append(Node* node);
     Sequential* seq() const;
     void serialize(AotModuleBuilder* aot_builder) const;
-    ~Graph() {
-      for (const Node* n: all_nodes_) {
-        delete n;
-      }
-    }
     
     private:
     std::string name_;
     std::unique_ptr<Sequential> seq_{nullptr};
-    std::unordered_set<const Node*> all_nodes_;
+    std::vector<std::unique_ptr<Node>> all_nodes_;
     std::unordered_map<std::string, IValue> bound_args;
   };
 
