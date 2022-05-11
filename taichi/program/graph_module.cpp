@@ -1,5 +1,5 @@
 #include "taichi/program/graph_module.h"
-// #include "taichi/program/kernel.h"
+#include "taichi/program/kernel.h"
 #include "taichi/aot/module_builder.h"
 #include "spdlog/fmt/fmt.h"
 
@@ -28,32 +28,21 @@ namespace lang {
     (*kernel_)(launch_ctx);
   }
 
-  void Dispatch::save(std::ofstream& fs) {
-    std::string args;
-    for (int i = 0; i < symbolic_args_.size(); ++i) {
-      args += symbolic_args_[i].name;
-      if (i != symbolic_args_.size() - 1) {
-        args += ", ";
-      }
+  std::vector<aot::SymbolicDispatch> Dispatch::serialize(AotModuleBuilder* aot_builder) const {
+    aot_builder->add(kernel_->get_name(), kernel_);
+    std::vector<aot::SymbolicArg> arg_names;
+    for (const auto& arg: symbolic_args_){
+      arg_names.push_back(aot::SymbolicArg{arg.name});
     }
-    std::string dispatch_str = fmt::format("{}({})", name, args);
-    fs << dispatch_str << std::endl;
-  }
-
-  void Dispatch::add_to_aot_module(AotModuleBuilder* aot_builder) const {
-    aot_builder->add(name, kernel_);
+    aot::SymbolicDispatch dispatch{kernel_->get_name(), arg_names};
+    
+    return {dispatch};
   }
 
   void Sequential::compile() {
     // In the future we can do more across-kernel optimization here.
     for (Node* n: sequence_) {
       n->compile();
-    }
-  }
-
-  void Sequential::save(std::ofstream& fs) {
-    for (const auto& node: sequence_) {
-      node->save(fs);
     }
   }
 
@@ -73,12 +62,17 @@ namespace lang {
     }
   }
 
-  void Sequential::add_to_aot_module(AotModuleBuilder* aot_builder) const {
-    // No-op
+  std::vector<aot::SymbolicDispatch> Sequential::serialize(AotModuleBuilder* aot_builder) const {
+    std::vector<aot::SymbolicDispatch> res;
+    for (const auto& node: sequence_) {
+      auto dispatches = node->serialize(aot_builder);
+      res.insert(res.end(), dispatches.begin(), dispatches.end());
+    }
+    return res;
   }
 
 
-  Graph::Graph() {
+  Graph::Graph(std::string name) : name_(name) {
     seq_ = std::make_unique<Sequential>(this);
   }
   Node* Graph::create_dispatch(Kernel *kernel, const std::vector<Arg>& args) {
@@ -92,7 +86,7 @@ namespace lang {
     seq()->compile();
   }
 
-  Sequential* Graph::seq() {
+  Sequential* Graph::seq() const {
     return seq_.get();
   }
 
@@ -100,44 +94,8 @@ namespace lang {
     seq_->run(args);
   }
 
-  void Graph::save(std::string dst_file) {
-    std::ofstream fs(dst_file);
-    seq()->save(fs);
-    fs.close();
-  }
-
-  void Graph::add_to_aot_module(AotModuleBuilder* aot_builder)  const{
-    for (const auto& node: all_nodes_) {
-      node->add_to_aot_module(aot_builder);
-    }
-  }
-
-  Sequential* GraphModule::new_graph(std::string name) {
-    TI_ASSERT(graphs_.count(name) == 0);
-    graphs_[name] = std::make_unique<Graph>();
-    return graphs_[name]->seq();
-  }
-
-  Graph* GraphModule::get_graph(std::string name) {
-    TI_ASSERT(graphs_.count(name) != 0);
-    return graphs_[name].get();
-  }
-
-  void GraphModule::compile() {
-    for (auto & graph: graphs_) {
-      graph.second->compile();
-    }
-  }
-
-  void GraphModule::save(std::string dst_folder, Program* prog) {
-    auto aot_builder = prog->make_aot_module_builder(Arch::vulkan);
-
-    for (auto& graph: graphs_) {
-      std::string graph_path = fmt::format("{}/graph_{}.txt", dst_folder, graph.first);
-      graph.second->save(graph_path); 
-      graph.second->add_to_aot_module(aot_builder.get());
-    }
-    aot_builder->dump(dst_folder, "");
+  void Graph::serialize(AotModuleBuilder* aot_builder)  const{
+    aot_builder->add_graph(name_, aot::DispatchSeq{this->seq()->serialize(aot_builder)});
   }
 }
 }

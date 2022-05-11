@@ -186,7 +186,7 @@ TEST(AotSaveLoad, Vulkan) {
   TestProgram test_prog;
   // FIXME: Change this to x64 before sending a PR
   test_prog.setup(Arch::vulkan);
-
+  auto aot_builder = test_prog.prog()->make_aot_module_builder(Arch::vulkan);
   IRBuilder builder1, builder2;
 
   {
@@ -221,13 +221,14 @@ TEST(AotSaveLoad, Vulkan) {
   ker2->insert_arg(get_data_type<int>(), /*is_array=*/true);
   ker2->insert_arg(get_data_type<int>(), /*is_array=*/false);
 
-  auto module = std::make_unique<GraphModule>();
-  auto seq = module->new_graph("test");
+  auto g = std::make_unique<Graph>("test");
+  auto seq = g->seq();
   auto arr_arg = Arg{"arr"};
   seq->emplace(ker1.get(), {arr_arg});
   seq->emplace(ker2.get(), {arr_arg, Arg{"x"}});
-  auto g = module->get_graph("test");
-  module->save(".", test_prog.prog());
+
+  g->serialize(aot_builder.get());
+  aot_builder->dump(".", "");
 }
 
 [[maybe unused]] static void load_data(taichi::lang::vulkan::VkRuntime* vulkan_runtime,

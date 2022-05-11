@@ -101,6 +101,19 @@ struct CompiledTaichiKernel {
             arr_args);
 };
 
+struct SymbolicArg {
+  std::string name;
+};
+
+struct SymbolicDispatch {
+  std::string name;
+  std::vector<SymbolicArg> args;
+};
+
+struct DispatchSeq {
+  std::vector<SymbolicDispatch> dispatch_seq;
+};
+
 struct ModuleData {
   std::unordered_map<std::string, CompiledTaichiKernel> kernels;
   std::unordered_map<std::string, CompiledTaichiKernel> kernel_tmpls;
