@@ -135,6 +135,7 @@ void AotModuleBuilderImpl::dump(const std::string &output_dir,
 
   const std::string json_path = fmt::format("{}/metadata.json", output_dir);
   converted.dump_json(json_path);
+  dump_graph(output_dir);
 }
 
 void AotModuleBuilderImpl::add_per_backend(const std::string &identifier,

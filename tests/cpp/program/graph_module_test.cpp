@@ -60,12 +60,11 @@ TEST(GraphModule, SimpleGraphRun) {
   auto ker1 = setup_kernel1(test_prog.prog());
   auto ker2 = setup_kernel2(test_prog.prog());
 
-  auto module = std::make_unique<GraphModule>();
-  auto seq = module->new_graph("test");
+  auto g = std::make_unique<Graph>("test");
+  auto seq = g->seq();
   auto arr_arg = Arg{"arr"};
   seq->emplace(ker1.get(), {arr_arg});
   seq->emplace(ker2.get(), {arr_arg, Arg{"x"}});
-  auto g = module->get_graph("test");
   g->compile();
 
   auto array = Ndarray(test_prog.prog(), PrimitiveType::i32, {size});
@@ -79,22 +78,4 @@ TEST(GraphModule, SimpleGraphRun) {
   EXPECT_EQ(array.read_int({0}), 2);
   EXPECT_EQ(array.read_int({1}), 2);
   EXPECT_EQ(array.read_int({2}), 42);
-}
-
-TEST(GraphModule, SimpleGraphSave) {
-  TestProgram test_prog;
-  // FIXME: Change this to x64 before sending a PR
-  test_prog.setup(Arch::vulkan);
-  const int size = 10;
-
-  auto ker1 = setup_kernel1(test_prog.prog());
-  auto ker2 = setup_kernel2(test_prog.prog());
-
-  auto module = std::make_unique<GraphModule>();
-  auto seq = module->new_graph("test");
-  auto arr_arg = Arg{"arr"};
-  seq->emplace(ker1.get(), {arr_arg});
-  seq->emplace(ker2.get(), {arr_arg, Arg{"x"}});
-  auto g = module->get_graph("test");
-  module->save(".", test_prog.prog());
 }

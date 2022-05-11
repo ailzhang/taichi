@@ -7,6 +7,7 @@
 #include "taichi/backends/device.h"
 #include "taichi/ir/snode.h"
 #include "taichi/aot/module_data.h"
+// #include "taichi/program/graph_module.h"
 
 namespace taichi {
 namespace lang {
@@ -37,6 +38,10 @@ class AotModuleBuilder {
   virtual void dump(const std::string &output_dir,
                     const std::string &filename) const = 0;
 
+  void dump_graph(std::string output_dir) const;
+
+  void add_graph(std::string name, const aot::DispatchSeq& graph);
+
  protected:
   /**
    * Intended to be overriden by each backend's implementation.
@@ -64,6 +69,9 @@ class AotModuleBuilder {
                                     Kernel *kernel) = 0;
 
   static bool all_fields_are_dense_in_container(const SNode *container);
+
+  private:
+  std::unordered_map<std::string, aot::DispatchSeq> graphs_;
 };
 
 }  // namespace lang
