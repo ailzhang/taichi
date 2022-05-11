@@ -69,6 +69,7 @@ namespace lang {
     Kernel *kernel_{nullptr};
     // std::string name;
     std::vector<Arg> symbolic_args_;
+    mutable bool serialized_{false};
   };
 
   class Sequential : public Node {

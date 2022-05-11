@@ -30,7 +30,11 @@ namespace lang {
   }
 
   std::vector<aot::SymbolicDispatch> Dispatch::serialize(AotModuleBuilder* aot_builder) const {
-    aot_builder->add(kernel_->get_name(), kernel_);
+    if (!serialized_) {
+      aot_builder->add(kernel_->get_name(), kernel_);
+      serialized_ = true;
+    }
+    
     std::vector<aot::SymbolicArg> arg_names;
     for (const auto& arg: symbolic_args_){
       arg_names.push_back(aot::SymbolicArg{arg.name});
