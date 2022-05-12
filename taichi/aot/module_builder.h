@@ -40,7 +40,7 @@ class AotModuleBuilder {
 
   void dump_graph(std::string output_dir) const;
 
-  void add_graph(std::string name, const aot::DispatchSeq& graph);
+  void add_graph(std::string name, const aot::DispatchSeq &graph);
 
  protected:
   /**
@@ -70,7 +70,7 @@ class AotModuleBuilder {
 
   static bool all_fields_are_dense_in_container(const SNode *container);
 
-  private:
+ private:
   std::unordered_map<std::string, aot::DispatchSeq> graphs_;
 };
 

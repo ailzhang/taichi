@@ -513,30 +513,32 @@ void export_lang(py::module &m) {
       .def_readonly("shape", &Ndarray::shape);
 
   py::class_<Arg>(m, "Arg")
-    .def(py::init<std::string, const std::vector<int>&>(), py::arg("name"), py::arg("element_shape"))
-    .def_readonly("name", &Arg::name)
-    .def_readonly("element_shape", &Arg::element_shape);
+      .def(py::init<std::string, const std::vector<int> &>(), py::arg("name"),
+           py::arg("element_shape"))
+      .def_readonly("name", &Arg::name)
+      .def_readonly("element_shape", &Arg::element_shape);
   py::class_<Node>(m, "Node");
   //   .def(py::init<>());
-  
+
   py::class_<Sequential, Node>(m, "Sequential")
-    .def(py::init<Graph*>())
-    .def("append", &Sequential::append)
-    .def("emplace", &Sequential::emplace);
+      .def(py::init<Graph *>())
+      .def("append", &Sequential::append)
+      .def("emplace", &Sequential::emplace);
 
   py::class_<Graph>(m, "Graph")
       .def(py::init<std::string>())
       .def("emplace", &Graph::emplace)
       .def("compile", &Graph::compile)
-      .def("create_sequential", &Graph::create_sequential, py::return_value_policy::reference)
+      .def("create_sequential", &Graph::create_sequential,
+           py::return_value_policy::reference)
       .def("seq", &Graph::seq, py::return_value_policy::reference)
       // .def("append", &Graph::append)
       .def("serialize", &Graph::serialize)
-      .def("run", [](Graph* self, const py::dict& d) {
+      .def("run", [](Graph *self, const py::dict &d) {
         std::unordered_map<std::string, IValue> args;
-        for (auto& it: d) {
+        for (auto &it : d) {
           // FIXME: there're also primitive types
-          auto& val = it.second.cast<Ndarray&>();
+          auto &val = it.second.cast<Ndarray &>();
           args.insert({py::cast<std::string>(it.first), IValue(val)});
         }
         self->run(args);

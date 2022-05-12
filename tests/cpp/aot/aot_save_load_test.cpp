@@ -190,34 +190,36 @@ TEST(AotSaveLoad, Vulkan) {
   IRBuilder builder1, builder2;
 
   {
-  auto *arg = builder1.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
-                                      /*is_ptr=*/true);
-  auto *zero = builder1.get_int32(0);
-  auto *one = builder1.get_int32(1);
-  auto *two = builder1.get_int32(2);
-  auto *a1ptr = builder1.create_external_ptr(arg, {one});
-  builder1.create_global_store(a1ptr, one);  // a[1] = 1
-  auto *a0 =
-      builder1.create_global_load(builder1.create_external_ptr(arg, {zero}));
-  auto *a2ptr = builder1.create_external_ptr(arg, {two});
-  auto *a2 = builder1.create_global_load(a2ptr);
-  auto *a0plusa2 = builder1.create_add(a0, a2);
-  builder1.create_global_store(a2ptr, a0plusa2);  // a[2] = a[0] + a[2]
+    auto *arg = builder1.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
+                                         /*is_ptr=*/true);
+    auto *zero = builder1.get_int32(0);
+    auto *one = builder1.get_int32(1);
+    auto *two = builder1.get_int32(2);
+    auto *a1ptr = builder1.create_external_ptr(arg, {one});
+    builder1.create_global_store(a1ptr, one);  // a[1] = 1
+    auto *a0 =
+        builder1.create_global_load(builder1.create_external_ptr(arg, {zero}));
+    auto *a2ptr = builder1.create_external_ptr(arg, {two});
+    auto *a2 = builder1.create_global_load(a2ptr);
+    auto *a0plusa2 = builder1.create_add(a0, a2);
+    builder1.create_global_store(a2ptr, a0plusa2);  // a[2] = a[0] + a[2]
   }
   auto block = builder1.extract_ir();
-  auto ker1 = std::make_unique<Kernel>(*test_prog.prog(), std::move(block), "ker1");
+  auto ker1 =
+      std::make_unique<Kernel>(*test_prog.prog(), std::move(block), "ker1");
   ker1->insert_arg(get_data_type<int>(), /*is_array=*/true);
   {
-  auto *arg = builder2.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
-                                      /*is_ptr=*/true);
-  auto *arg2 = builder2.create_arg_load(/*arg_id=*/1, get_data_type<int>(),
-                                      /*is_ptr=*/false);
-  auto *one = builder2.get_int32(1);
-  auto *a1ptr = builder2.create_external_ptr(arg, {one});
-  builder2.create_global_store(a1ptr, arg2);  // a[1] = 2
+    auto *arg = builder2.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
+                                         /*is_ptr=*/true);
+    auto *arg2 = builder2.create_arg_load(/*arg_id=*/1, get_data_type<int>(),
+                                          /*is_ptr=*/false);
+    auto *one = builder2.get_int32(1);
+    auto *a1ptr = builder2.create_external_ptr(arg, {one});
+    builder2.create_global_store(a1ptr, arg2);  // a[1] = 2
   }
   auto block2 = builder2.extract_ir();
-  auto ker2 = std::make_unique<Kernel>(*test_prog.prog(), std::move(block2), "ker2");
+  auto ker2 =
+      std::make_unique<Kernel>(*test_prog.prog(), std::move(block2), "ker2");
   ker2->insert_arg(get_data_type<int>(), /*is_array=*/true);
   ker2->insert_arg(get_data_type<int>(), /*is_array=*/false);
 
@@ -231,18 +233,24 @@ TEST(AotSaveLoad, Vulkan) {
   aot_builder->dump(".", "");
 }
 
-[[maybe unused]] static void load_data(taichi::lang::vulkan::VkRuntime* vulkan_runtime,
-               taichi::lang::DeviceAllocation& alloc, const void* data,
-               size_t size) {
-  char* const device_arr_ptr =
-      reinterpret_cast<char*>(vulkan_runtime->get_ti_device()->map(alloc));
+[[maybe_unused]] static void load_data(
+    taichi::lang::vulkan::VkRuntime *vulkan_runtime,
+    taichi::lang::DeviceAllocation &alloc,
+    const void *data,
+    size_t size) {
+  char *const device_arr_ptr =
+      reinterpret_cast<char *>(vulkan_runtime->get_ti_device()->map(alloc));
   std::memcpy(device_arr_ptr, data, size);
   vulkan_runtime->get_ti_device()->unmap(alloc);
 }
 
-[[maybe unused]] static void get_data(taichi::lang::vulkan::VkRuntime* vulkan_runtime,
-taichi::lang::DeviceAllocation& alloc, void* data, size_t size) {
-  char* const device_arr_ptr = reinterpret_cast<char*>(vulkan_runtime->get_ti_device()->map(alloc));
+[[maybe_unused]] static void get_data(
+    taichi::lang::vulkan::VkRuntime *vulkan_runtime,
+    taichi::lang::DeviceAllocation &alloc,
+    void *data,
+    size_t size) {
+  char *const device_arr_ptr =
+      reinterpret_cast<char *>(vulkan_runtime->get_ti_device()->map(alloc));
   std::memcpy(data, device_arr_ptr, size);
   vulkan_runtime->get_ti_device()->unmap(alloc);
 }
@@ -272,8 +280,9 @@ TEST(AotLoadGraph, Vulkan) {
       taichi::lang::vulkan::VulkanEnvSettings::kApiVersion();
   auto embedded_device =
       std::make_unique<taichi::lang::vulkan::VulkanDeviceCreator>(evd_params);
-  taichi::lang::vulkan::VulkanDevice* device_ = static_cast<taichi::lang::vulkan::VulkanDevice*>(
-        embedded_device->device());
+  taichi::lang::vulkan::VulkanDevice *device_ =
+      static_cast<taichi::lang::vulkan::VulkanDevice *>(
+          embedded_device->device());
   // Create Vulkan runtime
   vulkan::VkRuntime::Params params;
   params.host_result_buffer = result_buffer;
@@ -322,4 +331,3 @@ TEST(AotLoadGraph, Vulkan) {
   device_->dealloc_memory(devalloc_arr_);
 }
 #endif
-

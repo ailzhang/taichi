@@ -19,7 +19,7 @@ namespace lang {
 struct RuntimeContext;
 
 namespace aot {
-  class Graph;
+class Graph;
 
 class TI_DLL_EXPORT Field {
  public:
@@ -101,7 +101,9 @@ class TI_DLL_EXPORT Module {
 
   static std::unique_ptr<Module> load(Arch arch, std::any mod_params);
   // TODO: this shouldn't be backend specific
-  virtual std::unique_ptr<aot::Graph> load_graph(std::string name) {return nullptr;};
+  virtual std::unique_ptr<aot::Graph> load_graph(std::string name) {
+    return nullptr;
+  };
 
   // Module metadata
   // TODO: Instead of virtualize these simple properties, just store them as

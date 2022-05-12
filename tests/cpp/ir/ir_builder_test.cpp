@@ -124,31 +124,32 @@ TEST(IRBuilder, VulkanNdarray) {
   test_prog.setup(Arch::vulkan);
   IRBuilder builder1;
   const int size = 10;
-  
+
   auto array = Ndarray(test_prog.prog(), PrimitiveType::i32, {size});
   array.write_int({0}, 2);
   array.write_int({2}, 40);
   {
-  auto *arg = builder1.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
-                                      /*is_ptr=*/true);
-  auto *zero = builder1.get_int32(0);
-  auto *one = builder1.get_int32(1);
-  auto *two = builder1.get_int32(2);
-  auto *a1ptr = builder1.create_external_ptr(arg, {one});
-  builder1.create_global_store(a1ptr, one);  // a[1] = 1
-  auto *a0 =
-      builder1.create_global_load(builder1.create_external_ptr(arg, {zero}));
-  auto *a2ptr = builder1.create_external_ptr(arg, {two});
-  auto *a2 = builder1.create_global_load(a2ptr);
-  auto *a0plusa2 = builder1.create_add(a0, a2);
-  builder1.create_global_store(a2ptr, a0plusa2);  // a[2] = a[0] + a[2]
+    auto *arg = builder1.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
+                                         /*is_ptr=*/true);
+    auto *zero = builder1.get_int32(0);
+    auto *one = builder1.get_int32(1);
+    auto *two = builder1.get_int32(2);
+    auto *a1ptr = builder1.create_external_ptr(arg, {one});
+    builder1.create_global_store(a1ptr, one);  // a[1] = 1
+    auto *a0 =
+        builder1.create_global_load(builder1.create_external_ptr(arg, {zero}));
+    auto *a2ptr = builder1.create_external_ptr(arg, {two});
+    auto *a2 = builder1.create_global_load(a2ptr);
+    auto *a0plusa2 = builder1.create_add(a0, a2);
+    builder1.create_global_store(a2ptr, a0plusa2);  // a[2] = a[0] + a[2]
   }
   auto block = builder1.extract_ir();
   auto ker = std::make_unique<Kernel>(*test_prog.prog(), std::move(block));
   ker->insert_arg(get_data_type<int>(), /*is_array=*/true);
   auto launch_ctx = ker->make_launch_context();
-  launch_ctx.set_arg_external_array(/*arg_id=*/0, array.get_device_allocation_ptr_as_int(), size,
-                                    /*is_device_allocation=*/true);
+  launch_ctx.set_arg_external_array(
+      /*arg_id=*/0, array.get_device_allocation_ptr_as_int(), size,
+      /*is_device_allocation=*/true);
   (*ker)(launch_ctx);
   EXPECT_EQ(array.read_int({0}), 2);
   EXPECT_EQ(array.read_int({1}), 1);
@@ -156,20 +157,20 @@ TEST(IRBuilder, VulkanNdarray) {
 
   IRBuilder builder2;
   {
-  auto *arg = builder2.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
-                                      /*is_ptr=*/true);
-  auto *zero = builder2.get_int32(0);
-  auto *one = builder2.get_int32(1);
-  auto *two = builder2.get_int32(2);
-  auto *a1ptr = builder2.create_external_ptr(arg, {one});
-  builder2.create_global_store(a1ptr, two);  // a[1] = 2
+    auto *arg = builder2.create_arg_load(/*arg_id=*/0, get_data_type<int>(),
+                                         /*is_ptr=*/true);
+    auto *one = builder2.get_int32(1);
+    auto *two = builder2.get_int32(2);
+    auto *a1ptr = builder2.create_external_ptr(arg, {one});
+    builder2.create_global_store(a1ptr, two);  // a[1] = 2
   }
   auto block2 = builder2.extract_ir();
   auto ker2 = std::make_unique<Kernel>(*test_prog.prog(), std::move(block2));
   ker2->insert_arg(get_data_type<int>(), /*is_array=*/true);
   auto launch_ctx2 = ker2->make_launch_context();
-  launch_ctx2.set_arg_external_array(/*arg_id=*/0, array.get_device_allocation_ptr_as_int(), size,
-                                    /*is_device_allocation=*/true);
+  launch_ctx2.set_arg_external_array(
+      /*arg_id=*/0, array.get_device_allocation_ptr_as_int(), size,
+      /*is_device_allocation=*/true);
   (*ker2)(launch_ctx2);
   EXPECT_EQ(array.read_int({0}), 2);
   EXPECT_EQ(array.read_int({1}), 2);

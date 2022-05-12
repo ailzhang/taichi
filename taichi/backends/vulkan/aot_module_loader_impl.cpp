@@ -13,15 +13,14 @@ namespace {
 
 using KernelHandle = VkRuntime::KernelHandle;
 
-void tokenize(std::string const &str, const char* delim, 
-            std::vector<std::string> &out) 
-{ 
-    char *token = strtok(const_cast<char*>(str.c_str()), delim); 
-    while (token != nullptr) 
-    { 
-        out.push_back(std::string(token)); 
-        token = strtok(nullptr, delim); 
-    } 
+void tokenize(std::string const &str,
+              const char *delim,
+              std::vector<std::string> &out) {
+  char *token = strtok(const_cast<char *>(str.c_str()), delim);
+  while (token != nullptr) {
+    out.push_back(std::string(token));
+    token = strtok(nullptr, delim);
+  }
 }
 class FieldImpl : public aot::Field {
  public:
@@ -52,7 +51,7 @@ class KernelImpl : public aot::Kernel {
 class AotModuleImpl : public aot::Module {
  public:
   explicit AotModuleImpl(const AotModuleParams &params)
-      : runtime_(params.runtime), module_path_(params.module_path) {
+      : module_path_(params.module_path), runtime_(params.runtime) {
     const std::string bin_path =
         fmt::format("{}/metadata.tcb", params.module_path);
     read_from_binary_file(ti_aot_data_, bin_path);
@@ -90,11 +89,12 @@ class AotModuleImpl : public aot::Module {
     while (std::getline(fs, line)) {
       std::size_t left_paren = line.find("(");
       std::string kernel_name = line.substr(0, left_paren);
-      aot::Kernel* kernel = get_kernel(kernel_name);
+      aot::Kernel *kernel = get_kernel(kernel_name);
       std::size_t right_paren = line.find(")");
       std::vector<std::string> out;
-      const char* delim = ", ";
-      tokenize(line.substr(left_paren+1, right_paren-left_paren-1), delim, out);
+      const char *delim = ", ";
+      tokenize(line.substr(left_paren + 1, right_paren - left_paren - 1), delim,
+               out);
       std::vector<aot::Arg> args;
       for (int i = 0; i < out.size(); i++) {
         args.push_back(aot::Arg{out[i]});

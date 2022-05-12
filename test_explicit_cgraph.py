@@ -115,7 +115,7 @@ substep.emplace(substep_p2g, sym_x, sym_v, sym_C, sym_J, sym_grid_v, sym_grid_m)
 substep.emplace(substep_update_grid_v, sym_grid_v, sym_grid_m)
 substep.emplace(substep_g2p, sym_x, sym_v, sym_C, sym_J, sym_grid_v)
 
-for i in range(50):
+for i in range(500):
     g_update.append(substep)
 
 g_update.emplace(generate_vbo, sym_x, sym_vertices)
@@ -139,7 +139,7 @@ J = ti.ndarray(ti.f32, shape=(n_particles))
 grid_v = ti.Vector.ndarray(2, ti.f32, shape=(n_grid, n_grid))
 grid_m = ti.ndarray(ti.f32, shape=(n_grid, n_grid))
 
-aot = True
+aot = False
 
 if not aot:
     g_init.run({'x_init': vertices, 'v_init': init_v, 'x': x, 'v': v, 'J': J})
