@@ -16,6 +16,21 @@ namespace vulkan {
 
 class VkRuntime;
 
+class KernelImpl : public aot::Kernel {
+ public:
+  explicit KernelImpl(VkRuntime *runtime, VkRuntime::KernelHandle handle)
+      : runtime_(runtime), handle_(handle) {
+  }
+
+  void launch(RuntimeContext *ctx) override {
+    runtime_->launch_kernel(handle_, ctx);
+  }
+
+ private:
+  VkRuntime *const runtime_;
+  const VkRuntime::KernelHandle handle_;
+};
+
 struct TI_DLL_EXPORT AotModuleParams {
   std::string module_path;
   VkRuntime *runtime{nullptr};

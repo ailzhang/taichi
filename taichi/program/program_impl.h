@@ -8,6 +8,7 @@
 #include "taichi/program/snode_expr_utils.h"
 #include "taichi/program/kernel_profiler.h"
 #include "taichi/backends/device.h"
+#include "taichi/aot/module_loader.h"
 
 namespace taichi {
 namespace lang {
@@ -66,6 +67,12 @@ class ProgramImpl {
    */
   virtual std::unique_ptr<AotModuleBuilder> make_aot_module_builder() = 0;
 
+  /**
+   * Compile a taichi::lang::Kernel to taichi::lang::aot::Kernel.
+   */
+  virtual std::unique_ptr<aot::Kernel> make_aot_kernel(Kernel &kernel) {
+    TI_NOT_IMPLEMENTED;
+  }
   /**
    * Dump Offline-cache data to disk
    */

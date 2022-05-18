@@ -6,6 +6,7 @@
 #include "taichi/backends/arch.h"
 #include "taichi/program/callable.h"
 #include "taichi/program/ndarray.h"
+#include "taichi/aot/module_loader.h"
 
 TLANG_NAMESPACE_BEGIN
 
@@ -85,6 +86,8 @@ class TI_DLL_EXPORT Kernel : public Callable {
   }
 
   void compile();
+
+  std::unique_ptr<aot::Kernel> compile_to_aot_kernel();
 
   /**
    * Lowers |ir| to CHI IR level

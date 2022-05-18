@@ -8,9 +8,8 @@
 namespace taichi {
 namespace lang {
 namespace vulkan {
-namespace {
 
-using KernelHandle = VkRuntime::KernelHandle;
+namespace {
 
 class FieldImpl : public aot::Field {
  public:
@@ -21,21 +20,6 @@ class FieldImpl : public aot::Field {
  private:
   VkRuntime *const runtime_;
   aot::CompiledFieldData field_;
-};
-
-class KernelImpl : public aot::Kernel {
- public:
-  explicit KernelImpl(VkRuntime *runtime, KernelHandle handle)
-      : runtime_(runtime), handle_(handle) {
-  }
-
-  void launch(RuntimeContext *ctx) override {
-    runtime_->launch_kernel(handle_, ctx);
-  }
-
- private:
-  VkRuntime *const runtime_;
-  const KernelHandle handle_;
 };
 
 class AotModuleImpl : public aot::Module {
