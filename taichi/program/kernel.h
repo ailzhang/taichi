@@ -7,6 +7,7 @@
 #include "taichi/program/callable.h"
 #include "taichi/program/ndarray.h"
 #include "taichi/aot/module_loader.h"
+#include "taichi/aot/graph_data.h"
 
 TLANG_NAMESPACE_BEGIN
 

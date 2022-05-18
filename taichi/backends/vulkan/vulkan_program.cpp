@@ -190,8 +190,8 @@ std::unique_ptr<aot::Kernel> VulkanProgramImpl::make_aot_kernel(
   std::vector<CompiledSNodeStructs> compiled_structs;
   VkRuntime::RegisterParams kparams =
       run_codegen(&kernel, get_compute_device(), compiled_structs);
-  auto handle = vulkan_runtime_->register_taichi_kernel(kparams);
-  return std::make_unique<KernelImpl>(vulkan_runtime_.get(), handle);
+  return std::make_unique<KernelImpl>(vulkan_runtime_.get(),
+                                      std::move(kparams));
 }
 
 VulkanProgramImpl::~VulkanProgramImpl() {

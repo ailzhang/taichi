@@ -29,9 +29,11 @@ TEST(GraphModule, SimpleGraphRun) {
 
   auto g = std::make_unique<Graph>("test");
   auto seq = g->seq();
-  auto arr_arg = Arg{"arr", PrimitiveType::i32, {size}};
+  auto arr_arg =
+      Arg{"arr", PrimitiveType::i32.to_string(), ArgKind::NDARRAY, {size}};
   seq->emplace(ker1.get(), {arr_arg});
-  seq->emplace(ker2.get(), {arr_arg, Arg{"x", PrimitiveType::i32}});
+  seq->emplace(ker2.get(), {arr_arg, Arg{"x", PrimitiveType::i32.to_string(),
+                                         ArgKind::SCALAR}});
   g->compile();
 
   auto array = Ndarray(test_prog.prog(), PrimitiveType::i32, {size});

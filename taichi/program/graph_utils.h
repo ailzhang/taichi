@@ -2,31 +2,21 @@
 #include <string>
 #include <vector>
 #include "taichi/ir/type.h"
+#include "taichi/inc/constants.h"
 
 namespace taichi {
 namespace lang {
 class Ndarray;
 
-enum ArgKind { SCALAR, NDARRAY };
+enum ArgKind { SCALAR, NDARRAY, UNKNOWN };
 struct Arg {
   std::string name;
   // TODO: real element dtype = dtype + element_shape
-  DataType dtype;
+  std::string dtype_name;
   ArgKind tag;
   std::vector<int> element_shape;
 
-  Arg(std::string name, const DataType dtype)
-      : name(name), dtype(dtype), tag(ArgKind::SCALAR) {
-  }
-
-  Arg(std::string name,
-      const DataType dtype,
-      const std::vector<int> &element_shape)
-      : name(name),
-        dtype(dtype),
-        tag(ArgKind::NDARRAY),
-        element_shape(element_shape) {
-  }
+  TI_IO_DEF(name, dtype_name, tag, element_shape);
 };
 
 struct IValue {

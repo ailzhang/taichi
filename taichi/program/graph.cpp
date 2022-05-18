@@ -8,42 +8,17 @@
 namespace taichi {
 namespace lang {
 
-void Dispatch::compile() {
+void Dispatch::compile(std::vector<aot::CompiledDispatch> &dispatches) {
   compiled_kernel_ = kernel_->compile_to_aot_kernel();
+  aot::CompiledDispatch dispatch{kernel_->get_name(), symbolic_args_,
+                                 compiled_kernel_.get()};
+  dispatches.push_back(std::move(dispatch));
 }
 
-void Dispatch::run(RuntimeContext *ctx,
-                   std::unordered_map<std::string, IValue> &args) {
-  TI_ERROR_IF(!compiled_kernel_, "Did you forget to call graph.compile()?");
-
-  memset(ctx, 0, sizeof(RuntimeContext));
-  for (int i = 0; i < symbolic_args_.size(); ++i) {
-    auto &symbolic_arg = symbolic_args_[i];
-    auto found = args.find(symbolic_arg.name);
-    TI_ERROR_IF(found == args.end(), "Missing runtime value for ",
-                symbolic_arg.name);
-    IValue &ival = found->second;
-    if (ival.tag == ArgKind::NDARRAY) {
-      Ndarray *arr = reinterpret_cast<Ndarray *>(ival.val);
-      TI_ERROR_IF((symbolic_arg.tag != ival.tag) ||
-                      (symbolic_arg.element_shape != arr->shape),
-                  "Mismatched shape information for argument",
-                  symbolic_arg.name);
-      set_runtime_ctx_ndarray(ctx, i, arr);
-    } else {
-      TI_ERROR_IF(symbolic_arg.tag != ArgKind::SCALAR,
-                  "Required a scalar for argument", symbolic_arg.name);
-      ctx->set_arg(i, ival.val);
-    }
-  }
-
-  compiled_kernel_->launch(ctx);
-}
-
-void Sequential::compile() {
+void Sequential::compile(std::vector<aot::CompiledDispatch> &dispatches) {
   // In the future we can do more across-kernel optimization here.
   for (Node *n : sequence_) {
-    n->compile();
+    n->compile(dispatches);
   }
 }
 
@@ -54,13 +29,6 @@ void Sequential::append(Node *node) {
 void Sequential::emplace(Kernel *kernel, const std::vector<Arg> &args) {
   Node *n = owning_graph_->create_dispatch(kernel, args);
   sequence_.push_back(n);
-}
-
-void Sequential::run(RuntimeContext *ctx,
-                     std::unordered_map<std::string, IValue> &args) {
-  for (Node *n : sequence_) {
-    n->run(ctx, args);
-  }
 }
 
 Graph::Graph(std::string name) : name_(name) {
@@ -79,7 +47,7 @@ Sequential *Graph::create_sequential() {
 }
 
 void Graph::compile() {
-  seq()->compile();
+  seq()->compile(compiled_graph_.dispatches);
 }
 
 Sequential *Graph::seq() const {
@@ -91,10 +59,32 @@ void Graph::emplace(Kernel *kernel, const std::vector<Arg> &args) {
 }
 
 void Graph::run(std::unordered_map<std::string, IValue> &args) {
-  RuntimeContext host_ctx;
-  memset(&host_ctx, 0, sizeof(RuntimeContext));
-  seq_->run(&host_ctx, args);
-}
+  RuntimeContext ctx;
+  for (const auto &dispatch : compiled_graph_.dispatches) {
+    memset(&ctx, 0, sizeof(RuntimeContext));
+    auto &symbolic_args_ = dispatch.symbolic_args;
+    for (int i = 0; i < symbolic_args_.size(); ++i) {
+      auto &symbolic_arg = symbolic_args_[i];
+      auto found = args.find(symbolic_arg.name);
+      TI_ERROR_IF(found == args.end(), "Missing runtime value for ",
+                  symbolic_arg.name);
+      IValue &ival = found->second;
+      if (ival.tag == ArgKind::NDARRAY) {
+        Ndarray *arr = reinterpret_cast<Ndarray *>(ival.val);
+        TI_ERROR_IF((symbolic_arg.tag != ival.tag) ||
+                        (symbolic_arg.element_shape != arr->shape),
+                    "Mismatched shape information for argument",
+                    symbolic_arg.name);
+        set_runtime_ctx_ndarray(&ctx, i, arr);
+      } else {
+        TI_ERROR_IF(symbolic_arg.tag != ArgKind::SCALAR,
+                    "Required a scalar for argument", symbolic_arg.name);
+        ctx.set_arg(i, ival.val);
+      }
+    }
 
+    dispatch.compiled_kernel->launch(&ctx);
+  }
+}
 }  // namespace lang
 }  // namespace taichi
