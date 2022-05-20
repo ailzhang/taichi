@@ -67,10 +67,6 @@ class TI_DLL_EXPORT Kernel {
    * @param ctx Host context
    */
   virtual void launch(RuntimeContext *ctx) = 0;
-
-  virtual void save_to_module(AotModuleBuilder *builder) {
-    TI_NOT_IMPLEMENTED;
-  }
 };
 
 struct CompiledDispatch {
