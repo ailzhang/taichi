@@ -27,6 +27,8 @@
 #include "taichi/python/snode_registry.h"
 #include "taichi/program/sparse_matrix.h"
 #include "taichi/program/sparse_solver.h"
+#include "taichi/program/graph.h"
+#include "taichi/aot/graph_data.h"
 #include "taichi/ir/mesh.h"
 
 #include "taichi/program/kernel_profiler.h"
@@ -530,6 +532,45 @@ void export_lang(py::module &m) {
       .def("write_float", &Ndarray::write_float)
       .def_readonly("dtype", &Ndarray::dtype)
       .def_readonly("shape", &Ndarray::shape);
+
+  py::enum_<aot::ArgKind>(m, "ArgKind")
+      .value("SCALAR", aot::ArgKind::kScalar)
+      .value("NDARRAY", aot::ArgKind::kNdarray)
+      .export_values();
+
+  py::class_<aot::Arg>(m, "Arg")
+      .def(py::init<aot::ArgKind, std::string, std::string, std::vector<int>>(),
+           py::arg("tag"), py::arg("name"), py::arg("dtype_name"),
+           py::arg("element_shape"))
+      .def_readonly("name", &aot::Arg::name)
+      .def_readonly("element_shape", &aot::Arg::element_shape);
+  py::class_<Node>(m, "Node");
+  //   .def(py::init<>());
+
+  py::class_<Sequential, Node>(m, "Sequential")
+      .def(py::init<Graph *>())
+      .def("append", &Sequential::append)
+      .def("dispatch", &Sequential::dispatch);
+
+  py::class_<Graph>(m, "Graph")
+      .def(py::init<std::string>())
+      .def("dispatch", &Graph::dispatch)
+      .def("compile", &Graph::compile)
+      .def("create_sequential", &Graph::new_sequential_node,
+           py::return_value_policy::reference)
+      .def("seq", &Graph::seq, py::return_value_policy::reference)
+      // .def("append", &Graph::append)
+      // .def("serialize", &Graph::serialize)
+      .def("run", [](Graph *self, const py::dict &d) {
+        std::unordered_map<std::string, aot::IValue> args;
+        for (auto &it : d) {
+          // FIXME: there're also primitive types
+          auto &val = it.second.cast<Ndarray &>();
+          args.insert(
+              {py::cast<std::string>(it.first), aot::IValue::create(val)});
+        }
+        self->run(args);
+      });
 
   py::class_<Kernel>(m, "Kernel")
       .def("get_ret_int", &Kernel::get_ret_int)

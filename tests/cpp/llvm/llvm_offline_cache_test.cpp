@@ -119,7 +119,8 @@ TEST_P(LlvmOfflineCacheTest, ReadWrite) {
     EXPECT_EQ(task0.name, kTaskName);
 
     ASSERT_NE(kcache.owned_module, nullptr);
-    kcache.module->dump();
+    //kcache.module->dump();
+    kcache.module->print(llvm::errs(), nullptr);
     tlctx_->add_module(std::move(kcache.owned_module));
     using FuncType = int (*)(int, int);
     FuncType my_add = (FuncType)tlctx_->lookup_function_pointer(kTaskName);
