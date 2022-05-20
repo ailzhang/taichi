@@ -30,6 +30,7 @@ class Ndarray:
         #   So its memory was freed already.
         if impl.get_runtime().prog is not None and impl.get_runtime(
         ).generation == self._gen:
+            # print(impl.get_runtime().prog)
             impl.get_runtime().prog.delete_ndarray(self.arr)
 
     @property

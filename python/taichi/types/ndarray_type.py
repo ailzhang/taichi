@@ -43,7 +43,9 @@ class NdarrayType:
             )
 
     def _check_element_shape(self, shapes):
-        if self.element_shape is not None and shapes != self.element_shape:
+        # FIXME: list / tuple
+        if self.element_shape is not None and list(
+                shapes) != self.element_shape:
             raise ValueError(
                 f"Invalid argument into ti.types.ndarray() - required element_shape={self.element_shape}, but {shapes} is provided"
             )
