@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import taichi as ti
 from tests import test_utils
@@ -21,3 +22,23 @@ def test_ndarray_int():
     a = ti.ndarray(ti.i32, shape=(n, ))
     g.run({'pos': a})
     assert (a.to_numpy() == np.ones(4)).all()
+
+
+@pytest.mark.parametrize('dt', [ti.f32, ti.f64])
+@test_utils.test(arch=ti.vulkan)
+def test(dt):
+    @ti.kernel
+    def foo(a: float, res: ti.types.ndarray(field_dim=1)):
+        res[0] = a
+
+    x = 122.33
+
+    res_arr = ti.ndarray(dt, shape=(1, ))
+
+    sym_A = ti.graph.Arg(ti.graph.ArgKind.SCALAR, 'a', dt)
+    sym_res = ti.graph.Arg(ti.graph.ArgKind.NDARRAY, 'res', dt)
+    builder = ti.graph.GraphBuilder()
+    builder.dispatch(foo, sym_A, sym_res)
+    graph = builder.compile()
+    graph.run({"a": x, "res": res_arr})
+    assert res_arr[0] == x
