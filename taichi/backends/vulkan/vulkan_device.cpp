@@ -1381,6 +1381,8 @@ DeviceAllocation VulkanDevice::allocate_memory(const AllocParams &params) {
   TI_TRACE("Allocate VK buffer {}, alloc_id={}", (void *)alloc.buffer,
            handle.alloc_id);
 #endif
+  // std::cout <<"Allocate VK buffer id " <<handle.alloc_id << " size: " <<
+  // buffer_info.size << std::endl;
 
   if (get_cap(DeviceCapability::spirv_has_physical_storage_buffer)) {
     VkBufferDeviceAddressInfoKHR info{};
@@ -1845,6 +1847,10 @@ DeviceAllocation VulkanDevice::create_image(const ImageParams &params) {
 
 void VulkanDevice::destroy_image(DeviceAllocation handle) {
   auto map_pair = image_allocations_.find(handle.alloc_id);
+  std::cout << "Freeing id " << handle.alloc_id << std::endl;
+  if (map_pair == image_allocations_.end()) {
+    std::cout << "Double freeing id " << handle.alloc_id << std::endl;
+  }
 
   TI_ASSERT_INFO(map_pair != image_allocations_.end(),
                  "Invalid handle (double free?) {}", handle.alloc_id);

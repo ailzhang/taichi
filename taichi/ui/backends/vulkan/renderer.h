@@ -66,6 +66,8 @@ class TI_DLL_EXPORT Renderer {
 
   void draw_frame(Gui *gui);
 
+  ~Renderer();
+
   const AppContext &app_context() const;
   AppContext &app_context();
   const SwapChain &swap_chain() const;

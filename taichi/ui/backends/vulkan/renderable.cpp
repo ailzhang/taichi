@@ -21,6 +21,7 @@ void Renderable::init_render_resources() {
 }
 
 void Renderable::free_buffers() {
+  std::cout << "freeing buffers in Renderable" << std::endl;
   app_context_->device().dealloc_memory(vertex_buffer_);
   app_context_->device().dealloc_memory(staging_vertex_buffer_);
   app_context_->device().dealloc_memory(index_buffer_);

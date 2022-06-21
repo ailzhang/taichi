@@ -18,6 +18,19 @@ void Renderer::init(Program *prog,
   swap_chain_.init(&app_context_);
 }
 
+Renderer::~Renderer() {
+  if (render_complete_semaphore_) {
+    for (auto &renderable : renderables_) {
+      renderable->cleanup();
+    }
+
+    swap_chain_.cleanup();
+
+    render_complete_semaphore_.reset();
+    app_context_.cleanup();
+  }
+}
+
 template <typename T>
 std::unique_ptr<Renderable> get_new_renderable(AppContext *app_context,
                                                VertexAttributes vbo_attrs) {
