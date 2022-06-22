@@ -1250,6 +1250,23 @@ void VulkanDevice::init_vulkan_structs(Params &params) {
 }
 
 VulkanDevice::~VulkanDevice() {
+  for (auto &alloc : allocations_) {
+    std::cout << "freed buffer " << alloc.first << std::endl;
+    alloc.second.buffer.reset();
+  }
+  for (auto &alloc : image_allocations_) {
+    std::cout << "freed image " << alloc.first << std::endl;
+    alloc.second.image.reset();
+  }
+
+  for (auto &frame_buf : framebuffer_pools_) {
+    frame_buf.second.reset();
+  }
+  for (auto &renderpass : renderpass_pools_) {
+    renderpass.second.reset();
+  }
+  std::cout << "size of framebuffer " << framebuffer_pools_.size() << std::endl;
+  std::cout << "size of renderpass " << renderpass_pools_.size() << std::endl;
   vkDeviceWaitIdle(device_);
 
   desc_pool_ = nullptr;
