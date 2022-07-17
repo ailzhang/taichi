@@ -2,6 +2,7 @@ from taichi._lib import core as _ti_core
 from taichi.aot.utils import produce_injected_args
 from taichi.lang import kernel_impl
 from taichi.lang._ndarray import Ndarray
+from taichi.lang._texture import Texture
 from taichi.lang.exception import TaichiRuntimeError
 from taichi.lang.matrix import Matrix, MatrixType
 
@@ -66,6 +67,8 @@ class Graph:
         for k, v in args.items():
             if isinstance(v, Ndarray):
                 flattened[k] = v.arr
+            elif isinstance(v, Texture):
+                flattened[k] = v.tex
             elif isinstance(v, Matrix):
                 mat_val_id = 0
                 for a in range(v.n):

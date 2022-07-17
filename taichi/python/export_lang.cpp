@@ -592,6 +592,7 @@ void export_lang(py::module &m) {
       // Using this MATRIX as Scalar alias, we can move to native matrix type
       // when supported
       .value("MATRIX", aot::ArgKind::kMatrix)
+      .value("TEXTURE", aot::ArgKind::kTexture)
       .export_values();
 
   py::class_<aot::Arg>(m, "Arg")
@@ -629,6 +630,11 @@ void export_lang(py::module &m) {
             auto &val = it.second.cast<Ndarray &>();
             args.insert(
                 {py::cast<std::string>(it.first), aot::IValue::create(val)});
+          } else if (tag == aot::ArgKind::kTexture) {
+            auto &val = it.second.cast<Texture &>();
+            args.insert(
+                {py::cast<std::string>(it.first), aot::IValue::create(val)});
+
           } else if (tag == aot::ArgKind::kScalar ||
                      tag == aot::ArgKind::kMatrix) {
             std::string arg_name = py::cast<std::string>(it.first);

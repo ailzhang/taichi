@@ -15,10 +15,11 @@ namespace taichi {
 namespace lang {
 class AotModuleBuilder;
 class Ndarray;
+class Texture;
 
 namespace aot {
 // Currently only scalar, matrix and ndarray are supported.
-enum class ArgKind { kScalar, kMatrix, kNdarray, kUnknown };
+enum class ArgKind { kScalar, kMatrix, kNdarray, kTexture, kUnknown };
 
 /**
  * Symbolic argument used in building `Dispatch` nodes in the `Graph`.
@@ -94,6 +95,10 @@ struct TI_DLL_EXPORT IValue {
 
   static IValue create(const Ndarray &ndarray) {
     return IValue(reinterpret_cast<intptr_t>(&ndarray), ArgKind::kNdarray);
+  }
+
+  static IValue create(const Texture &tex) {
+    return IValue(reinterpret_cast<intptr_t>(&tex), ArgKind::kTexture);
   }
 
   template <typename T,

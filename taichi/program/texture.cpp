@@ -196,5 +196,13 @@ Texture::~Texture() {
   }
 }
 
+void set_runtime_ctx_texture(RuntimeContext *ctx, int arg_id, Texture *tex) {
+  intptr_t ptr = tex->get_device_allocation_ptr_as_int();
+  ctx->set_arg(arg_id, ptr);
+  // FIXME: separate RW and RO texture
+  ctx->set_array_device_allocation_type(
+      arg_id, RuntimeContext::DevAllocType::kRWTexture);
+}
+
 }  // namespace lang
 }  // namespace taichi
