@@ -19,7 +19,14 @@ class Texture;
 
 namespace aot {
 // Currently only scalar, matrix and ndarray are supported.
-enum class ArgKind { kScalar, kMatrix, kNdarray, kTexture, kUnknown };
+enum class ArgKind {
+  kScalar,
+  kMatrix,
+  kNdarray,
+  kTexture,
+  kRWTexture,
+  kUnknown
+};
 
 /**
  * Symbolic argument used in building `Dispatch` nodes in the `Graph`.

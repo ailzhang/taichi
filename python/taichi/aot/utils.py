@@ -87,7 +87,16 @@ def produce_injected_args(kernel, symbolic_args=None):
                                   layout=Layout.AOS))
             else:
                 raise RuntimeError('')
-        elif isinstance(anno, (TextureType, RWTextureType)):
+        elif isinstance(anno, TextureType):
+            # FIXME: this is a hack
+            if symbolic_args is not None:
+                arr_shape = tuple(symbolic_args[i].element_shape)
+                dtype = symbolic_args[i].dtype()
+                num_channels = symbolic_args[i].field_dim
+            else:
+                num_channels = anno.num_channels
+            injected_args.append(Texture(dtype, num_channels, arr_shape))
+        elif isinstance(anno, RWTextureType):
             # FIXME: this is a hack
             if symbolic_args is not None:
                 arr_shape = tuple(symbolic_args[i].element_shape)

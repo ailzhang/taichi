@@ -676,6 +676,7 @@ class Kernel:
                                     v, taichi.lang._texture.Texture):
                     has_external_arrays = True
                     v = v.tex
+                    print('rw texture')
                     launch_ctx.set_arg_rw_texture(actual_argument_slot, v)
                 elif isinstance(
                         needed,

@@ -593,6 +593,7 @@ void export_lang(py::module &m) {
       // when supported
       .value("MATRIX", aot::ArgKind::kMatrix)
       .value("TEXTURE", aot::ArgKind::kTexture)
+      .value("RWTEXTURE", aot::ArgKind::kRWTexture)
       .export_values();
 
   py::class_<aot::Arg>(m, "Arg")
@@ -630,7 +631,8 @@ void export_lang(py::module &m) {
             auto &val = it.second.cast<Ndarray &>();
             args.insert(
                 {py::cast<std::string>(it.first), aot::IValue::create(val)});
-          } else if (tag == aot::ArgKind::kTexture) {
+          } else if (tag == aot::ArgKind::kTexture ||
+                     tag == aot::ArgKind::kRWTexture) {
             auto &val = it.second.cast<Texture &>();
             args.insert(
                 {py::cast<std::string>(it.first), aot::IValue::create(val)});

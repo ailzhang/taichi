@@ -42,7 +42,14 @@ void CompiledGraph::run(
         ctx.set_arg(i, ival.val);
       } else if (ival.tag == aot::ArgKind::kTexture) {
         Texture *tex = reinterpret_cast<Texture *>(ival.val);
-        set_runtime_ctx_texture(&ctx, i, tex);
+        auto devalloc = tex->get_device_allocation();
+        // set_runtime_ctx_texture(&ctx, i, tex);
+        ctx.set_arg_texture(i, devalloc);
+      } else if (ival.tag == aot::ArgKind::kRWTexture) {
+        Texture *tex = reinterpret_cast<Texture *>(ival.val);
+        auto devalloc = tex->get_device_allocation();
+        // set_runtime_ctx_rw_texture(&ctx, i, tex);
+        ctx.set_arg_rw_texture(i, devalloc);
       } else {
         TI_ERROR("Error in compiled graph: unknown tag {}", ival.tag);
       }

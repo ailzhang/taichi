@@ -63,5 +63,6 @@ class TI_DLL_EXPORT Texture {
 };
 
 void set_runtime_ctx_texture(RuntimeContext *ctx, int arg_id, Texture *tex);
+void set_runtime_ctx_rw_texture(RuntimeContext *ctx, int arg_id, Texture *tex);
 }  // namespace lang
 }  // namespace taichi
