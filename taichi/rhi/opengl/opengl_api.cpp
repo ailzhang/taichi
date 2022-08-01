@@ -203,7 +203,8 @@ std::shared_ptr<Device> make_opengl_device() {
   std::shared_ptr<Device> dev = std::make_shared<GLDevice>();
   dev->set_cap(DeviceCapability::spirv_has_int64, true);
   dev->set_cap(DeviceCapability::spirv_has_float64, true);
-  dev->set_cap(DeviceCapability::spirv_version, 0x10300);
+  dev->set_cap(DeviceCapability::spirv_version, 0x10500);
+  dev->print_all_cap();
   return dev;
 }
 

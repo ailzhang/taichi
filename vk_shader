@@ -1,0 +1,152 @@
+OpCapability Shader
+OpCapability AtomicFloat64AddEXT
+OpCapability AtomicFloat32AddEXT
+OpCapability Int8
+OpCapability Int16
+OpCapability Int64
+OpCapability Float16
+OpCapability Float64
+OpCapability PhysicalStorageBufferAddresses
+OpExtension "SPV_KHR_storage_buffer_storage_class"
+OpExtension "SPV_KHR_variable_pointers"
+OpExtension "SPV_EXT_shader_atomic_float_add"
+OpExtension "SPV_KHR_physical_storage_buffer"
+%1 = OpExtInstImport "GLSL.std.450"
+OpMemoryModel PhysicalStorageBuffer64 GLSL450
+OpEntryPoint GLCompute %main "main" %root_buffer_0_u32 %root_buffer_0_f32 %root_buffer_0_u32 %root_buffer_0_f32 %gl_GlobalInvocationID %gl_NumWorkGroups
+OpExecutionMode %main LocalSize 128 1 1
+OpName %main "main"
+OpName %begin_expr_value "begin_expr_value"
+OpName %total_elems "total_elems"
+OpName %begin_ "begin_"
+OpName %end_ "end_"
+OpName %total_invocs "total_invocs"
+OpName %ii_i32 "ii_i32"
+OpName %tmp1_f32 "tmp1_f32"
+OpName %tmp41_u32 "tmp41_u32"
+OpName %tmp57_i32 "tmp57_i32"
+OpName %tmp43_u32 "tmp43_u32"
+OpName %tmp44_u32 "tmp44_u32"
+OpName %tmp46_u32 "tmp46_u32"
+OpName %tmp47_u32 "tmp47_u32"
+OpName %root_buffer_0_f32_struct_array "root_buffer_0_f32_struct_array"
+OpName %root_buffer_0_f32_struct_array "root_buffer_0_f32_ptr"
+OpName %root_buffer_0_f32 "root_buffer_0_f32"
+OpName %tmp3_f32 "tmp3_f32"
+OpName %tmp5_i32 "tmp5_i32"
+OpName %tmp6_i32 "tmp6_i32"
+OpName %root_buffer_0_u32_struct_array "root_buffer_0_u32_struct_array"
+OpName %root_buffer_0_u32_struct_array "root_buffer_0_u32_ptr"
+OpName %root_buffer_0_u32 "root_buffer_0_u32"
+OpDecorate %gl_GlobalInvocationID BuiltIn GlobalInvocationId
+OpDecorate %gl_NumWorkGroups BuiltIn NumWorkgroups
+OpDecorate %_runtimearr_float ArrayStride 4
+OpMemberDecorate %root_buffer_0_f32_struct_array 0 Offset 0
+OpDecorate %root_buffer_0_f32_struct_array Block
+OpDecorate %root_buffer_0_f32 DescriptorSet 0
+OpDecorate %root_buffer_0_f32 Binding 2
+OpDecorate %_runtimearr_uint ArrayStride 4
+OpMemberDecorate %root_buffer_0_u32_struct_array 0 Offset 0
+OpDecorate %root_buffer_0_u32_struct_array Block
+OpDecorate %root_buffer_0_u32 DescriptorSet 0
+OpDecorate %root_buffer_0_u32 Binding 3
+OpDecorate %gl_WorkGroupSize BuiltIn WorkgroupSize
+%bool = OpTypeBool
+%char = OpTypeInt 8 1
+%uchar = OpTypeInt 8 0
+%short = OpTypeInt 16 1
+%ushort = OpTypeInt 16 0
+%int = OpTypeInt 32 1
+%uint = OpTypeInt 32 0
+%long = OpTypeInt 64 1
+%ulong = OpTypeInt 64 0
+%float = OpTypeFloat 32
+%half = OpTypeFloat 16
+%double = OpTypeFloat 64
+%void = OpTypeVoid
+%15 = OpTypeFunction %void
+%v2int = OpTypeVector %int 2
+%v3int = OpTypeVector %int 3
+%v3uint = OpTypeVector %uint 3
+%v4float = OpTypeVector %float 4
+%v2float = OpTypeVector %float 2
+%v3float = OpTypeVector %float 3
+%int_0 = OpConstant %int 0
+%int_1 = OpConstant %int 1
+%begin_expr_value = OpConstant %int 0
+%total_elems = OpConstant %int 1
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+%gl_GlobalInvocationID = OpVariable %_ptr_Input_v3uint Input
+%_ptr_Input_uint = OpTypePointer Input %uint
+%tmp41_u32 = OpConstant %uint 0
+%gl_NumWorkGroups = OpVariable %_ptr_Input_v3uint Input
+%uint_128 = OpConstant %uint 128
+%tmp1_f32 = OpConstant %float 1
+%tmp57_i32 = OpConstant %int 0
+%uint_4 = OpConstant %uint 4
+%_runtimearr_float = OpTypeRuntimeArray %float
+%root_buffer_0_f32_struct_array = OpTypeStruct %_runtimearr_float
+%_ptr_StorageBuffer_root_buffer_0_f32_struct_array = OpTypePointer StorageBuffer %root_buffer_0_f32_struct_array
+%root_buffer_0_f32 = OpVariable %_ptr_StorageBuffer_root_buffer_0_f32_struct_array StorageBuffer
+%uint_2 = OpConstant %uint 2
+%_ptr_StorageBuffer_float = OpTypePointer StorageBuffer %float
+%tmp5_i32 = OpConstant %int 1
+%_runtimearr_uint = OpTypeRuntimeArray %uint
+%root_buffer_0_u32_struct_array = OpTypeStruct %_runtimearr_uint
+%_ptr_StorageBuffer_root_buffer_0_u32_struct_array = OpTypePointer StorageBuffer %root_buffer_0_u32_struct_array
+%root_buffer_0_u32 = OpVariable %_ptr_StorageBuffer_root_buffer_0_u32_struct_array StorageBuffer
+%_ptr_StorageBuffer_uint = OpTypePointer StorageBuffer %uint
+%uint_1 = OpConstant %uint 1
+%gl_WorkGroupSize = OpConstantComposite %v3uint %uint_128 %uint_1 %uint_1
+%main = OpFunction %void None %15
+%25 = OpLabel
+%32 = OpAccessChain %_ptr_Input_uint %gl_GlobalInvocationID %tmp41_u32
+%33 = OpLoad %uint %32
+%34 = OpBitcast %int %33
+%begin_ = OpIAdd %int %34 %begin_expr_value
+%end_ = OpIAdd %int %total_elems %begin_expr_value
+%38 = OpAccessChain %_ptr_Input_uint %gl_NumWorkGroups %tmp41_u32
+%39 = OpLoad %uint %38
+%41 = OpIMul %uint %39 %uint_128
+%total_invocs = OpBitcast %int %41
+OpBranch %43
+%43 = OpLabel
+%ii_i32 = OpPhi %int %begin_ %25 %85 %45
+%48 = OpSLessThan %bool %ii_i32 %end_
+OpLoopMerge %46 %45 None
+OpBranchConditional %48 %44 %46
+%44 = OpLabel
+%51 = OpBitcast %uint %tmp57_i32
+%53 = OpIMul %uint %51 %uint_4
+%tmp43_u32 = OpIAdd %uint %tmp41_u32 %53
+%tmp44_u32 = OpIAdd %uint %tmp43_u32 %tmp41_u32
+%56 = OpBitcast %uint %tmp57_i32
+%57 = OpIMul %uint %56 %uint_4
+%tmp46_u32 = OpIAdd %uint %tmp44_u32 %57
+%tmp47_u32 = OpIAdd %uint %tmp46_u32 %tmp41_u32
+%65 = OpShiftRightLogical %uint %tmp47_u32 %uint_2
+%67 = OpAccessChain %_ptr_StorageBuffer_float %root_buffer_0_f32 %int_0 %65
+%tmp3_f32 = OpAtomicFAddEXT %float %67 %int_1 %int_0 %tmp1_f32
+OpBranch %70
+%70 = OpLabel
+%tmp6_i32 = OpPhi %int %tmp57_i32 %44 %84 %72
+%75 = OpSLessThan %bool %tmp6_i32 %tmp5_i32
+OpLoopMerge %73 %72 None
+OpBranchConditional %75 %71 %73
+%71 = OpLabel
+%80 = OpShiftRightLogical %uint %tmp47_u32 %uint_2
+%82 = OpAccessChain %_ptr_StorageBuffer_uint %root_buffer_0_u32 %int_0 %80
+%83 = OpBitcast %uint %tmp1_f32
+OpStore %82 %83
+OpBranch %72
+%72 = OpLabel
+%84 = OpIAdd %int %tmp6_i32 %int_1
+OpBranch %70
+%73 = OpLabel
+OpBranch %45
+%45 = OpLabel
+%85 = OpIAdd %int %ii_i32 %total_invocs
+OpBranch %43
+%46 = OpLabel
+OpReturn
+OpFunctionEnd

@@ -1,0 +1,260 @@
+[T 08/02/22 00:46:04.545 2272897] [program.cpp:Program@53] Program initializing...
+[T 08/02/22 00:46:04.545 2272897] [memory_pool.cpp:MemoryPool@14] Memory pool created. Default buffer size per allocator = 1024 MB
+[T 08/02/22 00:46:04.545 2272897] [program.cpp:Program@153] Program (0x5650348a4130) arch=vulkan initialized.
+[T 08/02/22 00:46:04.545 2272897] [misc.py:init@455] Materializing runtime...
+[T 08/02/22 00:46:04.545 2272897] [unified_allocator.cpp:UnifiedAllocator@36] Allocating virtual address space of size 1024 MB
+[T 08/02/22 00:46:04.545 2272897] [unified_allocator.cpp:UnifiedAllocator@45] Memory allocated. Allocation time = 9.06e-06 s
+[T 08/02/22 00:46:04.545 2272897] [unified_allocator.h:allocate@39] UM [data=140263297122304] allocate() request=256 remain=1073741824
+[T 08/02/22 00:46:04.569 2272897] [vulkan_program.cpp:operator()@141] before glfwCreateWindowSurface 0x565034708fb0 0x565034830230
+[I 08/02/22 00:46:04.569 2272897] [vulkan_device_creator.cpp:pick_physical_device@372] Found Vulkan Device 0 (NVIDIA GeForce RTX 3060 Ti)
+[I 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:find_queue_families@142] Async compute queue 2, graphics queue 0
+[I 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:find_queue_families@142] Async compute queue 2, graphics queue 0
+[I 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@440] Vulkan Device "NVIDIA GeForce RTX 3060 Ti" supports Vulkan 0 version 1.3.205
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_16bit_storage (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_8bit_storage (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_acceleration_structure (13)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_bind_memory2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_buffer_device_address (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_copy_commands2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_create_renderpass2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_dedicated_allocation (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_deferred_host_operations (4)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_depth_stencil_resolve (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_descriptor_update_template (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_device_group (4)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_draw_indirect_count (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_driver_properties (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_dynamic_rendering (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_external_fence (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_external_fence_fd (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_external_memory (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_external_memory_fd (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_external_semaphore (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_external_semaphore_fd (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_format_feature_flags2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_fragment_shading_rate (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_get_memory_requirements2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_global_priority (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_image_format_list (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_imageless_framebuffer (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_maintenance1 (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_maintenance2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_maintenance3 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_maintenance4 (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_multiview (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_pipeline_executable_properties (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_pipeline_library (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_present_id (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_present_wait (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_push_descriptor (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_ray_query (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_ray_tracing_pipeline (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_relaxed_block_layout (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_sampler_mirror_clamp_to_edge (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_sampler_ycbcr_conversion (14)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_separate_depth_stencil_layouts (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_atomic_int64 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_clock (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_draw_parameters (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_float16_int8 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_float_controls (4)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_integer_dot_product (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_non_semantic_info (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_subgroup_extended_types (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_subgroup_uniform_control_flow (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_shader_terminate_invocation (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_spirv_1_4 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_storage_buffer_storage_class (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_swapchain (70)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_swapchain_mutable_format (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_synchronization2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_timeline_semaphore (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_uniform_buffer_standard_layout (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_variable_pointers (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_vulkan_memory_model (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_workgroup_memory_explicit_layout (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_KHR_zero_initialize_workgroup_memory (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_4444_formats (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_blend_operation_advanced (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_border_color_swizzle (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_buffer_device_address (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_calibrated_timestamps (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_color_write_enable (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_conditional_rendering (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_conservative_rasterization (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_custom_border_color (12)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_depth_clip_control (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_depth_clip_enable (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_depth_range_unrestricted (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_descriptor_indexing (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_discard_rectangles (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_display_control (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_extended_dynamic_state (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_extended_dynamic_state2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_external_memory_dma_buf (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_external_memory_host (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_fragment_shader_interlock (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_global_priority (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_global_priority_query (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_host_query_reset (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_image_drm_format_modifier (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_image_robustness (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_image_view_min_lod (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_index_type_uint8 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_inline_uniform_block (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_line_rasterization (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_load_store_op_none (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_memory_budget (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_multi_draw (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_pci_bus_info (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_physical_device_drm (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_pipeline_creation_cache_control (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_pipeline_creation_feedback (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_post_depth_coverage (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_primitive_topology_list_restart (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_private_data (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_provoking_vertex (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_queue_family_foreign (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_robustness2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_sample_locations (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_sampler_filter_minmax (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_scalar_block_layout (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_separate_stencil_usage (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_shader_atomic_float (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_shader_demote_to_helper_invocation (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_shader_image_atomic_int64 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_shader_subgroup_ballot (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_shader_subgroup_vote (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_shader_viewport_index_layer (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_subgroup_size_control (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_texel_buffer_alignment (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_tooling_info (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_transform_feedback (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_vertex_attribute_divisor (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_vertex_input_dynamic_state (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_ycbcr_2plane_444_formats (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_EXT_ycbcr_image_arrays (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_clip_space_w_scaling (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_compute_shader_derivatives (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_cooperative_matrix (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_corner_sampled_image (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_coverage_reduction_mode (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_cuda_kernel_launch (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_dedicated_allocation (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_dedicated_allocation_image_aliasing (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_device_diagnostic_checkpoints (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_device_diagnostics_config (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_device_generated_commands (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_fill_rectangle (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_fragment_coverage_to_color (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_fragment_shader_barycentric (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_fragment_shading_rate_enums (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_framebuffer_mixed_samples (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_geometry_shader_passthrough (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_inherited_viewport_scissor (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_linear_color_attachment (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_mesh_shader (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_ray_tracing (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_ray_tracing_motion_blur (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_representative_fragment_test (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_sample_mask_override_coverage (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_scissor_exclusive (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_shader_image_footprint (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_shader_sm_builtins (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_shader_subgroup_partitioned (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_shading_rate_image (3)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_viewport_array2 (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NV_viewport_swizzle (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NVX_binary_import (1)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NVX_image_view_handle (2)
+[T 08/02/22 00:46:04.570 2272897] [vulkan_device_creator.cpp:create_logical_device@481] Vulkan device extension VK_NVX_multiview_per_view_attributes (1)
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_physical_storage_buffer (22) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_int8 (6) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_float16 (9) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_atomic_float64 (18) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_atomic_float (15) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_atomic_float64_add (19) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_atomic_float_add (16) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_variable_ptr (21) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_subgroup_arithmetic (25) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::vk_has_external_memory (2) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_version (5) = 66816
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_subgroup_vote (24) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::vk_has_physical_features2 (1) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::vk_api_version (0) = 4206797
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_subgroup_basic (23) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_subgroup_ballot (26) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::vk_has_surface (3) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::wide_lines (27) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::vk_has_presentation (4) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_int16 (7) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_int64 (8) = 1
+[T 08/02/22 00:46:04.598 2272897] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_float64 (10) = 1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@140] Indices at SNode S2
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 0: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 1: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 2: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 3: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 4: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 5: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 6: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 7: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@146] SNodeDescriptor
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@147] * snode=2
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@149] * type=S2 (is_place=true)
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@150] * cell_stride=4
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@151] * cells_per_container_pot=1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@152] * container_stride=4
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@154] * total_num_cells_from_root=1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@155]
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@140] Indices at SNode S1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 0: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 1: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 2: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 3: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 4: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 5: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 6: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 7: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@146] SNodeDescriptor
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@147] * snode=1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@149] * type=S1 (is_place=false)
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@150] * cell_stride=4
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@151] * cells_per_container_pot=1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@152] * container_stride=4
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@154] * total_num_cells_from_root=1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@155]
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@140] Indices at SNode S0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 0: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 1: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 2: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 3: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 4: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 5: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 6: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@143] Index 7: 0..0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@146] SNodeDescriptor
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@147] * snode=0
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@149] * type=S0 (is_place=false)
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@150] * cell_stride=4
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@151] * cells_per_container_pot=1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@152] * container_stride=4
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@154] * total_num_cells_from_root=1
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:compute_snode_size@155]
+[T 08/02/22 00:46:04.607 2272897] [snode_struct_compiler.cpp:run@21] RootBuffer size=4
+[T 08/02/22 00:46:04.607 2272897] [kernel_impl.py:materialize@505] Compiling kernel mixed_inner_loops_c60_0...
+[T 08/02/22 00:46:04.614 2272897] [runtime.cpp:run_codegen@688] VK codegen for Taichi kernel=mixed_inner_loops_c60_0_k0000_vk
+[T 08/02/22 00:46:04.614 2272897] [kernel_utils.cpp:KernelContextAttributes@116] args:
+[T 08/02/22 00:46:04.614 2272897] [kernel_utils.cpp:KernelContextAttributes@123] rets:
+[T 08/02/22 00:46:04.614 2272897] [kernel_utils.cpp:KernelContextAttributes@126] sizes: args=0 rets=0
+[T 08/02/22 00:46:04.615 2272897] [spirv_ir_builder.cpp:init_header@17] SPIR-V Version 66816
+[T 08/02/22 00:46:04.615 2272897] [spirv_codegen.cpp:get_buffer_value@2079] buffer name = root_buffer_0, value = 63
+[T 08/02/22 00:46:04.615 2272897] [spirv_codegen.cpp:get_buffer_value@2079] buffer name = root_buffer_0, value = 79
+[T 08/02/22 00:46:04.622 2272897] [spirv_codegen.cpp:run@2357] SPIRV-Tools-opt: binary size, before=652, after=565
+[W 08/02/22 00:46:04.623 2272897] [spirv_codegen.cpp:run@2364] SPIR-V Assembly dump for mixed_inner_loops_c60_0_k0000_vk_0 :
+
+[T 08/02/22 00:46:04.623 2272897] [vulkan_device.cpp:create_compute_pipeline@338] Compiling Vulkan pipeline mixed_inner_loops_c60_0_k0000_vk_0_t00
+[Taichi] version 1.0.5, llvm 10.0.0, commit 59ef8af3, linux, python 3.9.12
+[Taichi] Starting on arch=vulkan
+[T 08/02/22 00:46:04.692 2272897] [program.cpp:finalize@389] Program finalizing...
+[T 08/02/22 00:46:04.693 2272897] [program.cpp:finalize@435] Program (0x5650348a4130) finalized_.

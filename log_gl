@@ -1,0 +1,128 @@
+[T 08/02/22 00:42:21.571 2269814] [opengl_api.cpp:initialize_opengl@31] initialize_opengl(false, true) called
+[D 08/02/22 00:42:21.732 2269814] [opengl_api.cpp:initialize_opengl@75] OpenGL context loaded through GLFW
+[D 08/02/22 00:42:21.732 2269814] [opengl_api.cpp:initialize_opengl@165] OpenGL version 4.3
+[T 08/02/22 00:42:21.732 2269814] [opengl_extension.inc.h:initialize_opengl@3] [glsl] Found GL_ARB_compute_shader
+[T 08/02/22 00:42:21.732 2269814] [opengl_extension.inc.h:initialize_opengl@4] [glsl] Found GL_ARB_gpu_shader_int64
+[T 08/02/22 00:42:21.732 2269814] [opengl_extension.inc.h:initialize_opengl@5] [glsl] Found GL_NV_shader_atomic_float
+[T 08/02/22 00:42:21.732 2269814] [opengl_extension.inc.h:initialize_opengl@6] [glsl] Found GL_NV_shader_atomic_float64
+[T 08/02/22 00:42:21.732 2269814] [opengl_extension.inc.h:initialize_opengl@7] [glsl] Found GL_NV_shader_atomic_int64
+[T 08/02/22 00:42:21.732 2269814] [opengl_api.cpp:initialize_opengl@184] GL_MAX_COMPUTE_WORK_GROUP_COUNT: 2147483647
+[T 08/02/22 00:42:21.732 2269814] [opengl_api.cpp:initialize_opengl@187] GL_MAX_COMPUTE_WORK_GROUP_SIZE: 1024
+[T 08/02/22 00:42:21.732 2269814] [program.cpp:Program@53] Program initializing...
+[T 08/02/22 00:42:21.732 2269814] [opengl_api.cpp:initialize_opengl@31] initialize_opengl(false, false) called
+[T 08/02/22 00:42:21.732 2269814] [memory_pool.cpp:MemoryPool@14] Memory pool created. Default buffer size per allocator = 1024 MB
+[T 08/02/22 00:42:21.732 2269814] [program.cpp:Program@153] Program (0x5576ea6682a0) arch=opengl initialized.
+[T 08/02/22 00:42:21.732 2269814] [misc.py:init@455] Materializing runtime...
+[T 08/02/22 00:42:21.732 2269814] [unified_allocator.cpp:UnifiedAllocator@36] Allocating virtual address space of size 1024 MB
+[T 08/02/22 00:42:21.732 2269814] [unified_allocator.cpp:UnifiedAllocator@45] Memory allocated. Allocation time = 9.78e-06 s
+[T 08/02/22 00:42:21.732 2269814] [unified_allocator.h:allocate@39] UM [data=139635914485760] allocate() request=256 remain=1073741824
+[T 08/02/22 00:42:21.732 2269814] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_int64 (8) = 1
+[T 08/02/22 00:42:21.732 2269814] [device.cpp:print_all_cap@147] DeviceCapability::spirv_version (5) = 66816
+[T 08/02/22 00:42:21.732 2269814] [device.cpp:print_all_cap@147] DeviceCapability::spirv_has_float64 (10) = 1
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@140] Indices at SNode S2
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 0: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 1: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 2: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 3: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 4: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 5: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 6: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 7: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@146] SNodeDescriptor
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@147] * snode=2
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@149] * type=S2 (is_place=true)
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@150] * cell_stride=4
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@151] * cells_per_container_pot=1
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@152] * container_stride=4
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@154] * total_num_cells_from_root=1
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@155]
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@140] Indices at SNode S1
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 0: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 1: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 2: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 3: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 4: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 5: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 6: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 7: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@146] SNodeDescriptor
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@147] * snode=1
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@149] * type=S1 (is_place=false)
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@150] * cell_stride=4
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@151] * cells_per_container_pot=1
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@152] * container_stride=4
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@154] * total_num_cells_from_root=1
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@155]
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@140] Indices at SNode S0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 0: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 1: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 2: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 3: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 4: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 5: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 6: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@143] Index 7: 0..0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@146] SNodeDescriptor
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@147] * snode=0
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@149] * type=S0 (is_place=false)
+[T 08/02/22 00:42:21.748 2269814] [snode_struct_compiler.cpp:compute_snode_size@150] * cell_stride=4
+[T 08/02/22 00:42:21.749 2269814] [snode_struct_compiler.cpp:compute_snode_size@151] * cells_per_container_pot=1
+[T 08/02/22 00:42:21.749 2269814] [snode_struct_compiler.cpp:compute_snode_size@152] * container_stride=4
+[T 08/02/22 00:42:21.749 2269814] [snode_struct_compiler.cpp:compute_snode_size@154] * total_num_cells_from_root=1
+[T 08/02/22 00:42:21.749 2269814] [snode_struct_compiler.cpp:compute_snode_size@155]
+[T 08/02/22 00:42:21.749 2269814] [snode_struct_compiler.cpp:run@21] RootBuffer size=4
+[T 08/02/22 00:42:21.755 2269814] [kernel_impl.py:materialize@505] Compiling kernel mixed_inner_loops_c60_0...
+[T 08/02/22 00:42:21.758 2269814] [runtime.cpp:run_codegen@688] VK codegen for Taichi kernel=mixed_inner_loops_c60_0_k0000_vk
+[T 08/02/22 00:42:21.758 2269814] [kernel_utils.cpp:KernelContextAttributes@116] args:
+[T 08/02/22 00:42:21.758 2269814] [kernel_utils.cpp:KernelContextAttributes@123] rets:
+[T 08/02/22 00:42:21.758 2269814] [kernel_utils.cpp:KernelContextAttributes@126] sizes: args=0 rets=0
+[T 08/02/22 00:42:21.758 2269814] [spirv_ir_builder.cpp:init_header@17] SPIR-V Version 66816
+[T 08/02/22 00:42:21.758 2269814] [spirv_codegen.cpp:get_buffer_value@2079] buffer name = root_buffer_0, value = 58
+[T 08/02/22 00:42:21.758 2269814] [spirv_codegen.cpp:run@2357] SPIRV-Tools-opt: binary size, before=605, after=605
+[W 08/02/22 00:42:21.759 2269814] [spirv_codegen.cpp:run@2364] SPIR-V Assembly dump for mixed_inner_loops_c60_0_k0000_vk_0 :
+
+
+[T 08/02/22 00:42:21.760 2269814] [opengl_device.cpp:GLPipeline@269] GLSL source:
+#version 450
+#extension GL_ARB_gpu_shader_int64 : require
+layout(local_size_x = 128, local_size_y = 1, local_size_z = 1) in;
+
+layout(binding = 2, std430) buffer root_buffer_0_u32_ptr
+{
+    uint _m0[];
+} root_buffer_0_u32;
+
+void main()
+{
+    int begin_ = int(gl_GlobalInvocationID.x) + 0;
+    int end_ = 1 + 0;
+    int total_invocs = int(gl_NumWorkGroups.x * 128u);
+    uint _64;
+    for (int ii_i32 = begin_; ii_i32 < end_; ii_i32 += total_invocs)
+    {
+        uint tmp47_u32 = (((0u + (uint(0) * 4u)) + 0u) + (uint(0) * 4u)) + 0u;
+        uint _60 = tmp47_u32 >> 2u;
+        for (;;)
+        {
+            uint _71 = root_buffer_0_u32._m0[_60];
+            uint _75 = atomicCompSwap(root_buffer_0_u32._m0[_60], _71, floatBitsToUint(uintBitsToFloat(_71) + 1.0));
+            _64 = _75;
+            if (_75 == _71)
+            {
+                break;
+            }
+            continue;
+        }
+        int tmp6_i32;
+        for (; tmp6_i32 < 1; tmp6_i32++)
+        {
+            root_buffer_0_u32._m0[tmp47_u32 >> 2u] = floatBitsToUint(1.0);
+        }
+    }
+}
+
+
+[Taichi] version 1.0.5, llvm 10.0.0, commit 59ef8af3, linux, python 3.9.12
+[Taichi] Starting on arch=opengl
+[T 08/02/22 00:42:21.851 2269814] [program.cpp:finalize@389] Program finalizing...
+[T 08/02/22 00:42:21.852 2269814] [program.cpp:finalize@435] Program (0x5576ea6682a0) finalized_.

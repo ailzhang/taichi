@@ -1,0 +1,149 @@
+OpCapability Shader
+OpCapability Int64
+OpCapability Float64
+OpExtension "SPV_KHR_storage_buffer_storage_class"
+%1 = OpExtInstImport "GLSL.std.450"
+OpMemoryModel Logical GLSL450
+OpEntryPoint GLCompute %main "main" %root_buffer_0_u32 %gl_GlobalInvocationID %gl_NumWorkGroups
+OpExecutionMode %main LocalSize 128 1 1
+OpName %main "main"
+OpName %begin_expr_value "begin_expr_value"
+OpName %total_elems "total_elems"
+OpName %begin_ "begin_"
+OpName %end_ "end_"
+OpName %total_invocs "total_invocs"
+OpName %ii_i32 "ii_i32"
+OpName %tmp1_f32 "tmp1_f32"
+OpName %tmp41_u32 "tmp41_u32"
+OpName %tmp57_i32 "tmp57_i32"
+OpName %tmp43_u32 "tmp43_u32"
+OpName %tmp44_u32 "tmp44_u32"
+OpName %tmp46_u32 "tmp46_u32"
+OpName %tmp47_u32 "tmp47_u32"
+OpName %root_buffer_0_u32_struct_array "root_buffer_0_u32_struct_array"
+OpName %root_buffer_0_u32_struct_array "root_buffer_0_u32_ptr"
+OpName %root_buffer_0_u32 "root_buffer_0_u32"
+OpName %tmp3_f32 "tmp3_f32"
+OpName %tmp5_i32 "tmp5_i32"
+OpName %tmp6_i32 "tmp6_i32"
+OpDecorate %gl_GlobalInvocationID BuiltIn GlobalInvocationId
+OpDecorate %gl_NumWorkGroups BuiltIn NumWorkgroups
+OpDecorate %_runtimearr_uint ArrayStride 4
+OpMemberDecorate %root_buffer_0_u32_struct_array 0 Offset 0
+OpDecorate %root_buffer_0_u32_struct_array Block
+OpDecorate %root_buffer_0_u32 DescriptorSet 0
+OpDecorate %root_buffer_0_u32 Binding 2
+OpDecorate %gl_WorkGroupSize BuiltIn WorkgroupSize
+%bool = OpTypeBool
+%int = OpTypeInt 32 1
+%uint = OpTypeInt 32 0
+%long = OpTypeInt 64 1
+%ulong = OpTypeInt 64 0
+%float = OpTypeFloat 32
+%double = OpTypeFloat 64
+%void = OpTypeVoid
+%10 = OpTypeFunction %void
+%v2int = OpTypeVector %int 2
+%v3int = OpTypeVector %int 3
+%v3uint = OpTypeVector %uint 3
+%v4float = OpTypeVector %float 4
+%v2float = OpTypeVector %float 2
+%v3float = OpTypeVector %float 3
+%int_0 = OpConstant %int 0
+%int_1 = OpConstant %int 1
+%begin_expr_value = OpConstant %int 0
+%total_elems = OpConstant %int 1
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+%gl_GlobalInvocationID = OpVariable %_ptr_Input_v3uint Input
+%_ptr_Input_uint = OpTypePointer Input %uint
+%tmp41_u32 = OpConstant %uint 0
+%gl_NumWorkGroups = OpVariable %_ptr_Input_v3uint Input
+%uint_128 = OpConstant %uint 128
+%tmp1_f32 = OpConstant %float 1
+%tmp57_i32 = OpConstant %int 0
+%uint_4 = OpConstant %uint 4
+%_runtimearr_uint = OpTypeRuntimeArray %uint
+%root_buffer_0_u32_struct_array = OpTypeStruct %_runtimearr_uint
+%_ptr_StorageBuffer_root_buffer_0_u32_struct_array = OpTypePointer StorageBuffer %root_buffer_0_u32_struct_array
+%root_buffer_0_u32 = OpVariable %_ptr_StorageBuffer_root_buffer_0_u32_struct_array StorageBuffer
+%uint_2 = OpConstant %uint 2
+%_ptr_StorageBuffer_uint = OpTypePointer StorageBuffer %uint
+%_ptr_Function_uint = OpTypePointer Function %uint
+%tmp5_i32 = OpConstant %int 1
+%uint_1 = OpConstant %uint 1
+%gl_WorkGroupSize = OpConstantComposite %v3uint %uint_128 %uint_1 %uint_1
+%main = OpFunction %void None %10
+%20 = OpLabel
+%64 = OpVariable %_ptr_Function_uint Function
+%27 = OpAccessChain %_ptr_Input_uint %gl_GlobalInvocationID %tmp41_u32
+%28 = OpLoad %uint %27
+%29 = OpBitcast %int %28
+%begin_ = OpIAdd %int %29 %begin_expr_value
+%end_ = OpIAdd %int %total_elems %begin_expr_value
+%33 = OpAccessChain %_ptr_Input_uint %gl_NumWorkGroups %tmp41_u32
+%34 = OpLoad %uint %33
+%36 = OpIMul %uint %34 %uint_128
+%total_invocs = OpBitcast %int %36
+OpBranch %38
+%38 = OpLabel
+%ii_i32 = OpPhi %int %begin_ %20 %90 %40
+%43 = OpSLessThan %bool %ii_i32 %end_
+OpLoopMerge %41 %40 None
+OpBranchConditional %43 %39 %41
+%39 = OpLabel
+%46 = OpBitcast %uint %tmp57_i32
+%48 = OpIMul %uint %46 %uint_4
+%tmp43_u32 = OpIAdd %uint %tmp41_u32 %48
+%tmp44_u32 = OpIAdd %uint %tmp43_u32 %tmp41_u32
+%51 = OpBitcast %uint %tmp57_i32
+%52 = OpIMul %uint %51 %uint_4
+%tmp46_u32 = OpIAdd %uint %tmp44_u32 %52
+%tmp47_u32 = OpIAdd %uint %tmp46_u32 %tmp41_u32
+%60 = OpShiftRightLogical %uint %tmp47_u32 %uint_2
+%62 = OpAccessChain %_ptr_StorageBuffer_uint %root_buffer_0_u32 %int_0 %60
+OpBranch %65
+%65 = OpLabel
+OpLoopMerge %67 %69 None
+OpBranch %66
+%66 = OpLabel
+%71 = OpLoad %uint %62
+%72 = OpBitcast %float %71
+%73 = OpFAdd %float %72 %tmp1_f32
+%74 = OpBitcast %uint %73
+%75 = OpAtomicCompareExchange %uint %62 %int_1 %int_0 %int_0 %74 %71
+%76 = OpIEqual %bool %75 %71
+OpStore %64 %75
+OpSelectionMerge %68 None
+OpBranchConditional %76 %67 %68
+%67 = OpLabel
+OpBranch %70
+%68 = OpLabel
+OpBranch %69
+%69 = OpLabel
+OpBranch %65
+%70 = OpLabel
+%77 = OpLoad %uint %64
+%tmp3_f32 = OpBitcast %float %77
+OpBranch %80
+%80 = OpLabel
+%tmp6_i32 = OpPhi %int %tmp57_i32 %39 %89 %82
+%85 = OpSLessThan %bool %tmp6_i32 %tmp5_i32
+OpLoopMerge %83 %82 None
+OpBranchConditional %85 %81 %83
+%81 = OpLabel
+%86 = OpShiftRightLogical %uint %tmp47_u32 %uint_2
+%87 = OpAccessChain %_ptr_StorageBuffer_uint %root_buffer_0_u32 %int_0 %86
+%88 = OpBitcast %uint %tmp1_f32
+OpStore %87 %88
+OpBranch %82
+%82 = OpLabel
+%89 = OpIAdd %int %tmp6_i32 %int_1
+OpBranch %80
+%83 = OpLabel
+OpBranch %40
+%40 = OpLabel
+%90 = OpIAdd %int %ii_i32 %total_invocs
+OpBranch %38
+%41 = OpLabel
+OpReturn
+OpFunctionEnd
