@@ -1090,6 +1090,13 @@ void export_lang(py::module &m) {
     }
   });
 
+  m.def("get_primary_ctx_state", []() {
+    unsigned int flags;
+    int active = -1;
+    CUDADriver::get_instance().get_primary_ctx_state(0, &flags, &active);
+    return active;
+  });
+
   // Type system
 
   py::class_<Type>(m, "Type").def("to_string", &Type::to_string);
