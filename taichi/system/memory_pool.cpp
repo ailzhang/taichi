@@ -25,6 +25,8 @@ MemoryPool::MemoryPool(Arch arch, Device *device)
     CUDADriver::get_instance().stream_create(&cuda_stream,
                                              CU_STREAM_NON_BLOCKING);
   }
+  // std::cout << "HELLO" <<std::endl;
+  // CUDADriver::get_instance().context_pop_current(NULL);
 #endif
   th = std::make_unique<std::thread>([this] { this->daemon(); });
 }

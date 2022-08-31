@@ -817,6 +817,7 @@ FunctionType CUDAModuleToFunctionConverter::convert(
             //   host.
             // See CUDA driver API `cuPointerGetAttribute` for more details.
             transferred = true;
+            CUDAContext::get_instance().get_guard();
             CUDADriver::get_instance().malloc(&device_buffers[i], arr_sz);
             CUDADriver::get_instance().memcpy_host_to_device(
                 (void *)device_buffers[i], arg_buffers[i], arr_sz);
@@ -845,6 +846,8 @@ FunctionType CUDAModuleToFunctionConverter::convert(
       }
     }
     if (transferred) {
+      CUDAContext::get_instance().get_guard();
+
       CUDADriver::get_instance().stream_synchronize(nullptr);
     }
 
@@ -859,6 +862,8 @@ FunctionType CUDAModuleToFunctionConverter::convert(
 
     // copy data back to host
     if (transferred) {
+      CUDAContext::get_instance().get_guard();
+
       CUDADriver::get_instance().stream_synchronize(nullptr);
       for (int i = 0; i < (int)args.size(); i++) {
         if (device_buffers[i] != arg_buffers[i]) {

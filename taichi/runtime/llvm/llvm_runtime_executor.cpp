@@ -176,7 +176,7 @@ void LlvmRuntimeExecutor::print_list_manager_info(void *list_manager,
 void LlvmRuntimeExecutor::synchronize() {
   if (config_->arch == Arch::cuda) {
 #if defined(TI_WITH_CUDA)
-    CUDAContext::get_instance().make_current();
+    CUDAContext::get_instance().get_guard();
     CUDADriver::get_instance().stream_synchronize(nullptr);
 #else
     TI_ERROR("No CUDA support");
@@ -191,7 +191,7 @@ uint64 LlvmRuntimeExecutor::fetch_result_uint64(int i, uint64 *result_buffer) {
   uint64 ret;
   if (config_->arch == Arch::cuda) {
 #if defined(TI_WITH_CUDA)
-    CUDAContext::get_instance().make_current();
+    CUDAContext::get_instance().get_guard();
     CUDADriver::get_instance().memcpy_device_to_host(&ret, result_buffer + i,
                                                      sizeof(uint64));
 #else
@@ -511,6 +511,9 @@ void LlvmRuntimeExecutor::finalize() {
 void LlvmRuntimeExecutor::materialize_runtime(MemoryPool *memory_pool,
                                               KernelProfilerBase *profiler,
                                               uint64 **result_buffer_ptr) {
+#if defined(TI_WITH_CUDA)
+  CUDAContext::get_instance().get_guard();
+#endif
   std::size_t prealloc_size = 0;
   TaichiLLVMContext *tlctx = nullptr;
   if (config_->arch == Arch::cuda) {
@@ -570,7 +573,6 @@ void LlvmRuntimeExecutor::materialize_runtime(MemoryPool *memory_pool,
   } else {
     num_rand_states = config_->cpu_max_num_threads;
   }
-
   TI_TRACE("Allocating {} random states (used by CUDA only)", num_rand_states);
 
   runtime_jit->call<void *, void *, std::size_t, void *, int, int, void *,
@@ -579,11 +581,16 @@ void LlvmRuntimeExecutor::materialize_runtime(MemoryPool *memory_pool,
       preallocated_device_buffer_, starting_rand_state, num_rand_states,
       (void *)&taichi_allocate_aligned, (void *)std::printf,
       (void *)std::vsnprintf);
+  // start
 
   TI_TRACE("LLVMRuntime initialized (excluding `root`)");
   llvm_runtime_ = fetch_result<void *>(taichi_result_buffer_ret_value_id,
                                        *result_buffer_ptr);
   TI_TRACE("LLVMRuntime pointer fetched");
+#if defined(TI_WITH_CUDA)
+  CUDADriver::get_instance().context_pop_current(NULL);
+#endif
+  // end
 
   if (arch_use_host_memory(config_->arch)) {
     runtime_jit->call<void *>("runtime_get_mem_req_queue", llvm_runtime_);

@@ -13,7 +13,7 @@ CudaDevice::AllocInfo CudaDevice::get_alloc_info(
 
 DeviceAllocation CudaDevice::allocate_memory(const AllocParams &params) {
   AllocInfo info;
-
+  CUDAContext::get_instance().get_guard();
   if (params.host_read || params.host_write) {
     CUDADriver::get_instance().malloc_managed(&info.ptr, params.size,
                                               CU_MEM_ATTACH_GLOBAL);
@@ -119,6 +119,7 @@ DeviceAllocation CudaDevice::import_memory(void *ptr, size_t size) {
 }
 
 uint64 CudaDevice::fetch_result_uint64(int i, uint64 *result_buffer) {
+  CUDAContext::get_instance().get_guard();
   CUDADriver::get_instance().stream_synchronize(nullptr);
   uint64 ret;
   CUDADriver::get_instance().memcpy_device_to_host(&ret, result_buffer + i,
