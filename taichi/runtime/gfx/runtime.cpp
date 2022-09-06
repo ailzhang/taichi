@@ -706,6 +706,9 @@ GfxRuntime::RegisterParams run_codegen(
     Kernel *kernel,
     Device *device,
     const std::vector<CompiledSNodeStructs> &compiled_structs) {
+  if (kernel->name == "jit_evaluator_1") {
+    std::cout << kernel->name << std::endl;
+  }
   const auto id = Program::get_kernel_id();
   const auto taichi_kernel_name(fmt::format("{}_k{:04d}_vk", kernel->name, id));
   TI_TRACE("VK codegen for Taichi kernel={}", taichi_kernel_name);
