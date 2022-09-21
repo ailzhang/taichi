@@ -29,12 +29,13 @@ static void glfw_error_callback(int code, const char *description) {
 }
 
 bool initialize_opengl(bool use_gles, bool error_tolerance, bool reset) {
-  static std::optional<bool> supported;  // std::nullopt
+  static std::optional<bool> supported[2];  // std::nullopt
 
   if (reset) {
     std::cout << "reset opengl" << std::endl;
     glfwTerminate();
-    supported = std::nullopt;
+    supported[0] = std::nullopt;
+    supported[1] = std::nullopt;
     kUseGles = false;
     return false;
   }
@@ -42,8 +43,9 @@ bool initialize_opengl(bool use_gles, bool error_tolerance, bool reset) {
 
   TI_TRACE("initialize_opengl({}, {}) called", use_gles, error_tolerance);
 
-  if (supported.has_value()) {  // this function has been called before
-    if (supported.value()) {    // detected to be true in last call
+  if (supported[(int)use_gles]
+          .has_value()) {  // this function has been called before
+    if (supported[(int)use_gles].value()) {  // detected to be true in last call
       return true;
     } else {
       if (!error_tolerance)  // not called from with_opengl
@@ -169,7 +171,7 @@ bool initialize_opengl(bool use_gles, bool error_tolerance, bool reset) {
   if (!opengl_version) {
     if (error_tolerance) {
       TI_WARN("Can not create OpenGL context");
-      supported = std::make_optional<bool>(false);
+      supported[(int)use_gles] = std::make_optional<bool>(false);
       return false;
     }
     TI_ERROR("Can not create OpenGL context");
@@ -188,7 +190,7 @@ bool initialize_opengl(bool use_gles, bool error_tolerance, bool reset) {
   if (!use_gles && !opengl_extension_GL_ARB_compute_shader) {
     if (error_tolerance) {
       TI_INFO("Your OpenGL does not support GL_ARB_compute_shader extension");
-      supported = std::make_optional<bool>(false);
+      supported[(int)use_gles] = std::make_optional<bool>(false);
       return false;
     }
     TI_ERROR("Your OpenGL does not support GL_ARB_compute_shader extension");
@@ -201,7 +203,7 @@ bool initialize_opengl(bool use_gles, bool error_tolerance, bool reset) {
   check_opengl_error("glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE)");
   TI_TRACE("GL_MAX_COMPUTE_WORK_GROUP_SIZE: {}", opengl_max_grid_dim);
 
-  supported = std::make_optional<bool>(true);
+  supported[(int)use_gles] = std::make_optional<bool>(true);
   kUseGles = use_gles;
   return true;
 }
