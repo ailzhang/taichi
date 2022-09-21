@@ -9,7 +9,7 @@ class OpenglRuntime : public GfxRuntime {
   taichi::lang::gfx::GfxRuntime gfx_runtime_;
 
  public:
-  OpenglRuntime();
+  OpenglRuntime(bool GLES = false);
   virtual taichi::lang::Device &get() override final;
   virtual taichi::lang::gfx::GfxRuntime &get_gfx_runtime() override final;
   taichi::lang::opengl::GLDevice &get_gl() {

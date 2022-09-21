@@ -23,7 +23,7 @@ int opengl_max_grid_dim = 1024;
 // kUseGles is set at most once in initialize_opengl below.
 // TODO: Properly support setting GLES/GLSL in opengl backend
 // without this global static boolean.
-static bool kUseGles = false;
+static bool kUseGles = true;
 
 static void glfw_error_callback(int code, const char *description) {
   TI_WARN("GLFW Error {}: {}", code, description);

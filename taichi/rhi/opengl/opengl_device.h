@@ -299,8 +299,13 @@ class GLDevice : public GraphicsDevice {
     return image_to_int_format_.at(image);
   }
 
+  bool is_gles() const {
+    return is_gles_;
+  }
+
  private:
   GLStream stream_;
+  bool is_gles_{false};
   std::unordered_map<GLuint, GLbitfield> buffer_to_access_;
   std::unordered_map<GLuint, GLuint> image_to_dims_;
   std::unordered_map<GLuint, GLuint> image_to_int_format_;

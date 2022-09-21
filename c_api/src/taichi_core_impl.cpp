@@ -152,7 +152,13 @@ TiRuntime ti_create_runtime(TiArch arch) {
 #endif  // TI_WITH_VULKAN
 #ifdef TI_WITH_OPENGL
     case TI_ARCH_OPENGL: {
-      out = (TiRuntime)(static_cast<Runtime *>(new OpenglRuntime));
+      out = (TiRuntime)(static_cast<Runtime *>(
+          new OpenglRuntime(/*GLES=*/false)));
+      break;
+    }
+    case TI_ARCH_GLES: {
+      out =
+          (TiRuntime)(static_cast<Runtime *>(new OpenglRuntime(/*GLES=*/true)));
       break;
     }
 #endif  // TI_WITH_OPENGL

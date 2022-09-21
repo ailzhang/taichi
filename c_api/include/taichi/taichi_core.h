@@ -75,6 +75,7 @@ typedef enum TiArch {
   TI_ARCH_OPENCL = 10,
   TI_ARCH_AMDGPU = 11,
   TI_ARCH_VULKAN = 12,
+  TI_ARCH_GLES = 13,
   TI_ARCH_MAX_ENUM = 0xffffffff,
 } TiArch;
 
