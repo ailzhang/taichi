@@ -106,7 +106,14 @@ Program::Program(Arch desired_arch) : snode_rw_accessors_bank_(this) {
 #endif
   } else if (config.arch == Arch::opengl) {
 #ifdef TI_WITH_OPENGL
-    TI_ASSERT(opengl::initialize_opengl(config.use_gles));
+    TI_ASSERT(opengl::initialize_opengl(false));
+    program_impl_ = std::make_unique<OpenglProgramImpl>(config);
+#else
+    TI_ERROR("This taichi is not compiled with OpenGL");
+#endif
+  } else if (config.arch == Arch::gles) {
+#ifdef TI_WITH_OPENGL
+    TI_ASSERT(opengl::initialize_opengl(true));
     program_impl_ = std::make_unique<OpenglProgramImpl>(config);
 #else
     TI_ERROR("This taichi is not compiled with OpenGL");
@@ -220,7 +227,8 @@ void Program::check_runtime_error() {
 void Program::synchronize() {
   // Normal mode shouldn't be affected by `sync` flag.
   if (arch_uses_llvm(config.arch) || config.arch == Arch::metal ||
-      config.arch == Arch::vulkan || config.arch == Arch::opengl) {
+      config.arch == Arch::vulkan || config.arch == Arch::opengl ||
+      config.arch == Arch::gles) {
     program_impl_->synchronize();
   }
 }
@@ -319,6 +327,8 @@ void Program::visualize_layout(const std::string &fn) {
 Arch Program::get_accessor_arch() {
   if (config.arch == Arch::opengl) {
     return Arch::opengl;
+  } else if (config.arch == Arch::gles) {
+    return Arch::gles;
   } else if (config.arch == Arch::vulkan) {
     return Arch::vulkan;
   } else if (config.arch == Arch::cuda) {
@@ -454,7 +464,8 @@ void Program::print_memory_profiler_info() {
 
 std::size_t Program::get_snode_num_dynamically_allocated(SNode *snode) {
   TI_ASSERT(arch_uses_llvm(config.arch) || config.arch == Arch::metal ||
-            config.arch == Arch::vulkan || config.arch == Arch::opengl);
+            config.arch == Arch::vulkan || config.arch == Arch::opengl ||
+            config.arch == Arch::gles);
   return program_impl_->get_snode_num_dynamically_allocated(snode,
                                                             result_buffer);
 }
@@ -521,7 +532,8 @@ std::unique_ptr<AotModuleBuilder> Program::make_aot_module_builder(Arch arch) {
 #endif
   }
   if (arch_uses_llvm(config.arch) || config.arch == Arch::metal ||
-      config.arch == Arch::vulkan || config.arch == Arch::opengl) {
+      config.arch == Arch::vulkan || config.arch == Arch::opengl ||
+      config.arch == Arch::gles) {
     return program_impl_->make_aot_module_builder();
   }
   return nullptr;
