@@ -340,6 +340,7 @@ def init(arch=None,
             *``offline_cache`` (bool): Enables offline cache of the compiled kernels. Default to True. When this is enabled Taichi will cache compiled kernel on your local disk to accelerate future calls.
             *``random_seed`` (int): Sets the seed of the random generator. The default is 0.
     """
+    print('init', arch)
     # Check version for users every 7 days if not disabled by users.
     _version_check.start_version_check_thread()
 
@@ -370,6 +371,7 @@ def init(arch=None,
     env_comp = _EnvironmentConfigurator(kwargs, cfg)
     env_spec = _EnvironmentConfigurator(kwargs, spec_cfg)
 
+    print('tag1', arch)
     # configure default_fp/ip:
     # TODO: move these stuff to _SpecialConfig too:
     env_default_fp = os.environ.get("TI_DEFAULT_FP")
@@ -409,7 +411,7 @@ def init(arch=None,
     env_spec.add('log_level', str)
     env_spec.add('gdb_trigger')
     env_spec.add('short_circuit_operators')
-
+    print('tag2', arch)
     # compiler configurations (ti.cfg):
     for key in dir(cfg):
         if key in ['arch', 'default_fp', 'default_ip']:
@@ -425,7 +427,7 @@ def init(arch=None,
         raise KeyError(
             f'Unrecognized keyword argument(s) for ti.init: {", ".join(unexpected_keys)}'
         )
-
+    print('tag3', arch)
     # dispatch configurations that are not in ti.cfg:
     if not _test_mode:
         _ti_core.set_core_trigger_gdb_when_crash(spec_cfg.gdb_trigger)
@@ -438,7 +440,10 @@ def init(arch=None,
     if env_arch is not None:
         _logging.info(f'Following TI_ARCH setting up for arch={env_arch}')
         arch = _ti_core.arch_from_name(env_arch)
+    print('tag4', arch)
     cfg.arch = adaptive_arch_select(arch, enable_fallback, cfg.use_gles)
+    print('tag5', arch, cfg.arch)
+
     if cfg.arch == cc:
         _ti_core.set_tmp_dir(locale_encode(prepare_sandbox()))
     print(f'[Taichi] Starting on arch={_ti_core.arch_name(cfg.arch)}')
@@ -724,9 +729,12 @@ def is_arch_supported(arch, use_gles=False):
         wasm: lambda: True,
         cpu: lambda: True,
     }
+    print('hey1', arch)
     with_arch = arch_table.get(arch, lambda: False)
     try:
-        return with_arch()
+        res = with_arch()
+        print('hey2', arch)
+        return res
     except Exception as e:
         arch = _ti_core.arch_name(arch)
         _ti_core.warn(
@@ -743,6 +751,7 @@ def adaptive_arch_select(arch, enable_fallback, use_gles):
         arch = [arch]
     for a in arch:
         if is_arch_supported(a, use_gles):
+            print('bla4', a)
             return a
     if not enable_fallback:
         raise RuntimeError(f'Arch={arch} is not supported')

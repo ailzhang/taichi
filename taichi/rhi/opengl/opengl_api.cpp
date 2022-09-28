@@ -28,8 +28,17 @@ static void glfw_error_callback(int code, const char *description) {
   TI_WARN("GLFW Error {}: {}", code, description);
 }
 
-bool initialize_opengl(bool use_gles, bool error_tolerance) {
+bool initialize_opengl(bool use_gles, bool error_tolerance, bool reset) {
   static std::optional<bool> supported;  // std::nullopt
+
+  if (reset) {
+    std::cout << "reset opengl" << std::endl;
+    glfwTerminate();
+    supported = std::nullopt;
+    kUseGles = false;
+    return false;
+  }
+  std::cout << "init opengl, use_gles=" << use_gles << std::endl;
 
   TI_TRACE("initialize_opengl({}, {}) called", use_gles, error_tolerance);
 
