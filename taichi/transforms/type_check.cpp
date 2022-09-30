@@ -29,6 +29,10 @@ class TypeCheck : public IRVisitor {
       dst_type = dst_type->get_compute_type();
     }
     if (dst_type != val->ret_type) {
+      if (dst_type->is<TensorType>()) {
+        std::cout << "store dst " << dst
+                  << " is tensor type: " << dst_type->to_string() << std::endl;
+      }
       auto promoted = promoted_type(dst_type, val->ret_type);
       if (dst_type != promoted) {
         TI_WARN("[{}] {} may lose precision: {} <- {}\n{}", stmt->name(),
@@ -36,9 +40,6 @@ class TypeCheck : public IRVisitor {
                 stmt->tb);
       }
       val = insert_type_cast_before(stmt, val, dst_type);
-    } else {
-      std::cout << "type_check_store " << dst_type->to_string() << " "
-                << val->ret_type->to_string() << std::endl;
     }
     return dst_type;
   }
@@ -423,8 +424,22 @@ class TypeCheck : public IRVisitor {
   }
 
   void visit(ExternalPtrStmt *stmt) override {
+    // stmt->ret_type = stmt->base_ptr->ret_type;
+    if (stmt->base_ptr->ret_type.ptr_removed()->is<TensorType>()) {
+      std::cout << "hey" << std::endl;
+      stmt->ret_type = stmt->base_ptr->ret_type.ptr_removed()
+                           ->as<TensorType>()
+                           ->get_element_type();
+    } else {
+      stmt->ret_type = stmt->base_ptr->ret_type;
+    }
     stmt->ret_type.set_is_pointer(true);
-    stmt->ret_type = stmt->base_ptr->ret_type;
+
+    std::cout << "ext ptr stmt " << stmt
+              << " before: " << stmt->ret_type->to_string()
+              << " after: " << stmt->base_ptr->ret_type->to_string()
+              << std::endl;
+
     for (int i = 0; i < stmt->indices.size(); i++) {
       TI_ASSERT(is_integral(stmt->indices[i]->ret_type));
       if (stmt->indices[i]->ret_type != PrimitiveType::i32) {

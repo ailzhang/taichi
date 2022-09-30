@@ -520,9 +520,13 @@ Stmt *make_ndarray_access(Expression::FlattenContext *ctx,
   if (expr->dim == indices.size()) {
     // Indexing into an scalar element
     external_ptr_stmt->ret_type = expr->dt.ptr_removed().get_element_type();
+    std::cout << "Ext ptr ret type1: " << external_ptr_stmt.get() << " "
+              << external_ptr_stmt->ret_type->to_string() << std::endl;
   } else {
     // Indexing outer dimensions
     external_ptr_stmt->ret_type = expr->dt.ptr_removed();
+    std::cout << "Ext ptr ret type2: "
+              << external_ptr_stmt->ret_type->to_string() << std::endl;
   }
 
   return ctx->push_back(std::move(external_ptr_stmt));
@@ -788,6 +792,7 @@ void AtomicOpExpression::flatten(FlattenContext *ctx) {
     ctx->push_back<AtomicOpStmt>(op_type, dest->stmt, src_val);
   }
   stmt = ctx->back_stmt();
+  stmt->ret_type = stmt->as<AtomicOpStmt>()->dest->ret_type;
   stmt->tb = tb;
 }
 

@@ -98,10 +98,7 @@ def update_force(pos: ti.any_arr(field_dim=1), vel: ti.any_arr(field_dim=1),
         for j in range(particle_num):
             R = pos[i] - pos[j]
 
-            acc[i] += (-mass * (pre[i] / (den[i] * den[i]) + pre[j] /
-                                (den[j] * den[j])) * W_gradient(R, h))
-
-            acc[i] += (viscosity_scale * (vel[i] - vel[j]).dot(R) /
+            acc[i] += (viscosity_scale * mass * (vel[i] - vel[j]).dot(R) /
                        (R.norm() + 0.01 * h * h) / den[j] * W_gradient(R, h))
 
 
