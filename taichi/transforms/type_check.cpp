@@ -36,6 +36,9 @@ class TypeCheck : public IRVisitor {
                 stmt->tb);
       }
       val = insert_type_cast_before(stmt, val, dst_type);
+    } else {
+      std::cout << "type_check_store " << dst_type->to_string() << " "
+                << val->ret_type->to_string() << std::endl;
     }
     return dst_type;
   }

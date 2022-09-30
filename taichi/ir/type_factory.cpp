@@ -190,6 +190,14 @@ DataType promoted_primitive_type(DataType x, DataType y) {
 
 DataType promoted_type(DataType a, DataType b) {
   if (a->is<TensorType>() || b->is<TensorType>()) {
+    if (!a->is<TensorType>()) {
+      std::cout << "a is not tensor type, b: " << b->is<TensorType>()
+                << std::endl;
+    }
+    if (!b->is<TensorType>()) {
+      std::cout << "b is not tensor type, a: " << a->is<TensorType>()
+                << std::endl;
+    }
     TI_ASSERT(a->is<TensorType>() && b->is<TensorType>());
     auto tensor_ty_a = a->cast<TensorType>();
     auto tensor_ty_b = b->cast<TensorType>();
