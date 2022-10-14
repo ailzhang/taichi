@@ -700,6 +700,7 @@ void export_lang(py::module &m) {
       .def("get_ret_int_tensor", &Kernel::get_ret_int_tensor)
       .def("get_ret_float_tensor", &Kernel::get_ret_float_tensor)
       .def("make_launch_context", &Kernel::make_launch_context)
+      .def_readwrite("autodiff_mode", &Kernel::autodiff_mode)
       .def(
           "ast_builder",
           [](Kernel *self) -> ASTBuilder * {

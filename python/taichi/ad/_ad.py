@@ -9,7 +9,7 @@ from functools import reduce
 import numpy as np
 import taichi.types.primitive_types as types
 from taichi.lang import impl
-from taichi.lang.enums import SNodeGradType
+from taichi.lang.enums import AutodiffMode, SNodeGradType
 from taichi.lang.expr import Expr
 from taichi.lang.field import ScalarField
 from taichi.lang.kernel_impl import kernel
@@ -165,6 +165,7 @@ class Tape:
             >>>     sum(2)
         """
         self.calls = []
+        self.modes = []
         self.entered = False
         self.gradient_evaluated = False
         self.clear_gradients = clear_gradients
@@ -210,8 +211,13 @@ class Tape:
         self.runtime.target_tape = None
         if self.eval_on_exit:
             self.grad()
+        for calls, mode in zip(self.calls, self.modes):
+            calls[0].autodiff_mode = mode
 
     def insert(self, func, args):
+        if self.validation and not impl.get_runtime().grad_replaced:
+            self.modes.append(func.autodiff_mode)
+            func.kernel_cpp.autodiff_mode = AutodiffMode.VALIDATION
         self.calls.append((func, args))
 
     def grad(self):
