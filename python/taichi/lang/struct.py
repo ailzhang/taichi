@@ -652,6 +652,7 @@ class StructField(Field):
 
 class StructType(CompoundType):
     def __init__(self, **kwargs):
+        # Python 3.7 dicts in all Python implementations must preserve insertion order.
         self.members = {}
         self.methods = {}
         for k, dtype in kwargs.items():

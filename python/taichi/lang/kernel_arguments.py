@@ -8,6 +8,7 @@ from taichi.lang.any_array import AnyArray
 from taichi.lang.enums import Layout
 from taichi.lang.expr import Expr
 from taichi.lang.matrix import Matrix, MatrixType, Vector, VectorType
+from taichi.lang.struct import Struct
 from taichi.lang.util import cook_dtype
 from taichi.types.primitive_types import RefType, f32, u64
 
@@ -65,6 +66,17 @@ def decl_matrix_arg(matrixtype):
         [[decl_scalar_arg(matrixtype.dtype) for _ in range(matrixtype.m)]
          for _ in range(matrixtype.n)],
         ndim=matrixtype.ndim)
+
+
+def decl_struct_arg(struct_type):
+    kw_args = {}
+    for k, dtype in struct_type.members.items():
+        if isinstance(dtype, MatrixType):
+            kw_args[k] = decl_matrix_arg(dtype)
+        else:
+            # only support matrix and scalar args for now
+            kw_args[k] = decl_scalar_arg(dtype)
+    return Struct(**kw_args)
 
 
 def decl_sparse_matrix(dtype):

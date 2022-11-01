@@ -21,10 +21,11 @@ from taichi.lang.expr import Expr
 from taichi.lang.kernel_arguments import KernelArgument
 from taichi.lang.matrix import Matrix, MatrixType
 from taichi.lang.shell import _shell_pop_print, oinspect
+from taichi.lang.struct import StructType
 from taichi.lang.util import (cook_dtype, has_paddle, has_pytorch,
                               to_taichi_type)
-from taichi.types import (ndarray_type, primitive_types, sparse_matrix_builder,
-                          template, texture_type)
+from taichi.types import (compound_types, ndarray_type, primitive_types,
+                          sparse_matrix_builder, template, texture_type)
 from taichi.types.utils import is_signed
 
 from taichi import _logging
@@ -506,6 +507,8 @@ class Kernel:
                     pass
                 elif isinstance(annotation, MatrixType):
                     pass
+                elif isinstance(annotation, compound_types.CompoundType):
+                    pass
                 else:
                     raise TaichiSyntaxError(
                         f'Invalid type annotation (argument {i}) of Taichi kernel: {annotation}'
@@ -780,6 +783,23 @@ class Kernel:
                             f'Matrix dtype {needed.dtype} is not integer type or real type.'
                         )
                     continue
+                elif isinstance(needed, StructType):
+                    # TODO: support nested struct
+                    for k, dtype in needed.members.items():
+                        if isinstance(dtype, MatrixType):
+                            raise ValueError('wrong runtime value')
+                        else:
+                            if id(dtype) in primitive_types.real_type_ids:
+                                ele = getattr(v, k)
+                                if not isinstance(ele, (float, int)):
+                                    raise TaichiRuntimeTypeError.get(
+                                        i, dtype.to_string(), provided)
+
+                                launch_ctx.set_arg_float(
+                                    actual_argument_slot, float(ele))
+                                actual_argument_slot += 1
+                            else:
+                                raise ValueError('wrong runtime value')
                 else:
                     raise ValueError(
                         f'Argument type mismatch. Expecting {needed}, got {type(v)}.'

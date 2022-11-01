@@ -19,6 +19,7 @@ from taichi.lang.field import Field
 from taichi.lang.impl import current_cfg
 from taichi.lang.matrix import Matrix, MatrixType, Vector, is_vector
 from taichi.lang.snode import append
+from taichi.lang.struct import StructType
 from taichi.lang.util import is_taichi_class, to_taichi_type
 from taichi.types import (annotations, ndarray_type, primitive_types,
                           texture_type)
@@ -594,6 +595,12 @@ class ASTTransformer(Builder):
                     ctx.create_variable(
                         arg.arg,
                         kernel_arguments.decl_matrix_arg(
+                            ctx.func.arguments[i].annotation))
+                elif isinstance(ctx.func.arguments[i].annotation, StructType):
+                    # TODO: remove this once we support compound types in C++.
+                    ctx.create_variable(
+                        arg.arg,
+                        kernel_arguments.decl_struct_arg(
                             ctx.func.arguments[i].annotation))
                 else:
                     ctx.create_variable(
