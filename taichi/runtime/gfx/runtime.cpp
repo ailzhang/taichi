@@ -698,6 +698,8 @@ void GfxRuntime::init_nonroot_buffers() {
 }
 
 void GfxRuntime::add_root_buffer(size_t root_buffer_size) {
+  std::cout << "Adding a root buffer with size: " << root_buffer_size
+            << std::endl;
   if (root_buffer_size == 0) {
     root_buffer_size = 4;  // there might be empty roots
   }

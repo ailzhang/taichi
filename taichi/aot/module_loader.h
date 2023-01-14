@@ -83,7 +83,8 @@ class TI_DLL_EXPORT Module {
   // member variables.
   virtual Arch arch() const = 0;
   virtual uint64_t version() const = 0;
-  virtual size_t get_root_size() const = 0;
+  // virtual size_t get_root_size() const = 0;
+  virtual std::vector<size_t> get_root_sizes() const = 0;
 
   Kernel *get_kernel(const std::string &name);
   KernelTemplate *get_kernel_template(const std::string &name);

@@ -56,8 +56,8 @@ class AotModuleImpl : public aot::Module {
     return std::make_unique<aot::CompiledGraph>(std::move(graph));
   }
 
-  size_t get_root_size() const override {
-    return module_data.root_buffer_size;
+  std::vector<size_t> get_root_sizes() const override {
+    return module_data.root_buffer_sizes;
   }
 
   // Module metadata

@@ -14,6 +14,7 @@ struct CompiledFieldData {
   std::string field_name;
   uint32_t dtype{0};
   std::string dtype_name;
+  uint32_t root_id{0};
   size_t mem_offset_in_parent{0};
   std::vector<int> shape;
   bool is_scalar{false};
@@ -22,6 +23,7 @@ struct CompiledFieldData {
   TI_IO_DEF(field_name,
             dtype,
             dtype_name,
+            root_id,
             mem_offset_in_parent,
             shape,
             is_scalar,
@@ -122,7 +124,7 @@ struct ModuleData {
   std::vector<aot::CompiledFieldData> fields;
   std::map<std::string, uint32_t> required_caps;
 
-  size_t root_buffer_size;
+  std::vector<size_t> root_buffer_sizes;
 
   void dump_json(std::string path) {
     TextSerializer ts;
@@ -130,7 +132,7 @@ struct ModuleData {
     ts.write_to_file(path);
   }
 
-  TI_IO_DEF(kernels, kernel_tmpls, fields, required_caps, root_buffer_size);
+  TI_IO_DEF(kernels, kernel_tmpls, fields, required_caps, root_buffer_sizes);
 };
 
 }  // namespace aot
