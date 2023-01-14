@@ -18,9 +18,9 @@ struct TaichiAotData {
   std::vector<spirv::TaichiKernelAttributes> kernels;
   std::vector<aot::CompiledFieldData> fields;
   std::map<std::string, uint32_t> required_caps;
-  size_t root_buffer_size{0};
+  std::vector<size_t> root_buffer_sizes;
 
-  TI_IO_DEF(kernels, fields, required_caps, root_buffer_size);
+  TI_IO_DEF(kernels, fields, required_caps, root_buffer_sizes);
 };
 
 }  // namespace gfx

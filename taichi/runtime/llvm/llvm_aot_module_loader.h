@@ -33,8 +33,8 @@ class LlvmAotModule : public aot::Module {
     return 0;
   }
 
-  size_t get_root_size() const override {
-    return 0;
+  std::vector<size_t> get_root_sizes() const override {
+    return {0};
   }
 
   LlvmRuntimeExecutor *const get_runtime_executor() {

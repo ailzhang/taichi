@@ -75,7 +75,7 @@ void run_dense_field_kernel(Arch arch, taichi::lang::Device *device) {
   EXPECT_TRUE(vk_module);
 
   // Retrieve kernels/fields/etc from AOT module
-  auto root_size = vk_module->get_root_size();
+  auto root_size = vk_module->get_root_sizes()[0];
   EXPECT_EQ(root_size, 40);
   gfx_runtime->add_root_buffer(root_size);
 
@@ -134,7 +134,7 @@ void run_kernel_test1(Arch arch, taichi::lang::Device *device) {
   EXPECT_TRUE(vk_module);
 
   // Retrieve kernels/fields/etc from AOT module
-  auto root_size = vk_module->get_root_size();
+  auto root_size = vk_module->get_root_sizes()[0];
   EXPECT_EQ(root_size, 0);
   gfx_runtime->add_root_buffer(root_size);
 
@@ -196,7 +196,7 @@ void run_kernel_test2(Arch arch, taichi::lang::Device *device) {
   EXPECT_TRUE(vk_module);
 
   // Retrieve kernels/fields/etc from AOT module
-  auto root_size = vk_module->get_root_size();
+  auto root_size = vk_module->get_root_sizes()[0];
   EXPECT_EQ(root_size, 0);
   gfx_runtime->add_root_buffer(root_size);
 
@@ -268,7 +268,7 @@ void run_cgraph1(Arch arch, taichi::lang::Device *device_) {
   EXPECT_TRUE(module);
 
   // Retrieve kernels/fields/etc from AOT module
-  auto root_size = module->get_root_size();
+  auto root_size = module->get_root_sizes()[0];
   EXPECT_EQ(root_size, 0);
   gfx_runtime->add_root_buffer(root_size);
 
@@ -343,7 +343,7 @@ void run_cgraph2(Arch arch, taichi::lang::Device *device_) {
   EXPECT_TRUE(module);
 
   // Retrieve kernels/fields/etc from AOT module
-  auto root_size = module->get_root_size();
+  auto root_size = module->get_root_sizes()[0];
   EXPECT_EQ(root_size, 0);
   gfx_runtime->add_root_buffer(root_size);
 
@@ -409,7 +409,7 @@ void run_mpm88_graph(Arch arch, taichi::lang::Device *device_) {
   EXPECT_TRUE(module);
 
   // Retrieve kernels/fields/etc from AOT module
-  auto root_size = module->get_root_size();
+  auto root_size = module->get_root_sizes()[0];
   EXPECT_EQ(root_size, 0);
   gfx_runtime->add_root_buffer(root_size);
 

@@ -29,7 +29,7 @@ class AotDataConverter {
     }
     res.fields = in.fields;
     res.required_caps = in.required_caps;
-    res.root_buffer_size = in.root_buffer_size;
+    res.root_buffer_sizes = in.root_buffer_sizes;
     return res;
   }
 
@@ -114,7 +114,9 @@ AotModuleBuilderImpl::AotModuleBuilderImpl(
     ti_aot_data_.required_caps[to_string(pair.first)] = pair.second;
   }
   if (!compiled_structs.empty()) {
-    ti_aot_data_.root_buffer_size = compiled_structs[0].root_size;
+    for (int i = 0; i < compiled_structs.size(); i++) {
+      ti_aot_data_.root_buffer_sizes.push_back(compiled_structs[i].root_size);
+    }
   }
 }
 
@@ -224,8 +226,19 @@ void AotModuleBuilderImpl::add_field_per_backend(const std::string &identifier,
   TI_ERROR_IF(!all_fields_are_dense_in_container(rep_snode->parent),
               "AOT: only supports dense field");
 
+  // FIXME: It's easier to get root_id from snode_to_root_ but it's not saved
+  // here auto root_id = snode_to_root_[rep_snode->id]; std::cout << "Found in
+  // root" << root_id << std::endl;
+  int root_id = -1;
+  for (int i = 0; i < compiled_structs_.size(); i++) {
+    if (compiled_structs_[i].snode_descriptors.count(rep_snode->parent->id)) {
+      root_id = i;
+      break;
+    }
+  }
+  TI_ASSERT(root_id >= 0);
   const auto &dense_desc =
-      compiled_structs_[0].snode_descriptors.at(rep_snode->parent->id);
+      compiled_structs_[root_id].snode_descriptors.at(rep_snode->parent->id);
 
   aot::CompiledFieldData field_data;
   field_data.field_name = identifier;
@@ -233,6 +246,7 @@ void AotModuleBuilderImpl::add_field_per_backend(const std::string &identifier,
   field_data.dtype = static_cast<int>(dt->cast<PrimitiveType>()->type);
   field_data.dtype_name = dt.to_string();
   field_data.shape = shape;
+  field_data.root_id = root_id;
   field_data.mem_offset_in_parent = dense_desc.mem_offset_in_parent_cell;
   if (!is_scalar) {
     field_data.element_shape = {row_num, column_num};
