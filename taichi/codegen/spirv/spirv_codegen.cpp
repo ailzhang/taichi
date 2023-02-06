@@ -748,6 +748,20 @@ class TaskCodegen : public IRVisitor {
       } else {
         TI_NOT_IMPLEMENTED
       }
+    } else if (stmt->op_type == UnaryOpType::frexp) {
+      if (is_real(src_dt)) {
+      if (data_type_bits(src_dt) > 64) {                                 
+        TI_ERROR("Instruction frexp does not 64bits operation");                      
+      }    
+      std::vector<std::tuple<SType, std::string, size_t>> components;
+      components.push_back({src_type, "frac", 0});
+      components.push_back({ir_->i32_type(), "exp", ir_->get_primitive_type_size(src_dt)});
+      spirv::SType ret_type = ir_->create_struct_type(components);
+      auto tmp = ir_->call_glsl450(ret_type, 52, operand_val);  
+      val = ir_->make_value(spv::OpCompositeExtract, src_type, tmp, 0);
+      } else {
+        TI_NOT_IMPLEMENTED;
+      }
     }
 #define UNARY_OP_TO_SPIRV(op, instruction, instruction_id, max_bits)           \
   else if (stmt->op_type == UnaryOpType::op) {                                 \

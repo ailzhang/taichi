@@ -414,6 +414,13 @@ def round(x, dtype=None):  # pylint: disable=redefined-builtin
         result = cast(result, dtype)
     return result
 
+@unary 
+def _frexp(x):
+    return _unary_operation(_ti_core.expr_frexp, math.frexp, x)
+
+def frexp(x):
+    result = _frexp(x)
+    return result
 
 @unary
 def _floor(x):
@@ -1530,5 +1537,5 @@ __all__ = [
     "atomic_max", "atomic_sub", "atomic_min", "atomic_add", "bit_cast",
     "bit_shr", "cast", "ceil", "cos", "exp", "floor", "log", "random",
     "raw_mod", "raw_div", "round", "rsqrt", "sin", "sqrt", "tan", "tanh",
-    "max", "min", "select", "abs", "pow"
+    "max", "min", "select", "abs", "pow", "frexp"
 ]

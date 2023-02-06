@@ -198,6 +198,15 @@ class TaskCodeGenCUDA : public TaskCodeGenLLVM {
       } else {
         TI_NOT_IMPLEMENTED
       }
+    } else if (op == UnaryOpType::frexp) {
+      llvm::Value* tmp = builder->CreateAlloca(builder->getInt32Ty());
+      if (input_taichi_type->is_primitive(PrimitiveTypeID::f32)) {
+        llvm_val[stmt] = call("__nv_frexpf", input, tmp);
+      } else if (input_taichi_type->is_primitive(PrimitiveTypeID::f64)) {
+        llvm_val[stmt] = call("__nv_frexp", input, tmp);
+      } else {
+        TI_NOT_IMPLEMENTED
+      }
     }
     UNARY_STD(exp)
     UNARY_STD(log)
