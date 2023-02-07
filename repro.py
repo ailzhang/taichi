@@ -1,9 +1,10 @@
 import taichi as ti
-ti.init(ti.cuda)
+ti.init(ti.vulkan, print_ir=False)
 
 @ti.kernel
 def test(x: ti.f32) -> ti.f32:
-    return ti.frexp(x)
+    a, b = ti.frexp(x)
+    return b
 
 
-print(test(16.4))
+print(test(1.4))

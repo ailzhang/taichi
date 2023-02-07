@@ -1557,7 +1557,7 @@ class ClearListStmt : public Stmt {
 // Checks if the task represented by |stmt| contains a single ClearListStmt.
 bool is_clear_list_task(const OffloadedStmt *stmt);
 
-class InternalFuncStmt : public Stmt {
+class InternalFuncStmt : public Stmt, public ir_traits::Store {
  public:
   std::string func_name;
   std::vector<Stmt *> args;
@@ -1578,6 +1578,13 @@ class InternalFuncStmt : public Stmt {
     TI_STMT_REG_FIELDS;
   }
 
+  stmt_refs get_store_destination() const override {
+    return args;
+  }
+
+  Stmt *get_store_data() const override {
+    return nullptr;
+  }
   TI_STMT_DEF_FIELDS(ret_type, func_name, args, with_runtime_context);
   TI_DEFINE_ACCEPT_AND_CLONE
 };

@@ -178,9 +178,9 @@ void UnaryOpExpression::type_check(const CompileConfig *config) {
 
   if (type == UnaryOpType::frexp) {
     ret_primitive_type = operand_primitive_type;
-  }
-
-  if (operand->ret_type->is<TensorType>()) {
+    ret_type = taichi::lang::TypeFactory::get_instance().get_tensor_type(
+        {2}, ret_primitive_type);
+  } else if (operand->ret_type->is<TensorType>()) {
     ret_type = taichi::lang::TypeFactory::get_instance().get_tensor_type(
         operand->ret_type.get_shape(), ret_primitive_type);
   } else {

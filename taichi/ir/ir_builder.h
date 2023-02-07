@@ -156,7 +156,6 @@ class IRBuilder {
   UnaryOpStmt *create_not(Stmt *value);  // bitwise
   UnaryOpStmt *create_logical_not(Stmt *value);
   UnaryOpStmt *create_round(Stmt *value);
-  UnaryOpStmt *create_frexp(Stmt *value);
   UnaryOpStmt *create_floor(Stmt *value);
   UnaryOpStmt *create_ceil(Stmt *value);
   UnaryOpStmt *create_abs(Stmt *value);

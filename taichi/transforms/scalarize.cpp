@@ -13,8 +13,9 @@ class Scalarize : public BasicStmtVisitor {
  public:
   ImmediateIRModifier immediate_modifier_;
   DelayedIRModifier delayed_modifier_;
+  const CompileConfig config_;
 
-  explicit Scalarize(IRNode *node) : immediate_modifier_(node) {
+  explicit Scalarize(IRNode *node, const CompileConfig& config) : immediate_modifier_(node), config_(config) {
     node->accept(this);
 
     delayed_modifier_.modify_ir();
@@ -49,7 +50,6 @@ class Scalarize : public BasicStmtVisitor {
       auto val_tensor_type = val_dtype->template as<TensorType>();
 
       TI_ASSERT(dest_tensor_type->get_shape() == val_tensor_type->get_shape());
-
       TI_ASSERT(stmt->val->template is<MatrixInitStmt>());
       auto matrix_init_stmt = stmt->val->template as<MatrixInitStmt>();
 
@@ -155,6 +155,41 @@ class Scalarize : public BasicStmtVisitor {
       stmt->replace_all_usages_with(tmp)
   */
   void visit(UnaryOpStmt *stmt) override {
+    // Hack for frexp
+    if (stmt->op_type == UnaryOpType::frexp) {
+      // alloca 
+      auto exponent = std::make_unique<AllocaStmt>(PrimitiveType::i32);
+      exponent->ret_type = PrimitiveType::i32;
+
+      // call Internalfunc
+      if (config_.arch == Arch::cuda || config_.arch == Arch::vulkan) {
+      std::vector<Stmt*> vecs {stmt->operand, exponent.get()};
+      auto frac = std::make_unique<InternalFuncStmt>("__nv_frexpf", vecs, PrimitiveType::f32, /*with_runtime_context=*/false);
+      
+      // cast to f32
+      auto loaded = std::make_unique<LocalLoadStmt>(exponent.get());
+      auto casted = std::make_unique<UnaryOpStmt>(UnaryOpType::cast_value, loaded.get());
+      casted->cast_type = stmt->operand->ret_type;
+      // Form a MatrixInit
+      std::vector<Stmt *> matrix_init_values;
+      matrix_init_values.push_back(frac.get());
+      matrix_init_values.push_back(casted.get());
+      auto matrix_init_stmt =
+          std::make_unique<MatrixInitStmt>(matrix_init_values);
+      matrix_init_stmt->ret_type = stmt->ret_type;
+      // replace 
+      delayed_modifier_.insert_before(stmt, std::move(exponent));
+      delayed_modifier_.insert_before(stmt, std::move(frac));
+      delayed_modifier_.insert_before(stmt, std::move(loaded));
+      delayed_modifier_.insert_before(stmt, std::move(casted));
+      immediate_modifier_.replace_usages_with(stmt, matrix_init_stmt.get());
+      delayed_modifier_.insert_before(stmt, std::move(matrix_init_stmt));
+      delayed_modifier_.erase(stmt);
+      // } else if (config_.arch == Arch::vulkan) {
+
+      }
+    }
+
     auto operand_dtype = stmt->operand->ret_type;
     if (operand_dtype->is<TensorType>()) {
       // Needs scalarize
@@ -740,9 +775,9 @@ class ExtractLocalPointers : public BasicStmtVisitor {
 
 namespace irpass {
 
-void scalarize(IRNode *root) {
+void scalarize(IRNode *root, const CompileConfig& config) {
   TI_AUTO_PROF;
-  Scalarize scalarize_pass(root);
+  Scalarize scalarize_pass(root, config);
   auto scalarizable_allocas = GatherScalarizableLocalPointers::run(root);
   ScalarizeLocalPointers scalarize_pointers_pass(root, scalarizable_allocas);
   ExtractLocalPointers extract_pointers_pass(root);
