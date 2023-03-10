@@ -206,7 +206,14 @@ void UnaryOpExpression::type_check(const CompileConfig *config) {
     ret_primitive_type = is_cast() ? cast_type : operand_primitive_type;
   }
 
-  if (operand->ret_type->is<TensorType>()) {
+  if (type == UnaryOpType::frexp) {
+    // TODO: 
+    // struct {float, int}
+    std::vector<StructMember> elements;
+    elements.push_back({taichi::lang::TypeFactory::get_instance().get_primitive_real_type(32), "f", 0});
+    elements.push_back({taichi::lang::TypeFactory::get_instance().get_primitive_int_type(32, /*is_signed=*/true), "i", 4});
+    ret_type = taichi::lang::TypeFactory::get_instance().get_struct_type(elements)->cast<StructType>();
+  } else if (operand->ret_type->is<TensorType>()) {
     ret_type = taichi::lang::TypeFactory::get_instance().get_tensor_type(
         operand->ret_type.get_shape(), ret_primitive_type);
   } else {

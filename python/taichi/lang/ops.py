@@ -453,6 +453,14 @@ def floor(x, dtype=None):
 
 
 @unary
+def _frexp(x):
+    return _unary_operation(_ti_core.expr_frexp, math.frexp, x)
+
+def frexp(x):
+    result = _frexp(x)
+    return result
+
+@unary
 def _ceil(x):
     return _unary_operation(_ti_core.expr_ceil, math.ceil, x)
 
@@ -1533,7 +1541,7 @@ def min(*args):  # pylint: disable=W0622
 __all__ = [
     "acos", "asin", "atan2", "atomic_and", "atomic_or", "atomic_xor",
     "atomic_max", "atomic_sub", "atomic_min", "atomic_add", "bit_cast",
-    "bit_shr", "cast", "ceil", "cos", "exp", "floor", "log", "random",
+    "bit_shr", "cast", "ceil", "cos", "exp", "floor", "frexp", "log", "random",
     "raw_mod", "raw_div", "round", "rsqrt", "sin", "sqrt", "tan", "tanh",
     "max", "min", "select", "abs", "pow"
 ]
