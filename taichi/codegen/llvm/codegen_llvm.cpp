@@ -16,6 +16,7 @@
 #include "taichi/codegen/llvm/struct_llvm.h"
 #include "taichi/util/file_sequence_writer.h"
 #include "taichi/codegen/codegen_utils.h"
+#include <llvm/Support/raw_ostream.h>
 
 namespace taichi::lang {
 
@@ -1261,6 +1262,7 @@ llvm::Value *TaskCodeGenLLVM::bitcast_to_u64(llvm::Value *val, DataType type) {
 }
 
 void TaskCodeGenLLVM::visit(ArgLoadStmt *stmt) {
+  std::cout << "ret_type " << stmt->ret_type->to_string() << std::endl;
   if (!stmt->is_grad) {
     llvm_val[stmt] = get_struct_arg({stmt->arg_id}, stmt->create_load);
     return;
@@ -1839,7 +1841,7 @@ void TaskCodeGenLLVM::visit(MatrixPtrStmt *stmt) {
 }
 
 void TaskCodeGenLLVM::visit(ExternalPtrStmt *stmt) {
-  auto argload = stmt->base_ptr->as<ArgLoadStmt>();
+  auto argload = stmt->base_ptr->as<GetElementStmt>()->src->as<ArgLoadStmt>();
   auto arg_id = argload->arg_id;
   int num_indices = stmt->indices.size();
   std::vector<llvm::Value *> sizes(num_indices);
@@ -1898,7 +1900,7 @@ void TaskCodeGenLLVM::visit(ExternalPtrStmt *stmt) {
     However, this does not fit with Taichi's Ndarray semantics. We will have to
     do pointer arithmetics to manually calculate the offset.
   */
-  DataType operand_dtype = argload->ret_type.ptr_removed();
+  DataType operand_dtype = stmt->base_ptr->ret_type.ptr_removed();
   if (operand_dtype->is<TensorType>()) {
     // Access PtrOffset via: base_ptr + offset * sizeof(element)
     auto primitive_type = operand_dtype.get_element_type();
@@ -2725,16 +2727,33 @@ void TaskCodeGenLLVM::visit(FuncCallStmt *stmt) {
 
 void TaskCodeGenLLVM::visit(GetElementStmt *stmt) {
   auto *struct_type = tlctx->get_data_type(stmt->src->ret_type.ptr_removed());
+  std::string s;
+  llvm::raw_string_ostream os(s);
   std::vector<llvm::Value *> index;
   index.reserve(stmt->index.size() + 1);
   index.push_back(tlctx->get_constant(0));
   for (auto &i : stmt->index) {
     index.push_back(tlctx->get_constant(i));
   }
+  // if (stmt->ret_type.is_pointer()) {
+  // index.push_back(tlctx->get_constant(0));
+  //}
   auto *gep = builder->CreateGEP(struct_type, llvm_val[stmt->src], index);
-  auto *val = builder->CreateLoad(
-      tlctx->get_data_type(stmt->ret_type.ptr_removed()), gep);
-  llvm_val[stmt] = val;
+  if (stmt->ret_type.is_pointer()) {
+    auto *val = builder->CreateLoad(tlctx->get_data_type(stmt->ret_type), gep);
+    // val->getType()->print(os);
+    // os.flush();
+    // std::cout << os.str() << std::endl;
+    // std::cout << "ret_type ptr_removed " << stmt->ret_type->to_string() <<
+    // std::endl;
+
+    llvm_val[stmt] = val;
+  } else {
+    auto *val = builder->CreateLoad(
+        tlctx->get_data_type(stmt->ret_type.ptr_removed()), gep);
+    llvm_val[stmt] = val;
+  }
+  std::cout << "done get element" << std::endl;
 }
 
 void TaskCodeGenLLVM::set_struct_to_buffer(
@@ -2795,6 +2814,11 @@ llvm::Value *TaskCodeGenLLVM::get_struct_arg(std::vector<int> index,
   auto *args_ptr = get_args_ptr(current_callable, get_context());
   auto *args_type = current_callable->args_type;
   auto *arg_type = args_type->get_element_type(index);
+  // index.push_back(0);
+  // for (int i = 0 ; i < index.size() ; i++) {
+  // std::cout << "index " << i << " " << index[i] << std::endl;
+  //}
+  std::cout << "arg_type " << arg_type->to_string() << std::endl;
   std::vector<llvm::Value *> gep_index;
   gep_index.reserve(index.size() + 1);
   gep_index.push_back(tlctx->get_constant(0));
@@ -2803,6 +2827,7 @@ llvm::Value *TaskCodeGenLLVM::get_struct_arg(std::vector<int> index,
   }
   auto *gep =
       builder->CreateGEP(tlctx->get_data_type(args_type), args_ptr, gep_index);
+  std::cout << "create_load " << create_load << std::endl;
   if (!create_load) {
     return gep;
   }

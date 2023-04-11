@@ -451,8 +451,8 @@ class TypeCheck : public IRVisitor {
   }
 
   void visit(ExternalPtrStmt *stmt) override {
-    TI_ASSERT(stmt->base_ptr->is<ArgLoadStmt>());
-    auto arg_load_stmt = stmt->base_ptr->cast<ArgLoadStmt>();
+    TI_ASSERT(stmt->base_ptr->is<GetElementStmt>());
+    auto arg_load_stmt = stmt->base_ptr->cast<GetElementStmt>();
 
     if (stmt->overrided_dtype) {
       // pass

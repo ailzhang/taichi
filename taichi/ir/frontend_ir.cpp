@@ -590,11 +590,27 @@ void ExternalTensorExpression::flatten(FlattenContext *ctx) {
   //                 The scalarization should happen after
   //                 irpass::lower_access()
   auto prim_dt = dt;
-  auto ptr = Stmt::make<ArgLoadStmt>(arg_id, prim_dt, /*is_ptr=*/true,
-                                     /*is_grad=*/is_grad, /*create_load=*/true);
+  // FIXME: should be pointer to dt
+  auto my_ret_type =
+      TypeFactory::get_instance().get_pointer_type(PrimitiveType::f32);
+  std::vector<StructMember> members;
+  // for (int i = 0; i < members.size(); i++) {
+  members.push_back({my_ret_type, "data_ptr"});
+  // }
+  auto type = TypeFactory::get_instance().get_struct_type(members);
+  // auto type2 = type;
+  // auto type1 = TypeFactory::get_instance().get_pointer_type(type2);
+  // type.set_is_pointer(true);
+  auto ptr =
+      Stmt::make<ArgLoadStmt>(arg_id, type, /*is_ptr=*/true,
+                              /*is_grad=*/is_grad, /*create_load=*/false);
 
   ptr->tb = tb;
+  std::vector<int> ind = {0};
+  auto get_element = Stmt::make<GetElementStmt>(ptr.get(), ind);
+  get_element->ret_type = my_ret_type;
   ctx->push_back(std::move(ptr));
+  ctx->push_back(std::move(get_element));
   stmt = ctx->back_stmt();
 }
 
