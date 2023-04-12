@@ -611,9 +611,10 @@ class IRPrinter : public IRVisitor {
       }
       s += ")";
     }
-    s += fmt::format(" element_dim={} layout={} is_grad={}", stmt->element_dim,
-                     (stmt->element_dim <= 0) ? "AOS" : "SOA",
-                     stmt->base_ptr->as<ArgLoadStmt>()->is_grad);
+    s += fmt::format(
+        " element_dim={} layout={} is_grad={}", stmt->element_dim,
+        (stmt->element_dim <= 0) ? "AOS" : "SOA",
+        stmt->base_ptr->as<GetElementStmt>()->src->as<ArgLoadStmt>()->is_grad);
 
     print(fmt::format("{}{} = external_ptr {}", stmt->type_hint(), stmt->name(),
                       s));

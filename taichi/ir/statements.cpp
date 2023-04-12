@@ -36,7 +36,7 @@ ExternalPtrStmt::ExternalPtrStmt(Stmt *base_ptr,
                                  const std::vector<Stmt *> &indices)
     : base_ptr(base_ptr), indices(indices) {
   TI_ASSERT(base_ptr != nullptr);
-  TI_ASSERT(base_ptr->is<ArgLoadStmt>());
+  TI_ASSERT(base_ptr->is<GetElementStmt>());
   TI_STMT_REG_FIELDS;
 }
 

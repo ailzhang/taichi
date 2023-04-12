@@ -228,7 +228,8 @@ class UniquelyAccessedSNodeSearcher : public BasicStmtVisitor {
     // A memory location of an ExternalPtrStmt depends on the indices
     // If the accessed indices are loop unique,
     // the accessed memory location is loop unique
-    ArgLoadStmt *arg_load_stmt = stmt->base_ptr->as<ArgLoadStmt>();
+    ArgLoadStmt *arg_load_stmt =
+        stmt->base_ptr->as<GetElementStmt>()->src->as<ArgLoadStmt>();
     int arg_id = arg_load_stmt->arg_id;
 
     auto accessed_ptr = accessed_arr_pointer_.find(arg_id);

@@ -48,7 +48,8 @@ class CheckOutOfBound : public BasicStmtVisitor {
     Stmt *result = new_stmts.push_back<ConstStmt>(TypedConstant(true));
     std::string msg = fmt::format(
         "[kernel={}] Out of bound access to ndarray at arg {} with indices [",
-        kernel_name, stmt->base_ptr->as<ArgLoadStmt>()->arg_id);
+        kernel_name,
+        stmt->base_ptr->as<GetElementStmt>()->src->as<ArgLoadStmt>()->arg_id);
     std::vector<Stmt *> args;
     int flattened_element = 1;
     for (int i = 0; i < stmt->element_shape.size(); i++) {
@@ -68,7 +69,9 @@ class CheckOutOfBound : public BasicStmtVisitor {
         auto axis = stmt->element_dim <= 0 ? i : (i - stmt->element_dim);
         upper_bound = new_stmts.push_back<ExternalTensorShapeAlongAxisStmt>(
             /*axis=*/axis,
-            /*arg_id=*/stmt->base_ptr->as<ArgLoadStmt>()->arg_id);
+            /*arg_id=*/stmt->base_ptr->as<GetElementStmt>()
+                ->src->as<ArgLoadStmt>()
+                ->arg_id);
       }
       auto check_upper_bound = new_stmts.push_back<BinaryOpStmt>(
           BinaryOpType::cmp_lt, stmt->indices[i], upper_bound);

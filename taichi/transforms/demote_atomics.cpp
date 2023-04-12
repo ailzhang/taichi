@@ -78,7 +78,8 @@ class DemoteAtomics : public BasicStmtVisitor {
           if (dest_ptr->indices.empty()) {
             demote = false;
           }
-          ArgLoadStmt *arg_load_stmt = dest_ptr->base_ptr->as<ArgLoadStmt>();
+          ArgLoadStmt *arg_load_stmt =
+              dest_ptr->base_ptr->as<GetElementStmt>()->src->as<ArgLoadStmt>();
           int arg_id = arg_load_stmt->arg_id;
           if (loop_unique_arr_ptr_[arg_id] == nullptr) {
             // Not loop unique

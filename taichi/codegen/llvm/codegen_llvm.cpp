@@ -1839,7 +1839,7 @@ void TaskCodeGenLLVM::visit(MatrixPtrStmt *stmt) {
 }
 
 void TaskCodeGenLLVM::visit(ExternalPtrStmt *stmt) {
-  auto argload = stmt->base_ptr->as<ArgLoadStmt>();
+  auto argload = stmt->base_ptr->as<GetElementStmt>()->src->as<ArgLoadStmt>();
   auto arg_id = argload->arg_id;
   int num_indices = stmt->indices.size();
   std::vector<llvm::Value *> sizes(num_indices);
@@ -1898,7 +1898,7 @@ void TaskCodeGenLLVM::visit(ExternalPtrStmt *stmt) {
     However, this does not fit with Taichi's Ndarray semantics. We will have to
     do pointer arithmetics to manually calculate the offset.
   */
-  DataType operand_dtype = argload->ret_type.ptr_removed();
+  DataType operand_dtype = stmt->base_ptr->ret_type.ptr_removed();
   if (operand_dtype->is<TensorType>()) {
     // Access PtrOffset via: base_ptr + offset * sizeof(element)
     auto primitive_type = operand_dtype.get_element_type();
