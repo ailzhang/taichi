@@ -36,11 +36,11 @@ class AnyArray:
             None  # AnyArray can take any shape
         )
 
-    @property
-    @taichi_scope
-    def grad(self):
-        """Returns the gradient of this array."""
-        return AnyArray(_ti_core.make_external_grad_tensor_expr(self.ptr))
+    # @property
+    # @taichi_scope
+    # def grad(self):
+    #     """Returns the gradient of this array."""
+    #     return AnyArray(_ti_core.make_external_grad_tensor_expr(self.ptr))
 
     @property
     @taichi_scope

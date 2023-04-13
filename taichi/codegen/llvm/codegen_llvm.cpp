@@ -1261,24 +1261,26 @@ llvm::Value *TaskCodeGenLLVM::bitcast_to_u64(llvm::Value *val, DataType type) {
 }
 
 void TaskCodeGenLLVM::visit(ArgLoadStmt *stmt) {
-  if (!stmt->is_grad) {
-    llvm_val[stmt] = get_struct_arg({stmt->arg_id}, stmt->create_load);
-    return;
-  }
+  // if (!stmt->is_grad) {
+  llvm_val[stmt] = get_struct_arg({stmt->arg_id}, stmt->create_load);
+  return;
+  // }
 
-  auto raw_arg = stmt->is_grad
-                     ? (call(builder.get(), "RuntimeContext_get_grad_args",
-                             get_context(), tlctx->get_constant(stmt->arg_id)))
-                     : (call(builder.get(), "RuntimeContext_get_args",
-                             get_context(), tlctx->get_constant(stmt->arg_id)));
-  llvm::Type *dest_ty = nullptr;
-  if (stmt->is_ptr) {
-    dest_ty = llvm::PointerType::get(
-        tlctx->get_data_type(stmt->ret_type.ptr_removed()), 0);
-    llvm_val[stmt] = builder->CreateIntToPtr(raw_arg, dest_ty);
-  } else {
-    llvm_val[stmt] = bitcast_from_u64(raw_arg, stmt->ret_type);
-  }
+  // auto raw_arg = stmt->is_grad
+  //                    ? (call(builder.get(), "RuntimeContext_get_grad_args",
+  //                            get_context(),
+  //                            tlctx->get_constant(stmt->arg_id)))
+  //                    : (call(builder.get(), "RuntimeContext_get_args",
+  //                            get_context(),
+  //                            tlctx->get_constant(stmt->arg_id)));
+  // llvm::Type *dest_ty = nullptr;
+  // if (stmt->is_ptr) {
+  //   dest_ty = llvm::PointerType::get(
+  //       tlctx->get_data_type(stmt->ret_type.ptr_removed()), 0);
+  //   llvm_val[stmt] = builder->CreateIntToPtr(raw_arg, dest_ty);
+  // } else {
+  //   llvm_val[stmt] = bitcast_from_u64(raw_arg, stmt->ret_type);
+  // }
 }
 
 void TaskCodeGenLLVM::visit(ReturnStmt *stmt) {
@@ -1842,7 +1844,23 @@ void TaskCodeGenLLVM::visit(ExternalPtrStmt *stmt) {
   // Index into ndarray struct
   auto *struct_type =
       tlctx->get_data_type(stmt->base_ptr->ret_type.ptr_removed());
-  std::vector<llvm::Value *> index(2, tlctx->get_constant(0));
+
+  std::vector<llvm::Value *> index;
+  index.push_back(tlctx->get_constant(0));
+  // index.push_back(tlctx->get_constant(0));
+
+  index.push_back(tlctx->get_constant((int)stmt->is_grad));
+
+  // bool isValid =
+  // llvm::dyn_cast<llvm::StructType>(struct_type)->indexValid(index); std::cout
+  // <<"is valid: " << isValid <<std::endl; base_ptr type auto my_type =
+  // llvm::dyn_cast<llvm::StructType>(struct_type)->getTypeAtIndex((unsigned)
+  // 1);
+  std::string s;
+  llvm::raw_string_ostream rso(s);
+  llvm_val[stmt->base_ptr]->getType()->print(rso);
+  // std::cout << "my_type llvm type is " << rso.str() << std::endl;
+
   auto *gep = builder->CreateGEP(struct_type, llvm_val[stmt->base_ptr], index);
   auto *val = builder->CreateLoad(tlctx->get_data_type(stmt->ret_type), gep);
 
@@ -2799,7 +2817,9 @@ llvm::Value *TaskCodeGenLLVM::get_struct_arg(std::vector<int> index,
                                              bool create_load) {
   auto *args_ptr = get_args_ptr(current_callable, get_context());
   auto *args_type = current_callable->args_type;
+  // std::cout << "args type " << args_type->to_string() << std::endl;
   auto *arg_type = args_type->get_element_type(index);
+  // std::cout << "arg type " << arg_type->to_string() << std::endl;
   std::vector<llvm::Value *> gep_index;
   gep_index.reserve(index.size() + 1);
   gep_index.push_back(tlctx->get_constant(0));

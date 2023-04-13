@@ -59,7 +59,7 @@ TEST(Half2Vectorization, Ndarray) {
   */
 
   auto argload_stmt = block->push_back<ArgLoadStmt>(
-      0 /*arg_id*/, PrimitiveType::f16, /*is_ptr*/ false, /*is_grad*/ false,
+      0 /*arg_id*/, PrimitiveType::f16, /*is_ptr*/ false,
       /*create_load*/ true);
   auto const_0_stmt = block->push_back<ConstStmt>(TypedConstant(0));
   auto const_1_stmt = block->push_back<ConstStmt>(TypedConstant(1));

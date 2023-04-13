@@ -8,6 +8,7 @@ from functools import reduce
 
 import numpy as np
 import taichi.types.primitive_types as types
+import torch
 from taichi.lang import impl
 from taichi.lang.enums import AutodiffMode, SNodeGradType
 from taichi.lang.expr import Expr
@@ -189,23 +190,30 @@ class Tape:
         self.entered = True
 
         impl.get_runtime().materialize()
-        if len(self.loss.shape) != 0:
-            raise RuntimeError(
-                'The loss of `Tape` must be a 0-D field, i.e. scalar')
-        if not self.loss.snode.ptr.has_adjoint():
-            raise RuntimeError(
-                'Gradients of loss are not allocated, please use ti.field(..., needs_grad=True)'
-                ' for all fields that are required by autodiff.')
-        if self.clear_gradients:
-            clear_all_gradients()
-        if self.validation:
-            clear_all_gradients(gradient_type=SNodeGradType.ADJOINT_CHECKBIT)
 
-        from taichi._kernels import clear_loss  # pylint: disable=C0415
-        clear_loss(self.loss)
+        if isinstance(self.loss, torch.Tensor):
+            # FIXME: clear gradients
+            # FIXME: check scalar loss
+            self.runtime.target_tape = self
+        else:
+            if len(self.loss.shape) != 0:
+                raise RuntimeError(
+                    'The loss of `Tape` must be a 0-D field, i.e. scalar')
+            if not self.loss.snode.ptr.has_adjoint():
+                raise RuntimeError(
+                    'Gradients of loss are not allocated, please use ti.field(..., needs_grad=True)'
+                    ' for all fields that are required by autodiff.')
+            if self.clear_gradients:
+                clear_all_gradients()
+            if self.validation:
+                clear_all_gradients(
+                    gradient_type=SNodeGradType.ADJOINT_CHECKBIT)
 
-        # Attach the context manager to runtime
-        self.runtime.target_tape = self
+            from taichi._kernels import clear_loss  # pylint: disable=C0415
+            clear_loss(self.loss)
+
+            # Attach the context manager to runtime
+            self.runtime.target_tape = self
         return self
 
     def __exit__(self, _type, value, tb):
@@ -235,7 +243,11 @@ class Tape:
             # since we insert write_int and write_float kernels to self.calls
             # e.g. x[None] = 0.0, this func has no grad attribute
             if hasattr(func, 'grad'):
-                self.loss.grad.fill(1.0)
+                if isinstance(self.loss, torch.Tensor):
+                    with torch.no_grad():
+                        self.loss.grad.fill_(1.0)
+                else:
+                    self.loss.grad.fill(1.0)
                 func.grad(*args)
 
         self.gradient_evaluated = True

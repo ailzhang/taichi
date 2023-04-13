@@ -49,7 +49,9 @@ void compile_to_offloads(IRNode *ir,
     irpass::print(ir);
     std::cout << std::flush;
   }
-
+  // std::cout << "autodiff mode " << (int)autodiff_mode << std::endl;
+  // FIXME
+  // autodiff_mode = AutodiffMode::kReverse;
   if (autodiff_mode == AutodiffMode::kReverse) {
     irpass::reverse_segments(ir);
     print("Segment reversed (for autodiff)");

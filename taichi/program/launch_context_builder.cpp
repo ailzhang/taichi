@@ -54,6 +54,11 @@ void LaunchContextBuilder::set_arg_float(int arg_id, float64 d) {
 template <typename T>
 void LaunchContextBuilder::set_struct_arg(std::vector<int> arg_indices, T d) {
   auto dt = kernel_->args_type->get_element_type(arg_indices);
+  if (!dt->is<PrimitiveType>()) {
+    // FIXME: hack pointer type to u64
+    dt = PrimitiveType::u64;
+  }
+  // std::cout << "my arg type " << dt->to_string() << std::endl;
   TI_ASSERT_INFO(dt->is<PrimitiveType>(),
                  "Assigning scalar value to external (numpy) array argument is "
                  "not allowed.");
@@ -214,14 +219,16 @@ void LaunchContextBuilder::set_arg_external_array_with_shape(
     int arg_id,
     uintptr_t ptr,
     uint64 size,
-    const std::vector<int64> &shape) {
+    const std::vector<int64> &shape,
+    uintptr_t grad_ptr) {
   TI_ASSERT_INFO(
       kernel_->parameter_list[arg_id].is_array,
       "Assigning external (numpy) array to scalar argument is not allowed.");
 
   TI_ASSERT_INFO(shape.size() <= taichi_max_num_indices,
                  "External array cannot have > {max_num_indices} indices");
-  array_ptrs[{arg_id}] = (void *)ptr;
+  array_ptrs[{arg_id, 0}] = (void *)ptr;
+  array_ptrs[{arg_id, 1}] = (void *)grad_ptr;
   set_array_runtime_size(arg_id, size);
   set_array_device_allocation_type(arg_id, DevAllocType::kNone);
   for (uint64 i = 0; i < shape.size(); ++i) {

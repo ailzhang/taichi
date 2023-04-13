@@ -66,7 +66,8 @@ class LaunchContextBuilder {
   void set_arg_external_array_with_shape(int arg_id,
                                          uintptr_t ptr,
                                          uint64 size,
-                                         const std::vector<int64> &shape);
+                                         const std::vector<int64> &shape,
+                                         uintptr_t grad_ptr = 0);
 
   void set_arg_ndarray_impl(int arg_id,
                             intptr_t devalloc_ptr,

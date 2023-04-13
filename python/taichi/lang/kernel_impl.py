@@ -760,6 +760,8 @@ class Kernel:
 
                             return call_back
 
+                        if v.requires_grad and v.grad is None:
+                            v.grad = torch.zeros_like(v)
                         tmp = v
                         if str(v.device).startswith(
                                 'cuda') and taichi_arch != _ti_core.Arch.cuda:
@@ -768,10 +770,21 @@ class Kernel:
                             host_v = v.to(device='cpu', copy=True)
                             tmp = host_v
                             callbacks.append(get_call_back(v, host_v))
+                        # tmp2 = torch.ones_like(tmp)
 
+                        # def get_call_back_grad(u, v):
+                        #     def call_back():
+                        #         u.grad = v
+
+                        #     return call_back
+
+                        # callbacks.append(get_call_back_grad(v, tmp2))
+                        # import pdb
+                        # pdb.set_trace()
                         launch_ctx.set_arg_external_array_with_shape(
                             actual_argument_slot, int(tmp.data_ptr()),
-                            tmp.element_size() * tmp.nelement(), array_shape)
+                            tmp.element_size() * tmp.nelement(), array_shape,
+                            int(v.grad.data_ptr()))
                     elif has_paddle() and isinstance(v, paddle.Tensor):
                         # For now, paddle.fluid.core.Tensor._ptr() is only available on develop branch
                         def get_call_back(u, v):
