@@ -294,12 +294,14 @@ void LaunchContextBuilder::set_arg_ndarray_impl(int arg_id,
   has_grad[arg_id] = grad;
 
   // Set array ptr
-  array_ptrs[{arg_id}] = (void *)devalloc_ptr;
-
+  // array_ptrs[{arg_id}] = (void *)devalloc_ptr;
+  array_ptrs[{arg_id, 0}] = (void *)devalloc_ptr;
+  // array_ptrs[{arg_id, 1}] = (void *)grad_ptr;
   // Set grad_args[arg_id] value
   if (grad) {
-    ctx_->grad_args[arg_id] =
-        taichi_union_cast_with_different_sizes<uint64>(devalloc_ptr_grad);
+    // ctx_->grad_args[arg_id] =
+    //     taichi_union_cast_with_different_sizes<uint64>(devalloc_ptr_grad);
+    array_ptrs[{arg_id, 1}] = (void *)devalloc_ptr_grad;
   }
 
   // Set device allocation type and runtime size

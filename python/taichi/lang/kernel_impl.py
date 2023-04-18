@@ -691,6 +691,8 @@ class Kernel:
                                     v, taichi.lang._ndarray.Ndarray):
                     v_primal = v.arr
                     v_grad = v.grad.arr if v.grad else None
+                    # import pdb
+                    # pdb.set_trace()
                     if v_grad is None:
                         launch_ctx.set_arg_ndarray(actual_argument_slot,
                                                    v_primal)
@@ -728,7 +730,7 @@ class Kernel:
                         if v.flags.c_contiguous:
                             launch_ctx.set_arg_external_array_with_shape(
                                 actual_argument_slot, int(v.ctypes.data),
-                                v.nbytes, array_shape)
+                                v.nbytes, array_shape, 0)
                         elif v.flags.f_contiguous:
                             # TODO: A better way that avoids copying is saving strides info.
                             tmp = np.ascontiguousarray(v)

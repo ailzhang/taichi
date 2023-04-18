@@ -10,6 +10,7 @@ import numpy as np
 import taichi.types.primitive_types as types
 import torch
 from taichi.lang import impl
+from taichi.lang._ndarray import ScalarNdarray
 from taichi.lang.enums import AutodiffMode, SNodeGradType
 from taichi.lang.expr import Expr
 from taichi.lang.field import ScalarField
@@ -194,6 +195,8 @@ class Tape:
         if isinstance(self.loss, torch.Tensor):
             # FIXME: clear gradients
             # FIXME: check scalar loss
+            self.runtime.target_tape = self
+        elif isinstance(self.loss, ScalarNdarray):
             self.runtime.target_tape = self
         else:
             if len(self.loss.shape) != 0:
