@@ -1570,6 +1570,24 @@ class BackupSSA : public BasicStmtVisitor {
   }
 };
 
+namespace {
+
+std::function<void(const std::string &)>
+make_pass_printer(bool verbose, const std::string &kernel_name, IRNode *ir) {
+  if (!verbose) {
+    return [](const std::string &) {};
+  }
+  return [ir, kernel_name](const std::string &pass) {
+    TI_INFO("[{}] {}:", kernel_name, pass);
+    std::cout << std::flush;
+    irpass::re_id(ir);
+    irpass::print(ir);
+    std::cout << std::flush;
+  };
+}
+
+}  // namespace
+
 namespace irpass {
 
 void auto_diff(IRNode *root,
@@ -1577,20 +1595,31 @@ void auto_diff(IRNode *root,
                AutodiffMode autodiff_mode,
                bool use_stack) {
   TI_AUTO_PROF;
+  auto print = make_pass_printer(true, "read_ad_code", root);
+
   if (autodiff_mode == AutodiffMode::kReverse) {
     if (use_stack) {
       auto IB = IdentifyIndependentBlocks::run(root);
+      print("IdentifyIndependentBlocks");
       ReverseOuterLoops::run(root, IB);
+      print("ReverseOuterLoops");
 
+      int count = 0;
       for (auto ib : IB) {
+        std::cout << "Independent block: " << count << std::endl;
         PromoteSSA2LocalVar::run(ib);
+        print("PromoteSSA2LocalVar");
         ReplaceLocalVarWithStacks replace(config.ad_stack_size);
         ib->accept(&replace);
         type_check(root, config);
+        print("ReplaceLocalVarWithStacks");
         MakeAdjoint::run(ib);
         type_check(root, config);
+        print("MakeAdjoint");
         BackupSSA::run(ib);
         irpass::analysis::verify(root);
+        print("BackupSSA");
+        count++;
       }
     } else {
       auto IB = IdentifyIndependentBlocks::run(root);
