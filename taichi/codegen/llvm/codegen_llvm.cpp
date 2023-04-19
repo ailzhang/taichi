@@ -1838,8 +1838,10 @@ void TaskCodeGenLLVM::visit(ExternalPtrStmt *stmt) {
   }
   auto ptr_type = TypeFactory::get_instance().get_pointer_type(arg_type);
   auto *struct_type = tlctx->get_data_type(
-      TypeFactory::get_instance().get_struct_type({{ptr_type}}));
-  std::vector<llvm::Value *> index(2, tlctx->get_constant(0));
+      TypeFactory::get_instance().get_struct_type({{ptr_type}, {ptr_type}}));
+  std::vector<llvm::Value *> index;
+  index.push_back(tlctx->get_constant(0));
+  index.push_back(tlctx->get_constant((int)stmt->is_grad));
   auto *gep = builder->CreateGEP(struct_type, llvm_val[stmt->base_ptr], index);
   auto *ptr_val = builder->CreateLoad(tlctx->get_data_type(ptr_type), gep);
 

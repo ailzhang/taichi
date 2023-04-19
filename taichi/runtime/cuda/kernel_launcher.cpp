@@ -30,7 +30,7 @@ void KernelLauncher::launch_llvm_kernel(Handle handle,
       if (arr_sz == 0) {
         continue;
       }
-      arg_buffers[i] = ctx.array_ptrs[{i}];
+      arg_buffers[i] = ctx.array_ptrs[{i, 0}];
       if (ctx.device_allocation_type[i] ==
           LaunchContextBuilder::DevAllocType::kNone) {
         // Note: both numpy and PyTorch support arrays/tensors with zeros
@@ -63,7 +63,7 @@ void KernelLauncher::launch_llvm_kernel(Handle handle,
         }
         // device_buffers[i] saves a raw ptr on CUDA device.
         ctx.set_struct_arg({i, 0}, (uint64)device_buffers[i]);
-
+        ctx.set_struct_arg({i, 1}, (uint64)ctx.array_ptrs[{i, 1}]);
       } else if (arr_sz > 0) {
         // arg_buffers[i] is a DeviceAllocation*
         // TODO: Unwraps DeviceAllocation* can be done at TaskCodeGenLLVM
@@ -78,6 +78,7 @@ void KernelLauncher::launch_llvm_kernel(Handle handle,
 
         // device_buffers[i] saves the unwrapped raw ptr from arg_buffers[i]
         ctx.set_struct_arg({i, 0}, (uint64)device_buffers[i]);
+        ctx.set_struct_arg({i, 1}, (uint64)ctx.array_ptrs[{i, 1}]);
       }
     }
   }

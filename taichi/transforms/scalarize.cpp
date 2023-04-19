@@ -837,6 +837,8 @@ class MergeExternalAndMatrixPtr : public BasicStmtVisitor {
       // place so that they're easier to remove
       std::vector<StructMember> members;
       members.push_back({stmt->ret_type, "data_ptr"});
+      members.push_back(
+          {stmt->ret_type, "grad_ptr", (size_t)data_type_size(stmt->ret_type)});
       auto type = TypeFactory::get_instance().get_struct_type(members);
       origin->base_ptr->as<ArgLoadStmt>()->ret_type = type;
       stmt->replace_usages_with(fused.get());

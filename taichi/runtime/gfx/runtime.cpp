@@ -66,7 +66,7 @@ class HostDeviceContextBlitter {
             void *device_arr_ptr{nullptr};
             TI_ASSERT(device_->map(buffer, &device_arr_ptr) ==
                       RhiResult::success);
-            const void *host_ptr = host_ctx_.array_ptrs[{i}];
+            const void *host_ptr = host_ctx_.array_ptrs[{i, 0}];
             std::memcpy(device_arr_ptr, host_ptr, ext_arr_size.at(i));
             device_->unmap(buffer);
           }
@@ -120,7 +120,7 @@ class HostDeviceContextBlitter {
         if (access & uint32_t(irpass::ExternalPtrAccess::WRITE)) {
           // Only need to blit ext arrs (host array)
           readback_dev_ptrs.push_back(ext_arrays.at(i).get_ptr(0));
-          readback_host_ptrs.push_back(host_ctx_.array_ptrs[{i}]);
+          readback_host_ptrs.push_back(host_ctx_.array_ptrs[{i, 0}]);
           readback_sizes.push_back(ext_arr_size.at(i));
           require_sync = true;
         }
@@ -438,8 +438,8 @@ void GfxRuntime::launch_kernel(KernelHandle handle,
           DeviceAllocation devalloc = kDeviceNullAllocation;
 
           // NDArray / Texture
-          if (host_ctx.array_ptrs.count({i})) {
-            devalloc = *(DeviceAllocation *)(host_ctx.array_ptrs[{i}]);
+          if (host_ctx.array_ptrs.count({i, 0})) {
+            devalloc = *(DeviceAllocation *)(host_ctx.array_ptrs[{i, 0}]);
           }
 
           if (host_ctx.device_allocation_type[i] ==

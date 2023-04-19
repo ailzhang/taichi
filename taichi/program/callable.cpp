@@ -35,10 +35,10 @@ int Callable::insert_ndarray_param(const DataType &dt,
                                    const std::string &name) {
   // Transform ndarray param to a struct type with a pointer to `dt`.
   std::vector<StructMember> members;
-  members.push_back(
-      {TypeFactory::get_instance().get_pointer_type(dt->get_compute_type()),
-       "data_ptr"});
-
+  auto dtype =
+      TypeFactory::get_instance().get_pointer_type(dt->get_compute_type());
+  members.push_back({dtype, "data_ptr"});
+  members.push_back({dtype, "grad_ptr", (size_t)data_type_size(dtype)});
   auto *type = TypeFactory::get_instance().get_struct_type(members);
   parameter_list.emplace_back(type, /*is_array=*/true,
                               /*size=*/0, total_dim, element_shape);
