@@ -30,7 +30,7 @@ TEST(Scalarize, ScalarizeGlobalStore) {
   auto const_2_stmt = block->push_back<ConstStmt>(TypedConstant(2));
   auto argload_stmt =
       block->push_back<ArgLoadStmt>(0 /*arg_id*/, tensor_type, /*is_ptr*/ false,
-                                    /*is_grad*/ false, /*create_load*/ true);
+                                    /*create_load*/ true);
 
   std::vector<Stmt *> indices = {};
   Stmt *dest_stmt = block->push_back<ExternalPtrStmt>(
@@ -92,7 +92,7 @@ TEST(Scalarize, ScalarizeGlobalLoad) {
       {2, 2}, type_factory.get_primitive_type(PrimitiveTypeID::i32));
   auto argload_stmt =
       block->push_back<ArgLoadStmt>(0 /*arg_id*/, tensor_type, /*is_ptr*/ false,
-                                    /*is_grad*/ false, /*create_load*/ true);
+                                    /*create_load*/ true);
 
   std::vector<Stmt *> indices = {};
   Stmt *src_stmt = block->push_back<ExternalPtrStmt>(
