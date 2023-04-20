@@ -1,0 +1,51 @@
+[I 04/20/23 19:06:35.295 1817417] [compile_to_offloads.cpp:operator()@23] [composite_train_fw_stack_c79_0_reverse_grad] Bit struct stores optimized:
+kernel {
+$0 = offloaded range_for(0, 8192) grid_dim=2624 block_dim=256
+body {
+  <i32> $1 = alloca
+  <i32> $2 = loop $0 index 0
+  <i32> $3 = const 0
+  <*gen> $4 = get root [S0root][root]
+  <*gen> $5 = [S0root][root]::lookup($4, $3) activate = false
+  <*gen> $6 = get child [S0root->S5dense] $5
+  <i32> $7 = const 3
+  <i32> $8 = mul $2 $7
+  <*gen> $9 = [S5dense][dense]::lookup($6, $8) activate = false
+  <*i64> $10 = get child [S5dense->S6place<i64>] $9
+  <i64> $11 = global load $10
+  <i32> $12 = cast_value<i32> $11
+  <f32> $13 = stack alloc (max_size=1024)
+  <f32> $14 = const 0.0
+  <f32> $15 : stack push $13, val = $14
+  <f32> $16 : stack push $13, val = $14
+  <i32> $17 = const 2
+  $18 : for in range($3, $17) block_dim=adaptive {
+    <i32> $19 = loop $18 index 0
+    <i32> $20 : local store [$1 <- $19]
+    <*gen> $21 = get child [S0root->S1dense] $5
+    <*gen> $22 = [S1dense][dense]::lookup($21, $19) activate = false
+    <*f32> $23 = get child [S1dense->S2place<f32>] $22
+    <f32> $24 = global load $23
+    <f32> $25 = stack load top $13
+    <f32> $26 = add $25 $24
+    <f32> $27 : stack push $13, val = $26
+  }
+  <*gen> $28 = get child [S0root->S9dense] $5
+  <i32> $29 = mul $12 $7
+  <*gen> $30 = [S9dense][dense]::lookup($28, $29) activate = false
+  <*f32> $31 = get child [S9dense->S10place<f32>] $30
+  <f32> $32 = global load $31
+  $33 : global store [$31 <- $14]
+  <f32> $34 : stack acc adj $13, val = $32
+  $35 : reversed for in range($3, $17) block_dim=adaptive {
+    <f32> $36 = stack load top adj $13
+    <f32> $37 : stack pop $13
+    <f32> $38 : stack acc adj $13, val = $36
+    <i32> $39 = local load [$1]
+    <*gen> $40 = get child [S0root->S3dense] $5
+    <*gen> $41 = [S3dense][dense]::lookup($40, $39) activate = false
+    <*f32> $42 = get child [S3dense->S4place<f32>] $41
+    <f32> $43 = atomic add($42, $36)
+  }
+}
+}

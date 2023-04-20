@@ -1,0 +1,35 @@
+[I 04/20/23 19:06:35.473 1817417] [compile_to_offloads.cpp:operator()@23] [composite_train_fw_c77_0_reverse_grad] Bit struct stores optimized:
+kernel {
+$0 = offloaded range_for(0, 8192) grid_dim=2624 block_dim=256
+body {
+  <i32> $1 = loop $0 index 0
+  <i32> $2 = const 0
+  <*gen> $3 = get root [S0root][root]
+  <*gen> $4 = [S0root][root]::lookup($3, $2) activate = false
+  <*gen> $5 = get child [S0root->S5dense] $4
+  <i32> $6 = const 3
+  <i32> $7 = mul $1 $6
+  <*gen> $8 = [S5dense][dense]::lookup($5, $7) activate = false
+  <*i64> $9 = get child [S5dense->S6place<i64>] $8
+  <i64> $10 = global load $9
+  <i32> $11 = cast_value<i32> $10
+  <f32> $12 = const 0.0
+  <*gen> $13 = get child [S0root->S7dense] $4
+  <i32> $14 = mul $11 $6
+  <*gen> $15 = [S7dense][dense]::lookup($13, $14) activate = false
+  <*f32> $16 = get child [S7dense->S8place<f32>] $15
+  $17 : global store [$16 <- $12]
+  <i32> $18 = const 2
+  $19 : reversed for in range($2, $18) block_dim=adaptive {
+    <i32> $20 = loop $19 index 0
+    <*gen> $21 = get child [S0root->S9dense] $4
+    <*gen> $22 = [S9dense][dense]::lookup($21, $14) activate = false
+    <*f32> $23 = get child [S9dense->S10place<f32>] $22
+    <f32> $24 = global load $23
+    <*gen> $25 = get child [S0root->S3dense] $4
+    <*gen> $26 = [S3dense][dense]::lookup($25, $20) activate = false
+    <*f32> $27 = get child [S3dense->S4place<f32>] $26
+    <f32> $28 = atomic add($27, $24)
+  }
+}
+}
