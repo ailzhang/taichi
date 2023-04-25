@@ -1281,3 +1281,21 @@ def test_ad_tape_throw():
     ):
         with ti.ad.Tape(loss=n):
             compute_sum(b, n)
+
+
+@test_utils.test(arch=archs_support_ndarray_ad)
+def test_nullptr_runtime():
+    N = 4
+
+    @ti.kernel
+    def compute_sum(a: ti.types.ndarray(), p: ti.types.ndarray()):
+        for i in a:
+            p[0] += a[i] * 2
+
+    b = ti.ndarray(ti.f32, shape=(N), needs_grad=True)
+    q = ti.ndarray(ti.f32, shape=(2), needs_grad=True)
+
+    with pytest.raises(RuntimeError, match=r"grad_ptr is null, did you forget to set needs_grad for arg 0"):
+        compute_sum(b, q)
+        q.grad = None
+        compute_sum.grad(b, q)

@@ -76,8 +76,15 @@ void LaunchContextBuilder::set_struct_arg(std::vector<int> arg_indices, T d) {
 void LaunchContextBuilder::set_ndarray_ptrs(int arg_id,
                                             uint64 data_ptr,
                                             uint64 grad_ptr) {
+  TI_ASSERT_INFO(data_ptr != 0, "data_ptr for arg {} is null", arg_id);
+  std::cout << "arg_id = " << arg_id << " " << data_ptr << " " << grad_ptr
+            << std::endl;
   set_struct_arg({arg_id, TypeFactory::DATA_PTR_POS_IN_NDARRAY}, data_ptr);
   if (kernel_->parameter_list[arg_id].needs_grad) {
+    TI_ASSERT_INFO(
+        grad_ptr != 0,
+        "grad_ptr is null, did you forget to set needs_grad for arg {}?",
+        arg_id);
     set_struct_arg({arg_id, TypeFactory::GRAD_PTR_POS_IN_NDARRAY}, grad_ptr);
   }
 }

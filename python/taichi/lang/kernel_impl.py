@@ -644,11 +644,12 @@ class Kernel:
                     launch_ctx.set_arg_uint(actual_argument_slot, v._get_ndarray_addr())
                 elif isinstance(needed, ndarray_type.NdarrayType) and isinstance(v, taichi.lang._ndarray.Ndarray):
                     v_primal = v.arr
-                    v_grad = v.grad.arr if v.grad else None
-                    if v_grad is None:
-                        launch_ctx.set_arg_ndarray(actual_argument_slot, v_primal)
+                    print(i, v)
+                    # v_grad = v.grad.arr if v.grad else None
+                    if needed.needs_grad or (needed.needs_grad is None and v.grad is not None):
+                        launch_ctx.set_arg_ndarray_with_grad(actual_argument_slot, v_primal, v.grad.arr)
                     else:
-                        launch_ctx.set_arg_ndarray_with_grad(actual_argument_slot, v_primal, v_grad)
+                        launch_ctx.set_arg_ndarray(actual_argument_slot, v_primal)
                 elif isinstance(needed, texture_type.TextureType) and isinstance(v, taichi.lang._texture.Texture):
                     launch_ctx.set_arg_texture(actual_argument_slot, v.tex)
                 elif isinstance(needed, texture_type.RWTextureType) and isinstance(v, taichi.lang._texture.Texture):
