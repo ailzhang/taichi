@@ -81,6 +81,9 @@ class IndependentBlocksJudger : public BasicStmtVisitor {
     if (is_inside_loop_)
       return;
 
+    if (stmt->dest->is<AllocaStmt>()) {
+      std::cout << "NO WAYYYYYY" << std::endl;
+    }
     if (stmt->dest->is<ExternalPtrStmt>()) {
       if (stmt->dest->as<ExternalPtrStmt>()
               ->base_ptr->as<ArgLoadStmt>()
@@ -123,7 +126,9 @@ class IndependentBlocksJudger : public BasicStmtVisitor {
   void visit(RangeForStmt *stmt) override {
     inner_most_loop_ = false;
     is_inside_loop_ = true;
+    std::cout << "visiting range for " << std::endl;
     stmt->body->accept(this);
+    std::cout << "exiting range for" << std::endl;
     is_inside_loop_ = false;
   }
 

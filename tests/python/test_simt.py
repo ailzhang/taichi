@@ -173,9 +173,13 @@ def test_shfl_xor_i32():
     def foo():
         ti.loop_config(block_dim=32)
         for i in range(32):
+            b = alloca
+            b = a[i]
             for j in range(5):
                 offset = 1 << j
-                a[i] += ti.simt.warp.shfl_xor_i32(ti.u32(0xFFFFFFFF), a[i], offset)
+                c = ti.simt.warp.shfl_xor_i32(ti.u32(0xFFFFFFFF), a[i], offset)
+                b += c
+            a[i] += b
 
     value = 0
     for i in range(32):

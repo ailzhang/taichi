@@ -24,14 +24,18 @@ class DemoteAtomics : public BasicStmtVisitor {
 
   DemoteAtomics() {
     current_offloaded = nullptr;
+    current_range_for = nullptr;
   }
 
   void visit(RangeForStmt *stmt) override {
+    preprocess_container_stmt(stmt);
     if (current_offloaded) {
       current_range_for = stmt;
-      if (stmt->body) {
-        stmt->body->accept(this);
-      }
+    }
+    if (stmt->body) {
+      stmt->body->accept(this);
+    }
+    if (current_offloaded) {
       current_range_for = nullptr;
     }
   }
@@ -39,53 +43,8 @@ class DemoteAtomics : public BasicStmtVisitor {
   void visit(AtomicOpStmt *stmt) override {
     bool demote = false;
     bool is_local = false;
-    if (current_offloaded) {
-      if (current_range_for) {
-        // An atomic inside a serial range for
-        std::cout << "inside range for" << std::endl;
-        bool is_global_ptr_stmt = false;
 
-        GlobalPtrStmt *dest = nullptr;
-        if (stmt->dest->is<GlobalPtrStmt>()) {
-          dest = stmt->dest->as<GlobalPtrStmt>();
-          is_global_ptr_stmt = true;
-        } else if (stmt->dest->is<MatrixPtrStmt>() &&
-                   stmt->dest->as<MatrixPtrStmt>()
-                       ->origin->is<GlobalPtrStmt>()) {
-          dest = stmt->dest->as<MatrixPtrStmt>()->origin->as<GlobalPtrStmt>();
-          is_global_ptr_stmt = true;
-        } else {
-          demote = true;
-        }
-        if (is_global_ptr_stmt) {
-          // insert alloca to parent
-          auto before_for = VecStatement();
-          auto alloca = before_for.push_back<AllocaStmt>(stmt->ret_type);
-          // insert add inside range_for, replace old
-          auto inside_for = VecStatement();
-          auto add = inside_for.push_back<AtomicOpStmt>(stmt->op_type, alloca,
-                                                        stmt->val);
-          stmt->replace_usages_with(add);
-          // insert add_back after the block
-          auto after_for = VecStatement();
-          auto load = after_for.push_back<LocalLoadStmt>(alloca);
-          // auto add_back =
-          after_for.push_back<AtomicOpStmt>(stmt->op_type, dest, load);
-          // current_range_for->parent->insert_before(current_range_for,
-          //                                          std::move(before_for));
-          modifier.insert_before(current_range_for, std::move(before_for));
-          // stmt->parent->insert_before(stmt, std::move(inside_for));
-          modifier.insert_before(stmt, std::move(inside_for));
-          // stmt->parent
-          // current_range_for->parent->insert_after(current_range_for,
-          //                                         std::move(after_for));
-          // stmt->parent->insert_after(current_range_for,
-          // std::move(after_for));
-          modifier.insert_after(current_range_for, std::move(after_for));
-          modifier.erase(stmt);
-          return;
-        }
-      }
+    if (current_offloaded) {
       if (stmt->dest->is<ThreadLocalPtrStmt>()) {
         demote = true;
       }
@@ -202,6 +161,37 @@ class DemoteAtomics : public BasicStmtVisitor {
     }
 
     if (demote) {
+      if (current_range_for && stmt->dest->is<GlobalPtrStmt>() && !is_local &&
+          stmt->op_type == AtomicOpType::add) {
+        // if (false) {
+        for (auto &st : stmt->dest->as<GlobalPtrStmt>()->indices) {
+          // FIXME: inside the range for.
+          if (st->parent == current_range_for->body.get()) {
+            return;
+          }
+        }
+        std::cout << "MY HACK" << std::endl;
+        // insert alloca to parent
+        auto before_for = VecStatement();
+        auto alloca = before_for.push_back<AllocaStmt>(stmt->ret_type);
+        // insert add inside range_for, replace old
+        auto inside_for = VecStatement();
+        auto add = inside_for.push_back<AtomicOpStmt>(stmt->op_type, alloca,
+                                                      stmt->val);
+        stmt->replace_usages_with(add);
+        // insert add_back after the block
+        auto after_for = VecStatement();
+        auto load = after_for.push_back<LocalLoadStmt>(alloca);
+        // auto add_back
+        auto new_ptr = after_for.push_back(stmt->dest->clone());
+        after_for.push_back<AtomicOpStmt>(stmt->op_type, new_ptr, load);
+        modifier.insert_before(current_range_for, std::move(before_for));
+        modifier.insert_before(stmt, std::move(inside_for));
+        std::cout << stmt->parent << " " << add->parent << std::endl;
+        modifier.insert_after(current_range_for, std::move(after_for));
+        modifier.erase(stmt);
+        return;
+      }
       // replace atomics with load, add, store
       auto bin_type = atomic_to_binary_op_type(stmt->op_type);
       auto ptr = stmt->dest;
@@ -265,7 +255,7 @@ class DemoteAtomics : public BasicStmtVisitor {
     DemoteAtomics demoter;
     bool modified = false;
     while (true) {
-      std::cout << "running demote once" << std::endl;
+      // std::cout << "running demote once" << std::endl;
       node->accept(&demoter);
       if (demoter.modifier.modify_ir()) {
         modified = true;

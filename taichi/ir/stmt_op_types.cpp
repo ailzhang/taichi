@@ -118,6 +118,7 @@ BinaryOpType atomic_to_binary_op_type(AtomicOpType type) {
     REGISTER_TYPE(bit_and);
     REGISTER_TYPE(bit_or);
     REGISTER_TYPE(bit_xor);
+    // REGISTER_TYPE(mul);
 
 #undef REGISTER_TYPE
     default:

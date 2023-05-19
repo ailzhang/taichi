@@ -108,8 +108,10 @@ void compile_to_offloads(IRNode *ir,
       autodiff_mode == AutodiffMode::kForward) {
     // Remove local atomics here so that we don't have to handle their gradients
     irpass::demote_atomics(ir, config);
+    print("before auto_diff fully_simplify");
 
     irpass::full_simplify(ir, config, {false, /*autodiff_enabled*/ true});
+    print("before auto_diff");
     irpass::auto_diff(ir, config, autodiff_mode, ad_use_stack);
     // TODO: Be carefull with the full_simplify when do high-order autodiff
     irpass::full_simplify(ir, config, {false, /*autodiff_enabled*/ false});
@@ -238,6 +240,7 @@ void offload_to_executable(IRNode *ir,
     irpass::make_block_local(ir, config, {kernel->get_name()});
     print("Make block local");
   }
+  irpass::analysis::verify(ir);
 
   if (is_extension_supported(config.arch, Extension::mesh)) {
     irpass::demote_mesh_statements(ir, config, {kernel->get_name()});
