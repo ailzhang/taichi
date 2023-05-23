@@ -493,16 +493,7 @@ class ExternalTensorExpression : public Expression {
                            int element_dim,
                            const std::vector<int> &element_shape,
                            bool needs_grad = false) {
-    if (element_shape.size() == 0) {
-      init(dt, dim, arg_id, element_dim, needs_grad);
-    } else {
-      TI_ASSERT(dt->is<PrimitiveType>());
-
-      auto tensor_type =
-          taichi::lang::TypeFactory::get_instance().create_tensor_type(
-              element_shape, dt);
-      init(tensor_type, dim, arg_id, element_dim, needs_grad);
-    }
+    init(dt, dim, arg_id, element_dim, needs_grad);
   }
 
   explicit ExternalTensorExpression(Expr *expr) : is_grad(true) {

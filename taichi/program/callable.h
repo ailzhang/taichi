@@ -118,7 +118,6 @@ class TI_DLL_EXPORT Callable : public CallableBase {
                        const std::string &name = "");
   int insert_ndarray_param(const DataType &dt,
                            int total_dim,
-                           std::vector<int> element_shape,
                            const std::string &name = "",
                            bool needs_grad = false);
   int insert_texture_param(int total_dim, const std::string &name = "");
