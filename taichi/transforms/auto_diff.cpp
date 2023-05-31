@@ -434,6 +434,9 @@ class AdStackAllocaJudger : public BasicStmtVisitor {
     if (is_stack_needed_)
       return;
     for (const auto &index : stmt->indices) {
+      std::cout << index->id << " " << index << " " << target_alloca_
+                << std::endl;
+
       if (index == target_alloca_)
         is_stack_needed_ = true;
     }
@@ -492,12 +495,15 @@ class AdStackAllocaJudger : public BasicStmtVisitor {
       stmt->false_statements->accept(this);
   }
 
-  static bool run(AllocaStmt *target_alloca) {
+  static bool run(Stmt *target_alloca) {
     AdStackAllocaJudger judger;
     judger.target_alloca_ = target_alloca;
     judger.target_alloca_backup_ = target_alloca;
     target_alloca->parent->accept(&judger);
-    return (!judger.load_only_) && judger.is_stack_needed_;
+    std::cout << "result: " << judger.load_only_ << " "
+              << judger.is_stack_needed_ << std::endl;
+    return (target_alloca->is<LoopIndexStmt>() || !judger.load_only_) &&
+           judger.is_stack_needed_;
   }
 
  private:
@@ -701,6 +707,25 @@ class ReplaceLocalVarWithStacks : public BasicStmtVisitor {
       auto stack_alloca_ptr = stack_alloca.get();
 
       alloc->replace_with(VecStatement(std::move(stack_alloca)));
+
+      // Note that unlike AllocaStmt, AdStackAllocaStmt does NOT have an 0 as
+      // initial value. Therefore here we push an initial 0 value.
+      auto zero = insert_const(dtype, stack_alloca_ptr, 0);
+      zero->insert_after_me(
+          Stmt::make<AdStackPushStmt>(stack_alloca_ptr, zero));
+    }
+  }
+
+  void visit(LoopIndexStmt *stmt) override {
+    bool is_stack_needed = AdStackAllocaJudger::run(stmt);
+    std::cout << "visiting a loop index " << stmt->id << " " << stmt
+              << " need stack: " << is_stack_needed << std::endl;
+    if (is_stack_needed) {
+      auto dtype = stmt->ret_type;
+      auto stack_alloca = Stmt::make<AdStackAllocaStmt>(dtype, ad_stack_size);
+      auto stack_alloca_ptr = stack_alloca.get();
+
+      stmt->replace_with(VecStatement(std::move(stack_alloca)));
 
       // Note that unlike AllocaStmt, AdStackAllocaStmt does NOT have an 0 as
       // initial value. Therefore here we push an initial 0 value.
